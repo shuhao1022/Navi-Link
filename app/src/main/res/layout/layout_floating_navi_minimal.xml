@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/bg_main_navigation_box"
+    android:minWidth="200dp"
+
+    android:paddingStart="10dp">
+    <TextView
+        android:id="@+id/tv_min_speed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:includeFontPadding="false"
+        android:text="0"
+        android:textColor="#FF0099FF"
+        android:textSize="40sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_min_speed_unit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="3dp"
+        android:layout_marginBottom="5dp"
+        android:text="km/h"
+        android:textColor="#BBFFFFFF"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@id/tv_min_speed"
+        app:layout_constraintStart_toEndOf="@id/tv_min_speed" />
+
+    <View
+        android:id="@+id/min_divider"
+        android:layout_width="1dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:background="#33FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/tv_min_speed_unit"
+        app:layout_constraintTop_toTopOf="parent" />
+    <ImageView
+        android:id="@+id/iv_action_icon_min"
+        android:layout_width="34dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="5dp"
+        android:scaleType="centerInside"
+        android:src="@mipmap/ic_navi_u_turn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/min_divider"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_distance_num_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:includeFontPadding="false"
+        android:text="283"
+        android:textColor="#FFFFFF"
+        android:textSize="35sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/iv_action_icon_min"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_distance_unit_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="2dp"
+        android:layout_marginBottom="4dp"
+        android:text="米"
+        android:textColor="#BBFFFFFF"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_distance_num_min"
+        app:layout_constraintStart_toEndOf="@+id/tv_distance_num_min" />
+
+    <View
+        android:id="@+id/navi_min_divider"
+        android:layout_width="1dp"
+        android:layout_height="20dp"
+        android:layout_marginStart="12dp"
+        android:background="#33FFFFFF"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_distance_unit_min"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_road_name_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:ellipsize="marquee"
+        android:maxLines="1"
+        android:maxWidth="200dp"
+        android:text="居里夫人大道"
+        android:textColor="#FFFFFF"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/navi_min_divider"
+        app:layout_constraintTop_toTopOf="parent" />
+
+        <View
+            android:id="@+id/tv_margin"
+            android:layout_width="12dp"
+            android:layout_height="50dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/tv_road_name_min"
+            app:layout_constraintTop_toTopOf="parent"
+           />
+
+    <include
+
+        layout="@layout/layout_floating_traffic_light_group"
+        android:layout_width="wrap_content"
+        android:layout_height="50dp"
+        android:layout_marginStart="0dp"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/tv_margin"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+</androidx.constraintlayout.widget.ConstraintLayout>

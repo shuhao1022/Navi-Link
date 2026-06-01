@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 黑色外边框 -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#000000" />
+            <size android:width="48dp" android:height="48dp" />
+        </shape>
+    </item>
+    <!-- 黄灯内圆（深琥珀色，与白字对比度好） -->
+    <item android:bottom="3dp" android:left="3dp" android:right="3dp" android:top="3dp">
+        <shape android:shape="oval">
+            <solid android:color="#CC9900" />
+        </shape>
+    </item>
+</layer-list>

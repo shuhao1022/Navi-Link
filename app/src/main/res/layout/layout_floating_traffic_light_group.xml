@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/ll_traffic_light_group"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:background="@drawable/bg_traffic_light_capsule"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingStart="4dp"
+    android:paddingEnd="10dp">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp">
+
+        <ImageView
+            android:id="@+id/iv_light_icon"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_traffic_light_green" />
+
+        <ImageView
+            android:layout_gravity="center"
+            android:id="@+id/iv_light_arrow"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:padding="4dp"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_navi_left" />
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_light_time"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginEnd="3dp"
+        android:includeFontPadding="false"
+        android:text="94"
+        android:textColor="#FFFFFF"
+        android:textSize="30sp"
+        android:textStyle="bold" />
+</LinearLayout>
