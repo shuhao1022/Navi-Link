@@ -15,15 +15,22 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.NaviLink"
         tools:targetApi="31">
+        <!-- 透明路由入口，无UI，仅做权限/状态判断后分发 -->
         <activity
-            android:name=".MainActivity"
+            android:name=".RouterActivity"
             android:exported="true"
+            android:theme="@style/Theme.Transparent"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTop" />
 
         <service
             android:name=".AutoMapService"
