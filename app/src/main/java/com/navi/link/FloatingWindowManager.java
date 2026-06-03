@@ -623,10 +623,8 @@ public class FloatingWindowManager {
                     tvFullEndPoiName.setText(cachedEndPoiName);
                 if (tvFullCameraDist != null && cachedCameraDist > 0)
                     tvFullCameraDist.setText(cachedCameraDist + "米");
-                if (tvFullLightCount != null && cachedTotalLightNum > 0) {
-                    int remain = cachedRemainLightNum > 0 ? cachedRemainLightNum : cachedTotalLightNum;
-                    tvFullLightCount.setText(remain + "/" + cachedTotalLightNum);
-                }
+                if (tvFullLightCount != null && cachedRemainLightNum > 0)
+                    tvFullLightCount.setText(cachedRemainLightNum + "个");
                 if (tvFullDirection != null && cachedCarDirection > 0)
                     tvFullDirection.setText("朝向 " + getDirectionText(cachedCarDirection));
             } else if (styleMode == 1) {
@@ -1090,9 +1088,8 @@ public class FloatingWindowManager {
             }
         }
         if (tvFullLightCount != null) {
-            if (totalLightNum > 0) {
-                int remain = remainLightNum > 0 ? remainLightNum : totalLightNum;
-                tvFullLightCount.setText(remain + "/" + totalLightNum);
+            if (remainLightNum > 0) {
+                tvFullLightCount.setText(remainLightNum + "个");
             } else {
                 tvFullLightCount.setText("--");
             }
