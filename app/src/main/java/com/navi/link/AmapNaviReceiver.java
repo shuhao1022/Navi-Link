@@ -10,7 +10,7 @@ import org.json.JSONArray;
 public class AmapNaviReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AmapNavi";
-    private boolean isLog = false;
+    private boolean isLog = true;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!"AUTONAVI_STANDARD_BROADCAST_SEND".equals(intent.getAction())) return;
@@ -55,13 +55,8 @@ public class AmapNaviReceiver extends BroadcastReceiver {
                 handleNaviInfo(intent, manager);
             } else {
                 if (manager.getCurrentMode() == FloatingWindowManager.MODE_NAVI) {
-                    // 导航模式但无新icon
-                    if (intent.getIntExtra("ROUTE_ALL_DIS", 0) > 0) {
-                        manager.resetNaviTimeout();
-                        manager.cancelCruiseGrace();
-                    } else {
-                        manager.startCruiseGrace();
-                    }
+                    // 导航模式但无新icon，始终启动巡航宽限期
+                    manager.startCruiseGrace();
                     handleNaviInfo(intent, manager);
                 } else {
                     // 巡航模式
@@ -136,9 +131,18 @@ public class AmapNaviReceiver extends BroadcastReceiver {
                 : 0;
 
         int curSpeed = intent.getIntExtra("CUR_SPEED", 0);
+        int limitedSpeed = intent.getIntExtra("LIMITED_SPEED", 0);
+        int cameraDist = intent.getIntExtra("CAMERA_DIST", 0);
+        int cameraSpeed = intent.getIntExtra("CAMERA_SPEED", 0);
+        String endPoiName = intent.getStringExtra("endPOIName");
+        int totalLightNum = intent.getIntExtra("TRAFFIC_LIGHT_NUM", 0);
+        int remainLightNum = intent.getIntExtra("remainLightNum", 0);
+        int carDirection = intent.getIntExtra("CAR_DIRECTION", -1);
 
         manager.updateNaviInfo(icon, disNum, disUnit, "进入", roadName,
-                summaryStr, eta, progressPercentage, curSpeed);
+                summaryStr, eta, progressPercentage, curSpeed,
+                limitedSpeed, cameraDist, cameraSpeed,
+                endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection);
     }
 
     private void handleCruiseInfo(Intent intent, FloatingWindowManager manager) {

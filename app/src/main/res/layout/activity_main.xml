@@ -22,10 +22,9 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- 第一行：启动方式（左）| 悬浮窗样式（右） -->
         <LinearLayout
-            android:id="@+id/ll_top_row"
-            android:orientation="horizontal"
+            android:id="@+id/ll_startup_container"
+            android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="32dp"
@@ -33,30 +32,27 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_title">
 
-            <!-- 左列：启动方式 -->
-            <LinearLayout
-                android:id="@+id/ll_startup_container"
-                android:orientation="vertical"
-                android:layout_width="0dp"
+            <TextView
+                android:textSize="13sp"
+                android:textColor="#FFAAAAAA"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginEnd="20dp">
+                android:layout_marginBottom="8dp"
+                android:text="启动方式" />
 
-                <TextView
-                    android:textSize="13sp"
-                    android:textColor="#FFAAAAAA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="启动方式" />
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_service_only"
                     android:focusable="true"
                     android:clickable="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="12dp"
                     app:cardBackgroundColor="#FF1E1E1E"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp"
@@ -86,6 +82,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
+                            android:gravity="center"
                             android:text="点击图标直接启动服务" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -94,8 +91,10 @@
                     android:id="@+id/card_normal_start"
                     android:focusable="true"
                     android:clickable="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
+                    android:layout_marginEnd="12dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     app:cardBackgroundColor="#FF1E1E1E"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp"
@@ -125,35 +124,77 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
+                            android:gravity="center"
                             android:text="点击图标打开配置页面" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+<!--                <com.google.android.material.button.MaterialButton-->
+<!--                    android:id="@+id/btn_go_home"-->
+<!--                   -->
+<!--                    android:text="回到桌面"-->
+<!--                    android:textSize="16sp"-->
+<!--                    android:textColor="#FFFFFFFF"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_weight="1"-->
+<!--                    app:cardBackgroundColor="#FF1E1E1E"-->
+<!--                    app:cardCornerRadius="10dp"-->
+<!--                    app:cardElevation="0dp"-->
+<!--                    app:strokeColor="#FF444444"-->
+<!--                    app:strokeWidth="1dp" />-->
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_go_home"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#FF1E1E1E"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/btn_go_home"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="回到桌面"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp"/>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
-            <!-- 右列：悬浮窗样式 -->
-            <LinearLayout
-                android:id="@+id/ll_style_container"
-                android:orientation="vertical"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_marginStart="20dp">
 
-                <TextView
-                    android:textSize="13sp"
-                    android:textColor="#FFAAAAAA"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="8dp"
-                    android:text="悬浮窗样式" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_style_container"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_startup_container">
+
+            <TextView
+                android:textSize="13sp"
+                android:textColor="#FFAAAAAA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="悬浮窗样式" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_normal"
                     android:focusable="true"
                     android:clickable="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="20dp"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     app:cardBackgroundColor="#FF1E1E1E"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp"
@@ -183,6 +224,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
+                            android:gravity="center"
                             android:text="完整导航信息" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -191,8 +233,10 @@
                     android:id="@+id/card_minimal"
                     android:focusable="true"
                     android:clickable="true"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="8dp"
                     app:cardBackgroundColor="#FF1E1E1E"
                     app:cardCornerRadius="10dp"
                     app:cardElevation="0dp"
@@ -222,7 +266,49 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
+                            android:gravity="center"
                             android:text="精简灵动岛风格" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_full"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#FF1E1E1E"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#FF444444"
+                    app:strokeWidth="1dp">
+
+                    <LinearLayout
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+
+                        <RadioButton
+                            android:id="@+id/rb_full"
+                            android:textSize="14sp"
+                            android:textColor="#FFFFFFFF"
+                            android:clickable="false"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="全数据"
+                            android:buttonTint="#FF4FC3F7" />
+
+                        <TextView
+                            android:textSize="11sp"
+                            android:textColor="#FF888888"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:gravity="center"
+                            android:text="竖版全导航信息" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
@@ -237,7 +323,7 @@
             android:layout_marginTop="32dp"
             android:text="悬浮窗缩放"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ll_top_row" />
+            app:layout_constraintTop_toBottomOf="@id/ll_style_container" />
 
         <TextView
             android:id="@+id/tv_scale_value"
