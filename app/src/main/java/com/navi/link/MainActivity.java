@@ -373,6 +373,14 @@ public class MainActivity extends AppCompatActivity {
         cardBgSemi.setOnClickListener(v -> selectBackgroundMode(1));
         cardBgTransparent.setOnClickListener(v -> selectBackgroundMode(2));
         btnGoHome.setOnClickListener(v -> moveTaskToBack(true));
+
+        // 仪表盘入口
+        View btnDashboard = findViewById(R.id.btn_dashboard);
+        if (btnDashboard != null) {
+            btnDashboard.setOnClickListener(v -> {
+                startActivity(new Intent(MainActivity.this, DashboardActivity.class));
+            });
+        }
         cbCruiseEnabled.setChecked(cruiseEnabled);
         if (tvCruiseStatus != null) tvCruiseStatus.setText(cruiseEnabled ? "巡航窗已启用" : "巡航窗已禁用");
         CompoundButton.OnCheckedChangeListener cruiseListener = (buttonView, isChecked) -> {

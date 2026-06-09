@@ -172,6 +172,24 @@
                         android:textColor="#ffffff"
                         android:textSize="25sp"/>
                 </androidx.cardview.widget.CardView>
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/cv_dashboard"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    app:cardBackgroundColor="#FF0066CC"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp">
+                    <TextView
+                        android:id="@+id/btn_dashboard"
+                        android:gravity="center"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:text="仪表盘"
+                        android:textColor="#ffffff"
+                        android:textSize="25sp"/>
+                </androidx.cardview.widget.CardView>
             </LinearLayout>
 
 
