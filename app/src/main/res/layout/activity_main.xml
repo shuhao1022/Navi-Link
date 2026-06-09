@@ -22,6 +22,19 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <!-- 测试: 车机昼夜设置 -->
+        <TextView
+            android:id="@+id/tv_skin_debug"
+            android:visibility="gone"
+            android:textSize="13sp"
+            android:textColor="#FF888888"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="SKIN: -"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_title" />
+
         <LinearLayout
             android:id="@+id/ll_startup_container"
             android:orientation="vertical"
@@ -30,7 +43,7 @@
             android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_title">
+            app:layout_constraintTop_toBottomOf="@id/tv_skin_debug">
 
             <TextView
                 android:textSize="13sp"
@@ -164,29 +177,15 @@
 
         </LinearLayout>
 
-        <CheckBox
-            android:id="@+id/cb_cruise_enabled"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:buttonTint="#FF0099FF"
-            android:checked="true"
-            android:text="启用巡航窗"
-            android:textColor="#FFCCCCCC"
-            android:textSize="14sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ll_startup_container" />
-
         <LinearLayout
             android:id="@+id/ll_style_container"
             android:orientation="vertical"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/cb_cruise_enabled">
+            app:layout_constraintTop_toBottomOf="@id/ll_startup_container">
 
             <TextView
                 android:textSize="13sp"
@@ -200,6 +199,43 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
+
+                <!-- 巡航窗开关卡片 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_cruise_toggle"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginEnd="6dp"
+                    app:cardBackgroundColor="#FF1E1E1E"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#FF444444"
+                    app:strokeWidth="1dp">
+                    <LinearLayout
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/cb_cruise_enabled"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="true" />
+
+                        <TextView
+                            android:id="@+id/tv_cruise_status"
+                            android:textSize="11sp"
+                            android:textColor="#FF888888"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="巡航窗已启用" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
 
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_normal"
@@ -325,6 +361,7 @@
                             android:text="竖版全导航信息" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </LinearLayout>
 

@@ -23,6 +23,9 @@ public class RouterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        // 初始化全局异常捕获
+        CrashHandler.getInstance().init(this);
+
         SharedPreferences sp = getSharedPreferences(MainActivity.PREFS_NAME, MODE_PRIVATE);
         boolean isServiceOnlyMode = sp.getBoolean("is_service_only", false);
 

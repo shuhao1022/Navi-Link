@@ -36,7 +36,8 @@
             android:name=".AutoMapService"
             android:enabled="true"
             android:exported="false"
-            android:foregroundServiceType="specialUse" />
+            android:foregroundServiceType="specialUse"
+            tools:targetApi="q" />
     </application>
 
 </manifest>

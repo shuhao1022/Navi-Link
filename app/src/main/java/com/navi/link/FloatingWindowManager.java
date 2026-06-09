@@ -779,18 +779,20 @@ public class FloatingWindowManager {
                 Math.round(view.getPaddingRight() * factor),
                 Math.round(view.getPaddingBottom() * factor));
 
-        // 缩放背景 drawable 圆角
-        Drawable bg = view.getBackground();
-        if (bg instanceof GradientDrawable) {
-            GradientDrawable gd = (GradientDrawable) bg.mutate();
-            float r = gd.getCornerRadius();
-            if (r > 0) {
-                gd.setCornerRadius(r * factor);
-            } else {
-                float[] radii = gd.getCornerRadii();
-                if (radii != null) {
-                    for (int i = 0; i < radii.length; i++) radii[i] *= factor;
-                    gd.setCornerRadii(radii);
+        // 缩放背景 drawable 圆角 (getCornerRadius/getCornerRadii 均为 API 24+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            Drawable bg = view.getBackground();
+            if (bg instanceof GradientDrawable) {
+                GradientDrawable gd = (GradientDrawable) bg.mutate();
+                float r = gd.getCornerRadius();
+                if (r > 0) {
+                    gd.setCornerRadius(r * factor);
+                } else {
+                    float[] radii = gd.getCornerRadii();
+                    if (radii != null) {
+                        for (int i = 0; i < radii.length; i++) radii[i] *= factor;
+                        gd.setCornerRadii(radii);
+                    }
                 }
             }
         }
