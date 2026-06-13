@@ -64,6 +64,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             if (extraState == 37 || extraState == 38) {
                 boolean isNight = (extraState == 38);
                 manager.onDayNightChanged(isNight);
+            } else if (extraState == 3 || extraState == 4) {
+                boolean isForeground = (extraState == 3);
+                manager.onAmapForegroundChanged(isForeground);
             }
             return;
         }

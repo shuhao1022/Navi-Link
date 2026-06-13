@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="38dp"
+    android:layout_height="40dp"
     android:layout_marginStart="3dp"
     android:background="@drawable/bg_traffic_light_capsule"
     android:gravity="center_vertical"
@@ -10,8 +10,8 @@
     android:paddingEnd="6dp">
 
     <FrameLayout
-        android:layout_width="32dp"
-        android:layout_height="32dp">
+        android:layout_width="35dp"
+        android:layout_height="35dp">
 
         <ImageView
             android:id="@+id/iv_light_icon"
@@ -22,8 +22,8 @@
 
         <ImageView
             android:id="@+id/iv_light_arrow"
-            android:layout_width="25dp"
-            android:layout_height="25dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
             android:layout_gravity="center"
             android:padding="3dp"
             android:scaleType="centerInside"
@@ -39,7 +39,7 @@
         android:includeFontPadding="false"
         android:text="等"
         android:textColor="#FFFFFF"
-        android:textSize="24sp"
+        android:textSize="25sp"
         android:textStyle="bold" />
 
 </LinearLayout>

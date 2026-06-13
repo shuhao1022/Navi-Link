@@ -134,6 +134,7 @@ public class FloatingWindowManager {
     // 昼夜模式 + 透明背景
     private boolean isNightMode = true; // 默认夜间（深色文字）
     private int backgroundMode = 0; // 0=深色, 1=半透明, 2=全透明
+    private boolean isAmapForeground = false;
 
     // 透明主题文字颜色常量
     // 亮色背景（高德白天）用深色文字
@@ -355,6 +356,11 @@ public class FloatingWindowManager {
         return sp.getBoolean("cruise_enabled", true);
     }
 
+    public boolean isNormalNaviLaneEnabled() {
+        SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        return sp.getBoolean("normal_navi_lane_enabled", false);
+    }
+
     // ======================== 超时管理 ========================
 
     void resetNaviTimeout() {
@@ -378,9 +384,7 @@ public class FloatingWindowManager {
         hasActiveData = true;
         handler.removeCallbacks(watchdogRunnable);
         handler.postDelayed(watchdogRunnable, WATCHDOG_TIMEOUT_MS);
-        View view = floatingView;
-        if (view == null || view.getVisibility() == View.VISIBLE) return;
-        floatingView.setVisibility(View.VISIBLE);
+        updateFloatingWindowVisibility();
     }
 
     // ======================== 窗口重建 ========================
@@ -486,6 +490,7 @@ public class FloatingWindowManager {
         applyThemeColor();
         windowManager.addView(floatingView, layoutParams);
         isShowing = true;
+        updateFloatingWindowVisibility();
     }
 
     private void doNaviSwitch() {
@@ -635,6 +640,7 @@ public class FloatingWindowManager {
         tvExitInfo = floatingView.findViewById(R.id.tv_exit_info);
         tvNaviLightCount = floatingView.findViewById(R.id.tv_navi_light_count);
         vDivider = floatingView.findViewById(R.id.v_divider);
+        laneLineView = floatingView.findViewById(R.id.lane_line_view);
 
         View lightGroup = floatingView.findViewById(R.id.ll_traffic_light_group);
         llTrafficLightGroup = lightGroup;
@@ -761,6 +767,14 @@ public class FloatingWindowManager {
                 if (tvEta != null) tvEta.setText(cachedEta);
                 if (tvNaviLightCount != null && cachedRemainLightNum > 0)
                     tvNaviLightCount.setText("🚦" + cachedRemainLightNum + "个");
+                // 恢复车道线
+                if (laneLineView != null) {
+                    if (isNormalNaviLaneEnabled() && cachedDriveWayJson != null) {
+                        laneLineView.updateLanes(cachedDriveWayJson);
+                    } else {
+                        laneLineView.clear();
+                    }
+                }
                 // 恢复出口信息
                 if (tvExitInfo != null) {
                     if (!cachedExitName.isEmpty()) {
@@ -1157,6 +1171,33 @@ public class FloatingWindowManager {
     }
 
     /**
+     * 高德前后台运行状态变化回调
+     */
+    public void onAmapForegroundChanged(boolean isForeground) {
+        if (this.isAmapForeground == isForeground) return;
+        this.isAmapForeground = isForeground;
+        updateFloatingWindowVisibility();
+    }
+
+    /**
+     * 统一更新悬浮窗显隐状态的方法，高德前后台切换、用户改变配置、看门狗复位时都会触发此方法
+     */
+    public void updateFloatingWindowVisibility() {
+        if (floatingView == null) return;
+        SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        boolean hideOnForeground = sp.getBoolean("hide_on_amap_foreground", false);
+
+        boolean shouldHide = hideOnForeground && isAmapForeground;
+        if (shouldHide) {
+            floatingView.setVisibility(View.GONE);
+        } else {
+            if (currentMode == MODE_NAVI || (isCruiseEnabled() && hasActiveData)) {
+                floatingView.setVisibility(View.VISIBLE);
+            }
+        }
+    }
+
+    /**
      * 设置背景模式: 0=深色, 1=半透明, 2=全透明
      */
     public void setBackgroundMode(int mode) {
@@ -1297,7 +1338,15 @@ public class FloatingWindowManager {
     public void updateLaneLines(String driveWayJson) {
         cachedDriveWayJson = driveWayJson;
         if (laneLineView != null) {
-            laneLineView.updateLanes(driveWayJson);
+            if (currentMode == MODE_NAVI && styleMode == 0) {
+                if (isNormalNaviLaneEnabled()) {
+                    laneLineView.updateLanes(driveWayJson);
+                } else {
+                    laneLineView.clear();
+                }
+            } else {
+                laneLineView.updateLanes(driveWayJson);
+            }
         }
         if (laneLineViewFull != null) {
             laneLineViewFull.updateLanes(driveWayJson);

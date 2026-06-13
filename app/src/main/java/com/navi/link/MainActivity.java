@@ -76,12 +76,20 @@ public class MainActivity extends AppCompatActivity {
     private CompoundButton cbCruiseEnabled;
     private TextView tvCruiseStatus;
     private MaterialCardView cardCruiseToggle;
+    private CompoundButton cbNormalLaneEnabled;
+    private TextView tvNormalLaneStatus;
+    private MaterialCardView cardNormalLaneToggle;
+    private CompoundButton cbAvoidForegroundEnabled;
+    private TextView tvAvoidForegroundStatus;
+    private MaterialCardView cardAvoidForegroundToggle;
 
     private boolean isMinimalStyle = false;
     private int styleMode = 0;
     private boolean isServiceOnlyMode = false;
     private int backgroundMode = 0; // 0=深色, 1=半透明, 2=全透明
     private boolean cruiseEnabled = true;
+    private boolean normalLaneEnabled = false;
+    private boolean avoidForegroundEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -130,6 +138,12 @@ public class MainActivity extends AppCompatActivity {
         cbCruiseEnabled = findViewById(R.id.cb_cruise_enabled);
         tvCruiseStatus = findViewById(R.id.tv_cruise_status);
         cardCruiseToggle = findViewById(R.id.card_cruise_toggle);
+        cbNormalLaneEnabled = findViewById(R.id.cb_normal_lane_enabled);
+        tvNormalLaneStatus = findViewById(R.id.tv_normal_lane_status);
+        cardNormalLaneToggle = findViewById(R.id.card_normal_lane_toggle);
+        cbAvoidForegroundEnabled = findViewById(R.id.cb_avoid_foreground_enabled);
+        tvAvoidForegroundStatus = findViewById(R.id.tv_avoid_foreground_status);
+        cardAvoidForegroundToggle = findViewById(R.id.card_avoid_foreground_toggle);
         llThemeColors = findViewById(R.id.ll_theme_colors);
 
         View contentView = findViewById(android.R.id.content);
@@ -150,11 +164,26 @@ public class MainActivity extends AppCompatActivity {
         isServiceOnlyMode = sp.getBoolean(KEY_IS_SERVICE_ONLY, false);
         backgroundMode = sp.getInt("background_mode", 0);
         cruiseEnabled = sp.getBoolean("cruise_enabled", true);
-
+        normalLaneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
+        avoidForegroundEnabled = sp.getBoolean("hide_on_amap_foreground", false);
+ 
         updateStartupSelection();
         updateStyleSelection();
         updateBackgroundModeSelection();
         updateSeekBarToCurrentScale();
+        
+        if (cbNormalLaneEnabled != null) {
+            cbNormalLaneEnabled.setChecked(normalLaneEnabled);
+        }
+        if (tvNormalLaneStatus != null) {
+            tvNormalLaneStatus.setText(normalLaneEnabled ? "车道线已启用" : "车道线已禁用");
+        }
+        if (cbAvoidForegroundEnabled != null) {
+            cbAvoidForegroundEnabled.setChecked(avoidForegroundEnabled);
+        }
+        if (tvAvoidForegroundStatus != null) {
+            tvAvoidForegroundStatus.setText(avoidForegroundEnabled ? "高德前台时隐藏悬浮窗" : "前台正常显示浮窗");
+        }
 
         sbScale.setProgressTintList(ColorStateList.valueOf(getAccentColor()));
         sbScale.setThumbTintList(ColorStateList.valueOf(getAccentColor()));
@@ -240,6 +269,8 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(KEY_IS_SERVICE_ONLY, isServiceOnlyMode)
                 .putInt("background_mode", backgroundMode)
                 .putBoolean("cruise_enabled", cruiseEnabled)
+                .putBoolean("normal_navi_lane_enabled", normalLaneEnabled)
+                .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
                 .apply();
     }
 
@@ -351,6 +382,48 @@ public class MainActivity extends AppCompatActivity {
         cbCruiseEnabled.setOnCheckedChangeListener(cruiseListener);
         if (cardCruiseToggle != null) {
             cardCruiseToggle.setOnClickListener(v -> cbCruiseEnabled.toggle());
+        }
+
+        cbNormalLaneEnabled.setChecked(normalLaneEnabled);
+        if (tvNormalLaneStatus != null) {
+            tvNormalLaneStatus.setText(normalLaneEnabled ? "车道线已启用" : "车道线已禁用");
+        }
+        CompoundButton.OnCheckedChangeListener normalLaneListener = (buttonView, isChecked) -> {
+            normalLaneEnabled = isChecked;
+            savePreferences();
+            if (tvNormalLaneStatus != null) {
+                tvNormalLaneStatus.setText(isChecked ? "车道线已启用" : "车道线已禁用");
+            }
+            // 立即刷新悬浮窗
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.refreshWindow();
+            }
+        };
+        cbNormalLaneEnabled.setOnCheckedChangeListener(normalLaneListener);
+        if (cardNormalLaneToggle != null) {
+            cardNormalLaneToggle.setOnClickListener(v -> cbNormalLaneEnabled.toggle());
+        }
+
+        cbAvoidForegroundEnabled.setChecked(avoidForegroundEnabled);
+        if (tvAvoidForegroundStatus != null) {
+            tvAvoidForegroundStatus.setText(avoidForegroundEnabled ? "高德前台时隐藏悬浮窗" : "前台正常显示浮窗");
+        }
+        CompoundButton.OnCheckedChangeListener avoidForegroundListener = (buttonView, isChecked) -> {
+            avoidForegroundEnabled = isChecked;
+            savePreferences();
+            if (tvAvoidForegroundStatus != null) {
+                tvAvoidForegroundStatus.setText(isChecked ? "高德前台时隐藏悬浮窗" : "前台正常显示浮窗");
+            }
+            // 立即更新悬浮窗可见性
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.updateFloatingWindowVisibility();
+            }
+        };
+        cbAvoidForegroundEnabled.setOnCheckedChangeListener(avoidForegroundListener);
+        if (cardAvoidForegroundToggle != null) {
+            cardAvoidForegroundToggle.setOnClickListener(v -> cbAvoidForegroundEnabled.toggle());
         }
 
         sbScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {

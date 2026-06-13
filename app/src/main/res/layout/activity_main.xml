@@ -583,6 +583,140 @@
             </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_other_settings_container"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_bg_modes">
+
+            <TextView
+                android:textSize="13sp"
+                android:textColor="#FFAAAAAA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="常规导航设置" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- 常规车道线开关卡片 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_normal_lane_toggle"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#FF1E1E1E"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#FF444444"
+                    app:strokeWidth="1dp">
+                    <LinearLayout
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/cb_normal_lane_enabled"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false" />
+
+                        <TextView
+                            android:id="@+id/tv_normal_lane_status"
+                            android:textSize="11sp"
+                            android:textColor="#FF888888"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="车道线已禁用" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 占位空白以保持布局平衡 -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="2" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_avoid_settings_container"
+            android:orientation="vertical"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/ll_other_settings_container">
+
+            <TextView
+                android:textSize="13sp"
+                android:textColor="#FFAAAAAA"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:text="避让设置" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- 前台避让开关卡片 -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_avoid_foreground_toggle"
+                    android:focusable="true"
+                    android:clickable="true"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="#FF1E1E1E"
+                    app:cardCornerRadius="10dp"
+                    app:cardElevation="0dp"
+                    app:strokeColor="#FF444444"
+                    app:strokeWidth="1dp">
+                    <LinearLayout
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="12dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content">
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/cb_avoid_foreground_enabled"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checked="false" />
+
+                        <TextView
+                            android:id="@+id/tv_avoid_foreground_status"
+                            android:textSize="11sp"
+                            android:textColor="#FF888888"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="前台正常显示浮窗" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- 占位空白以保持布局平衡 -->
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="2" />
+            </LinearLayout>
+        </LinearLayout>
+
         <TextView
             android:id="@+id/tv_status"
             android:textSize="14sp"
@@ -592,7 +726,7 @@
             android:layout_marginTop="24dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ll_bg_modes" />
+            app:layout_constraintTop_toBottomOf="@id/ll_avoid_settings_container" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
