@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="#FF121212"
+    android:padding="24dp">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/tv_dialog_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="副屏投屏位置调整"
+        android:textSize="18sp"
+        android:textColor="#FFFFFFFF"
+        android:textStyle="bold"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="16dp"
+        android:layout_marginBottom="8dp" />
+
+    <!-- Real-time coordinates -->
+    <TextView
+        android:id="@+id/tv_cluster_pos_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前位置: X: 0, Y: 0"
+        android:textSize="14sp"
+        android:textColor="#FFAAAAAA"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Virtual Trackpad Area (Takes up weighted space) -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginBottom="24dp"
+        android:background="#FF1E1E1F"
+        android:padding="2dp"
+        android:layout_gravity="center">
+
+        <FrameLayout
+            android:id="@+id/cluster_trackpad"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#FF2C2C2E"
+            android:layout_gravity="center">
+
+            <!-- Center Grid Lines -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_gravity="center_vertical"
+                android:background="#1AFFFFFF" />
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_horizontal"
+                android:background="#1AFFFFFF" />
+
+            <!-- Virtual Floating Window Indicator -->
+            <FrameLayout
+                android:id="@+id/cluster_trackpad_indicator"
+                android:layout_width="80dp"
+                android:layout_height="60dp"
+                android:background="#804FC3F7">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="浮窗"
+                    android:textColor="#FFFFFFFF"
+                    android:textSize="11sp"
+                    android:textStyle="bold" />
+            </FrameLayout>
+
+        </FrameLayout>
+    </FrameLayout>
+
+    <!-- D-Pad Panel -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="24dp">
+
+        <!-- Center Reset Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pos_center"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="90dp"
+            android:layout_height="48dp"
+            android:text="居中"
+            android:textSize="13sp"
+            android:textColor="#FFFFFFFF"
+            app:backgroundTint="#FF3A3A3C"
+            app:cornerRadius="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Up Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pos_up"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="64dp"
+            android:layout_height="44dp"
+            android:text="▲"
+            android:textSize="13sp"
+            android:textColor="#FFFFFFFF"
+            app:backgroundTint="#FF2C2C2E"
+            app:cornerRadius="8dp"
+            android:layout_marginBottom="8dp"
+            app:layout_constraintBottom_toTopOf="@id/btn_pos_center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Down Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pos_down"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="64dp"
+            android:layout_height="44dp"
+            android:text="▼"
+            android:textSize="13sp"
+            android:textColor="#FFFFFFFF"
+            app:backgroundTint="#FF2C2C2E"
+            app:cornerRadius="8dp"
+            android:layout_marginTop="8dp"
+            app:layout_constraintTop_toBottomOf="@id/btn_pos_center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- Left Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pos_left"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="64dp"
+            android:layout_height="44dp"
+            android:text="◀"
+            android:textSize="13sp"
+            android:textColor="#FFFFFFFF"
+            app:backgroundTint="#FF2C2C2E"
+            app:cornerRadius="8dp"
+            android:layout_marginEnd="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_pos_center"
+            app:layout_constraintEnd_toStartOf="@id/btn_pos_center"
+            app:layout_constraintTop_toTopOf="@id/btn_pos_center" />
+
+        <!-- Right Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_pos_right"
+            style="@style/Widget.MaterialComponents.Button"
+            android:layout_width="64dp"
+            android:layout_height="44dp"
+            android:text="▶"
+            android:textSize="13sp"
+            android:textColor="#FFFFFFFF"
+            app:backgroundTint="#FF2C2C2E"
+            app:cornerRadius="8dp"
+            android:layout_marginStart="8dp"
+            app:layout_constraintBottom_toBottomOf="@id/btn_pos_center"
+            app:layout_constraintStart_toEndOf="@id/btn_pos_center"
+            app:layout_constraintTop_toTopOf="@id/btn_pos_center" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Confirm Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_pos_done"
+        style="@style/Widget.MaterialComponents.Button"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="保存并退出"
+        android:textSize="16sp"
+        android:textColor="#FFFFFFFF"
+        app:backgroundTint="#FF4FC3F7"
+        app:cornerRadius="12dp" />
+
+</LinearLayout>

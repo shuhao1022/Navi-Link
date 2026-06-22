@@ -19,6 +19,9 @@ import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.hardware.display.DisplayManager;
+import android.view.Display;
+import android.util.Log;
 
 import org.json.JSONArray;
 
@@ -42,6 +45,26 @@ public class FloatingWindowManager {
     private WindowManager.LayoutParams layoutParams;
     private View scaleTarget;
     private BaseFloatingWindow activeWindow;
+
+    // 副屏相关变量
+    private boolean isClusterMirrorEnabled = false;
+    private int clusterDisplayId = -1;
+    private View clusterFloatingView;
+    private BaseFloatingWindow clusterActiveWindow;
+    private WindowManager clusterWindowManager;
+    private WindowManager.LayoutParams clusterLayoutParams;
+    private int clusterSavedPosX = -1;
+    private int clusterSavedPosY = -1;
+    private int clusterNaturalWidth = 0;
+    private int clusterNaturalHeight = 0;
+    private View clusterScaleTarget = null;
+    private Context clusterContext = null;
+    private boolean clusterIsDragging = false;
+    private float clusterInitialTouchX;
+    private float clusterInitialTouchY;
+    private int clusterInitialWindowX;
+    private int clusterInitialWindowY;
+    private static final String TAG = "FloatingWindowManager";
 
     // 状态
     private int currentMode = MODE_CRUISE;
@@ -167,6 +190,10 @@ public class FloatingWindowManager {
         savedPosY = sp.getInt("window_pos_y", -1);
         isNightMode = sp.getBoolean("is_night_mode", true); // 默认夜间
         backgroundMode = sp.getInt("background_mode", 0); // 默认深色背景
+        isClusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
+        clusterDisplayId = sp.getInt("cluster_display_id", -1);
+        clusterSavedPosX = sp.getInt("cluster_window_pos_x", -1);
+        clusterSavedPosY = sp.getInt("cluster_window_pos_y", -1);
     }
 
     /** 当前模式对应的缩放索引: 常规/常规巡航=0, 灵动岛/灵动岛巡航=1, 全数据=2 */
@@ -207,6 +234,7 @@ public class FloatingWindowManager {
 
     public void hide() {
         handler.removeCallbacksAndMessages(null);
+        dismissClusterMirror();
         if (floatingView == null || !isShowing) return;
         try {
             windowManager.removeView(floatingView);
@@ -251,6 +279,7 @@ public class FloatingWindowManager {
         handler.removeCallbacks(cruiseGraceRunnable);
         if (!isCruiseEnabled()) {
             // 巡航未启用，移除窗口
+            dismissClusterMirror();
             if (floatingView != null) {
                 try { windowManager.removeView(floatingView); } catch (Exception ignored) {}
                 if (activeWindow != null) {
@@ -406,6 +435,7 @@ public class FloatingWindowManager {
         
         loadPreferences();
         scaleTarget = null;
+        dismissClusterMirror();
 
         if (floatingView != null && layoutParams != null) {
             // 只有当用户手动拖拽过才更新保存的位置
@@ -509,12 +539,14 @@ public class FloatingWindowManager {
         applyThemeColor();
         windowManager.addView(floatingView, layoutParams);
         isShowing = true;
+        ensureClusterMirror();
         updateFloatingWindowVisibility();
     }
 
     private void doNaviSwitch() {
         if (currentMode == MODE_CRUISE && !isCruiseEnabled()) {
             // 巡航未启用，移除窗口
+            dismissClusterMirror();
             if (floatingView != null) {
                 try { windowManager.removeView(floatingView); } catch (Exception ignored) {}
                 if (activeWindow != null) {
@@ -694,9 +726,12 @@ public class FloatingWindowManager {
     public void updateTmcData(String tmcJson) {
         if (tmcJson == null || tmcJson.isEmpty()) return;
         cachedTmcJson = tmcJson;
-        if (isShowing && floatingView != null && currentMode == MODE_NAVI) {
-            if (activeWindow != null) {
+        if (isShowing && currentMode == MODE_NAVI) {
+            if (activeWindow != null && floatingView != null) {
                 activeWindow.updateTmcData(tmcJson);
+            }
+            if (clusterActiveWindow != null && clusterFloatingView != null) {
+                clusterActiveWindow.updateTmcData(tmcJson);
             }
         }
     }
@@ -734,15 +769,32 @@ public class FloatingWindowManager {
     }
 
     private void applyThemeColor() {
-        if (floatingView == null) return;
-
-        if (activeWindow != null) {
-            activeWindow.applyThemeColor(themeColor);
+        if (floatingView != null) {
+            if (activeWindow != null) {
+                activeWindow.applyThemeColor(themeColor);
+            }
+            applyThemeColorToView(floatingView, scaleTarget);
         }
 
-        View target = floatingView.findViewById(R.id.root_layout);
-        if (target == null) target = scaleTarget;
-        if (target == null) target = floatingView;
+        if (clusterFloatingView != null) {
+            if (clusterActiveWindow != null) {
+                clusterActiveWindow.applyThemeColor(themeColor);
+            }
+            applyThemeColorToView(clusterFloatingView, clusterScaleTarget);
+        }
+
+        // 仅全透明模式下应用昼夜文字颜色，其他模式恢复默认
+        if (backgroundMode == 2) {
+            applyDayNightTextColors();
+        } else {
+            resetToDefaultTextColors();
+        }
+    }
+
+    private void applyThemeColorToView(View root, View targetScale) {
+        View target = root.findViewById(R.id.root_layout);
+        if (target == null) target = targetScale;
+        if (target == null) target = root;
 
         // 透明背景模式处理
         // 根据样式确定圆角: 灵动岛/灵动岛巡航=40dp, 常规/常规巡航/全数据=12dp
@@ -781,13 +833,6 @@ public class FloatingWindowManager {
             bgDrawable.setCornerRadius(cornerPx);
             target.setBackground(bgDrawable);
         }
-
-        // 仅全透明模式下应用昼夜文字颜色，其他模式恢复默认
-        if (backgroundMode == 2) {
-            applyDayNightTextColors();
-        } else {
-            resetToDefaultTextColors();
-        }
     }
 
     /**
@@ -797,6 +842,9 @@ public class FloatingWindowManager {
         if (activeWindow != null) {
             activeWindow.applyDayNightTextColors(isNightMode);
         }
+        if (clusterActiveWindow != null) {
+            clusterActiveWindow.applyDayNightTextColors(isNightMode);
+        }
     }
 
     /**
@@ -805,6 +853,9 @@ public class FloatingWindowManager {
     private void resetToDefaultTextColors() {
         if (activeWindow != null) {
             activeWindow.resetToDefaultTextColors();
+        }
+        if (clusterActiveWindow != null) {
+            clusterActiveWindow.resetToDefaultTextColors();
         }
     }
 
@@ -833,20 +884,22 @@ public class FloatingWindowManager {
      * 统一更新悬浮窗显隐状态的方法，高德前后台切换、用户改变配置、看门狗复位时都会触发此方法
      */
     public void updateFloatingWindowVisibility() {
-        if (floatingView == null) return;
         SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
         boolean hideOnForeground = sp.getBoolean("hide_on_amap_foreground", false);
 
         boolean shouldHide = hideOnForeground && isAmapForeground;
-        if (shouldHide) {
-            floatingView.setVisibility(View.GONE);
-        } else {
-            if (currentMode == MODE_NAVI || (isCruiseEnabled() && hasActiveData)) {
-                floatingView.setVisibility(View.VISIBLE);
-            } else {
+        if (floatingView != null) {
+            if (shouldHide) {
                 floatingView.setVisibility(View.GONE);
+            } else {
+                if (currentMode == MODE_NAVI || (isCruiseEnabled() && hasActiveData)) {
+                    floatingView.setVisibility(View.VISIBLE);
+                } else {
+                    floatingView.setVisibility(View.GONE);
+                }
             }
         }
+        updateClusterFloatingWindowVisibility();
     }
 
     /**
@@ -951,9 +1004,12 @@ public class FloatingWindowManager {
         cachedRoadName = roadName != null ? roadName : "";
         cachedCameraSpeed = cameraSpeed;
         cachedCameraDist = cameraDist;
-        if (isShowing && floatingView != null && currentMode == MODE_CRUISE) {
-            if (activeWindow != null) {
+        if (isShowing && currentMode == MODE_CRUISE) {
+            if (activeWindow != null && floatingView != null) {
                 activeWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist);
+            }
+            if (clusterActiveWindow != null && clusterFloatingView != null) {
+                clusterActiveWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist);
             }
             // 速度/路名文字变化后重新测量窗口，避免内容变宽时被旧宽度截断
             remeasureWindow();
@@ -962,31 +1018,59 @@ public class FloatingWindowManager {
 
     public void updateLaneLines(String driveWayJson) {
         cachedDriveWayJson = driveWayJson;
-        if (isShowing && floatingView != null && activeWindow != null) {
-            activeWindow.updateLaneLines(driveWayJson);
-            remeasureWindow();
+        if (isShowing) {
+            boolean updated = false;
+            if (activeWindow != null && floatingView != null) {
+                activeWindow.updateLaneLines(driveWayJson);
+                updated = true;
+            }
+            if (clusterActiveWindow != null && clusterFloatingView != null) {
+                clusterActiveWindow.updateLaneLines(driveWayJson);
+                updated = true;
+            }
+            if (updated) {
+                remeasureWindow();
+            }
         }
     }
 
     public void updateCruiseTrafficLights(JSONArray lightsArray) {
-        if (!isShowing || floatingView == null || currentMode != MODE_CRUISE) return;
-        if (activeWindow != null) {
+        if (!isShowing || currentMode != MODE_CRUISE) return;
+        boolean updated = false;
+        if (activeWindow != null && floatingView != null) {
             activeWindow.updateCruiseTrafficLights(lightsArray);
+            updated = true;
         }
-        remeasureWindow();
+        if (clusterActiveWindow != null && clusterFloatingView != null) {
+            clusterActiveWindow.updateCruiseTrafficLights(lightsArray);
+            updated = true;
+        }
+        if (updated) {
+            remeasureWindow();
+        }
     }
 
     /**
      * 重新测量并更新窗口尺寸，用于红绿灯动态增减后自适应宽度
      */
     private void remeasureWindow() {
-        if (floatingView == null || layoutParams == null) return;
-        measureNaturalSize();
-        layoutParams.width = naturalWidth;
-        layoutParams.height = naturalHeight;
-        try {
-            windowManager.updateViewLayout(floatingView, layoutParams);
-        } catch (Exception ignored) {
+        if (floatingView != null && layoutParams != null) {
+            measureNaturalSize();
+            layoutParams.width = naturalWidth;
+            layoutParams.height = naturalHeight;
+            try {
+                windowManager.updateViewLayout(floatingView, layoutParams);
+            } catch (Exception ignored) {
+            }
+        }
+        if (clusterFloatingView != null && clusterLayoutParams != null && clusterWindowManager != null) {
+            measureNaturalSizeForCluster(clusterFloatingView);
+            clusterLayoutParams.width = clusterNaturalWidth;
+            clusterLayoutParams.height = clusterNaturalHeight;
+            try {
+                clusterWindowManager.updateViewLayout(clusterFloatingView, clusterLayoutParams);
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -1016,9 +1100,16 @@ public class FloatingWindowManager {
         cachedRemainLightNum = remainLightNum;
         cachedCurRoadName = curRoadName != null ? curRoadName : "";
         cachedCarDirection = carDirection;
-        if (isShowing && floatingView != null && currentMode == MODE_NAVI) {
-            if (activeWindow != null) {
+        if (isShowing && currentMode == MODE_NAVI) {
+            if (activeWindow != null && floatingView != null) {
                 activeWindow.updateNaviInfo(
+                        icon, disNum, disUnit, actionStr, roadName, summaryStr, eta,
+                        progress, curSpeed, limitedSpeed, cameraDist, cameraSpeed,
+                        endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection
+                );
+            }
+            if (clusterActiveWindow != null && clusterFloatingView != null) {
+                clusterActiveWindow.updateNaviInfo(
                         icon, disNum, disUnit, actionStr, roadName, summaryStr, eta,
                         progress, curSpeed, limitedSpeed, cameraDist, cameraSpeed,
                         endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection
@@ -1036,9 +1127,12 @@ public class FloatingWindowManager {
     public void updateExitInfo(String exitName, String exitDirection) {
         cachedExitName = exitName != null ? exitName.trim() : "";
         cachedExitDirection = exitDirection != null ? exitDirection.trim() : "";
-        if (!isShowing || floatingView == null || currentMode != MODE_NAVI) return;
-        if (activeWindow != null) {
+        if (!isShowing || currentMode != MODE_NAVI) return;
+        if (activeWindow != null && floatingView != null) {
             activeWindow.updateExitInfo(exitName, exitDirection);
+        }
+        if (clusterActiveWindow != null && clusterFloatingView != null) {
+            clusterActiveWindow.updateExitInfo(exitName, exitDirection);
         }
     }
 
@@ -1049,10 +1143,13 @@ public class FloatingWindowManager {
         cachedLightStatus = status;
         cachedLightDir = dir;
         cachedLightCountdown = countdown;
-        if (!isShowing || floatingView == null || currentMode != MODE_NAVI) return;
+        if (!isShowing || currentMode != MODE_NAVI) return;
 
-        if (activeWindow != null) {
+        if (activeWindow != null && floatingView != null) {
             activeWindow.updateTrafficLight(status, dir, countdown);
+        }
+        if (clusterActiveWindow != null && clusterFloatingView != null) {
+            clusterActiveWindow.updateTrafficLight(status, dir, countdown);
         }
         remeasureWindow();
 
@@ -1061,14 +1158,17 @@ public class FloatingWindowManager {
     }
 
     public void hideTrafficLight() {
-        if (!isShowing || floatingView == null) return;
+        if (!isShowing) return;
         handler.removeCallbacks(trafficLightTimeoutRunnable);
         hideTrafficLightCapsule();
     }
 
     private void hideTrafficLightCapsule() {
-        if (activeWindow != null) {
+        if (activeWindow != null && floatingView != null) {
             activeWindow.updateTrafficLight(0, 0, 0);
+        }
+        if (clusterActiveWindow != null && clusterFloatingView != null) {
+            clusterActiveWindow.updateTrafficLight(0, 0, 0);
         }
     }
 
@@ -1098,5 +1198,391 @@ public class FloatingWindowManager {
                 .putInt("window_pos_x", correctedX)
                 .putInt("window_pos_y", correctedY)
                 .apply();
+    }
+
+    // ======================== 副屏投屏支持 (Cluster Mirror) ========================
+
+    private Display findClusterDisplay() {
+        DisplayManager manager = (DisplayManager) context.getSystemService(Context.DISPLAY_SERVICE);
+        if (manager == null) {
+            return null;
+        }
+        if (clusterDisplayId >= 0) {
+            Display[] displays = manager.getDisplays();
+            for (Display display : displays) {
+                if (display != null && display.getDisplayId() == clusterDisplayId) {
+                    return display;
+                }
+            }
+            Log.w(TAG, "Preferred cluster display missing: " + clusterDisplayId);
+            return null;
+        }
+        // 自动选择首个非主屏
+        Display[] presentationDisplays = manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
+        for (Display display : presentationDisplays) {
+            if (display != null && display.getDisplayId() != Display.DEFAULT_DISPLAY) {
+                return display;
+            }
+        }
+        Display[] displays = manager.getDisplays();
+        for (Display display : displays) {
+            if (display != null && display.getDisplayId() != Display.DEFAULT_DISPLAY) {
+                return display;
+            }
+        }
+        return null;
+    }
+
+    private void ensureClusterMirror() {
+        if (!isClusterMirrorEnabled) {
+            dismissClusterMirror();
+            return;
+        }
+
+        Display display = findClusterDisplay();
+        if (display == null) {
+            dismissClusterMirror();
+            Log.w(TAG, "Cluster mirror enabled but no secondary display found.");
+            return;
+        }
+
+        if (clusterFloatingView == null) {
+            try {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+                    clusterContext = context.createDisplayContext(display);
+                } else {
+                    clusterContext = context;
+                }
+            } catch (Throwable t) {
+                Log.e(TAG, "createDisplayContext failed", t);
+                clusterContext = context;
+            }
+
+            clusterWindowManager = (WindowManager) clusterContext.getSystemService(Context.WINDOW_SERVICE);
+            if (clusterWindowManager == null) {
+                Log.e(TAG, "Cluster WindowManager is null");
+                return;
+            }
+
+            int layoutRes;
+            if (currentMode == MODE_NAVI) {
+                if (styleMode == 2) layoutRes = R.layout.layout_floating_navi_full;
+                else if (styleMode == 1) layoutRes = R.layout.layout_floating_navi_minimal;
+                else layoutRes = R.layout.layout_floating_navi_normal;
+            } else {
+                layoutRes = styleMode == 1
+                        ? R.layout.layout_floating_cruise_minimal
+                        : R.layout.layout_floating_cruise_normal;
+            }
+
+            View inflated = LayoutInflater.from(clusterContext).inflate(layoutRes, null);
+            clusterFloatingView = inflated;
+
+            if (currentMode == MODE_NAVI && styleMode >= 1) {
+                FrameLayout frameLayout = new FrameLayout(clusterContext);
+                frameLayout.setClipChildren(false);
+                frameLayout.setClipToPadding(false);
+                frameLayout.addView(inflated, new FrameLayout.LayoutParams(
+                        FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
+                clusterFloatingView = frameLayout;
+                clusterScaleTarget = inflated;
+            } else {
+                clusterScaleTarget = null;
+            }
+
+            float scale = getScale();
+            if (scale != 1.0f) {
+                physicalScaleContent(inflated);
+            }
+
+            clusterActiveWindow = FloatingWindowFactory.createWindow(currentMode, styleMode, clusterContext, inflated);
+
+            restoreCachedDataForCluster();
+            measureNaturalSizeForCluster(clusterFloatingView);
+
+            int layoutType = Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+                    ? WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+                    : WindowManager.LayoutParams.TYPE_SYSTEM_ALERT;
+
+            clusterLayoutParams = new WindowManager.LayoutParams(
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    WindowManager.LayoutParams.WRAP_CONTENT,
+                    layoutType,
+                    WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
+                            | WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
+                            | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN,
+                    -3);
+            clusterLayoutParams.gravity = Gravity.TOP | Gravity.START;
+
+            int screenWidth = clusterContext.getResources().getDisplayMetrics().widthPixels;
+            int screenHeight = clusterContext.getResources().getDisplayMetrics().heightPixels;
+
+            int viewWidth = clusterNaturalWidth;
+            int viewHeight = clusterNaturalHeight;
+
+            if (clusterSavedPosX >= 0 && clusterSavedPosY >= 0) {
+                clusterLayoutParams.x = Math.max(0, Math.min(clusterSavedPosX, screenWidth - Math.max(viewWidth, 1)));
+                clusterLayoutParams.y = Math.max(0, Math.min(clusterSavedPosY, screenHeight - Math.max(viewHeight, 1)));
+            } else {
+                if (viewWidth > 0) {
+                    clusterLayoutParams.x = (screenWidth - viewWidth) / 2;
+                } else {
+                    clusterLayoutParams.x = 0;
+                }
+                clusterLayoutParams.y = dpToPx(80);
+            }
+
+            applyScaleForCluster();
+            setupTouchListenerForCluster();
+            applyThemeColorForCluster();
+
+            try {
+                clusterWindowManager.addView(clusterFloatingView, clusterLayoutParams);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to add cluster floating view", e);
+            }
+        }
+
+        updateClusterFloatingWindowVisibility();
+    }
+
+    private void dismissClusterMirror() {
+        if (clusterFloatingView != null && clusterWindowManager != null) {
+            try {
+                if (clusterFloatingView.isAttachedToWindow() || clusterFloatingView.getParent() != null) {
+                    clusterWindowManager.removeView(clusterFloatingView);
+                }
+            } catch (Exception ignored) {}
+            if (clusterActiveWindow != null) {
+                clusterActiveWindow.onDestroy();
+                clusterActiveWindow = null;
+            }
+            clusterFloatingView = null;
+            clusterContext = null;
+        }
+    }
+
+    public void updateClusterFloatingWindowVisibility() {
+        if (clusterFloatingView == null) return;
+
+        SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        boolean hideOnForeground = sp.getBoolean("hide_on_amap_foreground", false);
+        boolean shouldHide = hideOnForeground && isAmapForeground;
+
+        if (shouldHide || !isShowing) {
+            clusterFloatingView.setVisibility(View.GONE);
+        } else {
+            if (currentMode == MODE_NAVI || (isCruiseEnabled() && hasActiveData)) {
+                clusterFloatingView.setVisibility(View.VISIBLE);
+            } else {
+                clusterFloatingView.setVisibility(View.GONE);
+            }
+        }
+    }
+
+    private void applyScaleForCluster() {
+        if (clusterFloatingView == null) return;
+        disableClipOnParents(clusterFloatingView);
+    }
+
+    private void measureNaturalSizeForCluster(View view) {
+        if (view == null) return;
+        view.measure(
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
+                View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+        clusterNaturalWidth = view.getMeasuredWidth();
+        clusterNaturalHeight = view.getMeasuredHeight();
+    }
+
+    private void setupTouchListenerForCluster() {
+        if (clusterFloatingView == null) return;
+        clusterFloatingView.setOnTouchListener((view, motionEvent) -> {
+            int action = motionEvent.getAction();
+            if (action == MotionEvent.ACTION_DOWN) {
+                clusterIsDragging = false;
+                clusterInitialTouchX = motionEvent.getRawX();
+                clusterInitialTouchY = motionEvent.getRawY();
+                clusterInitialWindowX = clusterLayoutParams.x;
+                clusterInitialWindowY = clusterLayoutParams.y;
+                return true;
+            }
+            if (action != MotionEvent.ACTION_UP) {
+                if (action == MotionEvent.ACTION_MOVE) {
+                    float dx = motionEvent.getRawX() - clusterInitialTouchX;
+                    float dy = motionEvent.getRawY() - clusterInitialTouchY;
+                    if (!clusterIsDragging && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+                        clusterIsDragging = true;
+                    }
+                    if (clusterIsDragging && !isPositionLocked) {
+                        clusterLayoutParams.x = clusterInitialWindowX + (int) dx;
+                        clusterLayoutParams.y = clusterInitialWindowY + (int) dy;
+                        try {
+                            clusterWindowManager.updateViewLayout(clusterFloatingView, clusterLayoutParams);
+                        } catch (Exception ignored) {
+                        }
+                    }
+                    return true;
+                }
+                if (action != MotionEvent.ACTION_CANCEL) return false;
+            }
+
+            if (clusterIsDragging && !isPositionLocked) {
+                saveClusterWindowPosition();
+            }
+            return true;
+        });
+    }
+
+    private void saveClusterWindowPosition() {
+        if (clusterLayoutParams == null || clusterNaturalWidth <= 0 || clusterNaturalHeight <= 0 || clusterContext == null) return;
+
+        int screenWidth = clusterContext.getResources().getDisplayMetrics().widthPixels;
+        int screenHeight = clusterContext.getResources().getDisplayMetrics().heightPixels;
+        int viewWidth = clusterNaturalWidth;
+        int viewHeight = clusterNaturalHeight;
+
+        int correctedX = Math.max(0, Math.min(clusterLayoutParams.x, screenWidth - viewWidth));
+        int correctedY = Math.max(0, Math.min(clusterLayoutParams.y, screenHeight - viewHeight));
+
+        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
+                .edit()
+                .putInt("cluster_window_pos_x", correctedX)
+                .putInt("cluster_window_pos_y", correctedY)
+                .apply();
+
+        clusterSavedPosX = correctedX;
+        clusterSavedPosY = correctedY;
+    }
+
+    private void applyThemeColorForCluster() {
+        if (clusterActiveWindow != null) {
+            clusterActiveWindow.applyThemeColor(themeColor);
+        }
+    }
+
+    public void onClusterMirrorConfigChanged() {
+        dismissClusterMirror();
+        loadPreferences();
+        if (isClusterMirrorEnabled) {
+            ensureClusterMirror();
+        }
+    }
+
+    private void restoreCachedDataForCluster() {
+        if (!hasCachedData || clusterActiveWindow == null) return;
+        if (currentMode == MODE_CRUISE) {
+            clusterActiveWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist);
+            if (cachedDriveWayJson != null) {
+                clusterActiveWindow.updateLaneLines(cachedDriveWayJson);
+            }
+        } else if (currentMode == MODE_NAVI) {
+            clusterActiveWindow.updateNaviInfo(
+                    cachedIcon,
+                    cachedDisNum,
+                    cachedDisUnit,
+                    cachedActionStr,
+                    cachedRoadName,
+                    cachedSummaryStr,
+                    cachedEta,
+                    cachedProgress,
+                    cachedSpeed,
+                    cachedLimitedSpeed,
+                    cachedCameraDist,
+                    cachedCameraSpeed,
+                    cachedEndPoiName,
+                    cachedTotalLightNum,
+                    cachedRemainLightNum,
+                    cachedCurRoadName,
+                    cachedCarDirection
+            );
+            if (cachedTmcJson != null) {
+                clusterActiveWindow.updateTmcData(cachedTmcJson);
+            }
+            if (cachedDriveWayJson != null) {
+                clusterActiveWindow.updateLaneLines(cachedDriveWayJson);
+            }
+            if (cachedExitName != null && !cachedExitName.isEmpty()) {
+                clusterActiveWindow.updateExitInfo(cachedExitName, cachedExitDirection);
+            }
+            if (cachedLightStatus != -1) {
+                clusterActiveWindow.updateTrafficLight(cachedLightStatus, cachedLightDir, cachedLightCountdown);
+            }
+        }
+        clusterActiveWindow.applyThemeColor(themeColor);
+        clusterActiveWindow.applyDayNightTextColors(isNightMode);
+    }
+
+    public int getClusterNaturalWidth() {
+        return clusterNaturalWidth;
+    }
+
+    public int getClusterNaturalHeight() {
+        return clusterNaturalHeight;
+    }
+
+    public int getClusterSavedPosX() {
+        if (clusterLayoutParams != null) {
+            return clusterLayoutParams.x;
+        }
+        return clusterSavedPosX >= 0 ? clusterSavedPosX : 0;
+    }
+
+    public int getClusterSavedPosY() {
+        if (clusterLayoutParams != null) {
+            return clusterLayoutParams.y;
+        }
+        return clusterSavedPosY >= 0 ? clusterSavedPosY : 0;
+    }
+
+    public int getClusterScreenWidth() {
+        if (clusterContext != null) {
+            return clusterContext.getResources().getDisplayMetrics().widthPixels;
+        }
+        return 0;
+    }
+
+    public int getClusterScreenHeight() {
+        if (clusterContext != null) {
+            return clusterContext.getResources().getDisplayMetrics().heightPixels;
+        }
+        return 0;
+    }
+
+    public boolean isClusterMirrorActive() {
+        return clusterFloatingView != null;
+    }
+
+    public void updateClusterPosition(int x, int y) {
+        if (clusterContext == null) return;
+
+        int screenWidth = getClusterScreenWidth();
+        int screenHeight = getClusterScreenHeight();
+        int viewWidth = clusterNaturalWidth;
+        int viewHeight = clusterNaturalHeight;
+
+        if (viewWidth <= 0) viewWidth = dpToPx(160);
+        if (viewHeight <= 0) viewHeight = dpToPx(120);
+
+        int correctedX = Math.max(0, Math.min(x, screenWidth - viewWidth));
+        int correctedY = Math.max(0, Math.min(y, screenHeight - viewHeight));
+
+        clusterSavedPosX = correctedX;
+        clusterSavedPosY = correctedY;
+
+        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
+                .edit()
+                .putInt("cluster_window_pos_x", correctedX)
+                .putInt("cluster_window_pos_y", correctedY)
+                .apply();
+
+        if (clusterLayoutParams != null && clusterFloatingView != null && clusterWindowManager != null) {
+            clusterLayoutParams.x = correctedX;
+            clusterLayoutParams.y = correctedY;
+            try {
+                clusterWindowManager.updateViewLayout(clusterFloatingView, clusterLayoutParams);
+            } catch (Exception e) {
+                Log.e(TAG, "Failed to update cluster position layout", e);
+            }
+        }
     }
 }

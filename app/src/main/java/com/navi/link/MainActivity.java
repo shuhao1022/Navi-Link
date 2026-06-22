@@ -19,12 +19,18 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.view.MotionEvent;
+import android.widget.FrameLayout;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
 
 import androidx.appcompat.widget.SwitchCompat;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.app.AlertDialog;
+import android.hardware.display.DisplayManager;
+import android.view.Display;
 import android.text.TextUtils;
 import java.util.List;
 import java.util.ArrayList;
@@ -105,7 +111,12 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalCameraEnabled;
     private TextView tvMinimalCameraStatus;
     private MaterialCardView cardMinimalCameraToggle;
-
+    private MaterialCardView cardClusterMirrorToggle;
+    private SwitchCompat cbClusterMirrorEnabled;
+    private TextView tvClusterMirrorStatus;
+    private MaterialCardView cardClusterDisplaySelect;
+    private TextView tvClusterDisplaySelectStatus;
+    private TextView btnAdjustClusterPos;
 
     private boolean isMinimalStyle = false;
     private int styleMode = 0;
@@ -118,6 +129,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean avoidForegroundEnabled = false;
     private boolean overspeedWarningEnabled = true;
     private boolean minimalCameraEnabled = false;
+    private boolean clusterMirrorEnabled = false;
+    private int clusterDisplayId = -1;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -179,6 +192,12 @@ public class MainActivity extends AppCompatActivity {
         cbMinimalCameraEnabled = findViewById(R.id.cb_minimal_camera_enabled);
         tvMinimalCameraStatus = findViewById(R.id.tv_minimal_camera_status);
         cardMinimalCameraToggle = findViewById(R.id.card_minimal_camera_toggle);
+        cbClusterMirrorEnabled = findViewById(R.id.cb_cluster_mirror_enabled);
+        tvClusterMirrorStatus = findViewById(R.id.tv_cluster_mirror_status);
+        cardClusterMirrorToggle = findViewById(R.id.card_cluster_mirror_toggle);
+        cardClusterDisplaySelect = findViewById(R.id.card_cluster_display_select);
+        tvClusterDisplaySelectStatus = findViewById(R.id.tv_cluster_display_select_status);
+        btnAdjustClusterPos = findViewById(R.id.btn_adjust_cluster_pos);
         llThemeColors = findViewById(R.id.ll_theme_colors);
         tvSys = findViewById(R.id.tv_sys);
         tvStyle = findViewById(R.id.tv_style);
@@ -217,6 +236,8 @@ public class MainActivity extends AppCompatActivity {
         avoidForegroundEnabled = sp.getBoolean("hide_on_amap_foreground", false);
         overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
         minimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
+        clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
+        clusterDisplayId = sp.getInt("cluster_display_id", -1);
  
         updateSeekBarToCurrentScale();
         
@@ -244,6 +265,16 @@ public class MainActivity extends AppCompatActivity {
         if (tvMinimalCameraStatus != null) {
             tvMinimalCameraStatus.setText(minimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
         }
+        if (cbClusterMirrorEnabled != null) {
+            cbClusterMirrorEnabled.setChecked(clusterMirrorEnabled);
+        }
+        if (tvClusterMirrorStatus != null) {
+            tvClusterMirrorStatus.setText(clusterMirrorEnabled ? "已启用副屏镜像投屏" : "已禁用副屏投屏");
+        }
+        if (btnAdjustClusterPos != null) {
+            btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
+        }
+        updateClusterDisplaySelectStatus();
 
         applyThemeToViews();
 
@@ -388,6 +419,8 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
                 .putBoolean("overspeed_warning_enabled", overspeedWarningEnabled)
                 .putBoolean("minimal_camera_enabled", minimalCameraEnabled)
+                .putBoolean("cluster_mirror_enabled", clusterMirrorEnabled)
+                .putInt("cluster_display_id", clusterDisplayId)
                 .apply();
     }
 
@@ -484,6 +517,7 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbAvoidForegroundEnabled, accentColor);
         updateSwitchTheme(cbOverspeedWarningEnabled, accentColor);
         updateSwitchTheme(cbMinimalCameraEnabled, accentColor);
+        updateSwitchTheme(cbClusterMirrorEnabled, accentColor);
 
         // 更新 SeekBar 与文本颜色
         sbScale.setProgressTintList(accentColorStateList);
@@ -493,6 +527,10 @@ public class MainActivity extends AppCompatActivity {
         tvStyle.setTextColor(accentColor);
         tvSys.setTextColor(accentColor);
         tvOperation.setTextColor(accentColor);
+
+        if (btnAdjustClusterPos != null) {
+            btnAdjustClusterPos.setTextColor(accentColor);
+        }
 
         MaterialCardView btnExitApp = findViewById(R.id.btn_exit_app);
         if (btnExitApp != null) {
@@ -661,6 +699,45 @@ public class MainActivity extends AppCompatActivity {
             cardMinimalCameraToggle.setOnClickListener(v -> cbMinimalCameraEnabled.toggle());
         }
 
+        cbClusterMirrorEnabled.setChecked(clusterMirrorEnabled);
+        if (tvClusterMirrorStatus != null) {
+            tvClusterMirrorStatus.setText(clusterMirrorEnabled ? "已启用副屏镜像投屏" : "已禁用副屏投屏");
+        }
+        CompoundButton.OnCheckedChangeListener clusterMirrorListener = (buttonView, isChecked) -> {
+            clusterMirrorEnabled = isChecked;
+            savePreferences();
+            if (tvClusterMirrorStatus != null) {
+                tvClusterMirrorStatus.setText(isChecked ? "已启用副屏镜像投屏" : "已禁用副屏投屏");
+            }
+            if (btnAdjustClusterPos != null) {
+                btnAdjustClusterPos.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+            }
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.onClusterMirrorConfigChanged();
+            }
+        };
+        cbClusterMirrorEnabled.setOnCheckedChangeListener(clusterMirrorListener);
+        if (cardClusterMirrorToggle != null) {
+            cardClusterMirrorToggle.setOnClickListener(v -> cbClusterMirrorEnabled.toggle());
+        }
+
+        if (cardClusterDisplaySelect != null) {
+            cardClusterDisplaySelect.setOnClickListener(v -> showClusterDisplaySelectionDialog());
+        }
+
+        if (btnAdjustClusterPos != null) {
+            btnAdjustClusterPos.setOnClickListener(v -> {
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm == null || !fwm.isClusterMirrorActive()) {
+                    Toast.makeText(MainActivity.this, "副屏投屏未开启，请先开启投屏", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Intent intent = new Intent(MainActivity.this, ClusterPositionActivity.class);
+                startActivity(intent);
+            });
+        }
+
         sbScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onStartTrackingTouch(SeekBar seekBar) {
@@ -772,5 +849,92 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    private void showClusterDisplaySelectionDialog() {
+        DisplayManager manager = (DisplayManager) getSystemService(DISPLAY_SERVICE);
+        if (manager == null) {
+            Toast.makeText(this, "系统显示管理服务不可用", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        Display[] displays = manager.getDisplays();
+        ArrayList<DisplayChoice> choices = new ArrayList<>();
+        
+        // Add default/auto option
+        choices.add(new DisplayChoice(-1, "自动选择 (首个副屏幕)"));
+        
+        int selectedIndex = 0;
+        int currentSelectedId = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt("cluster_display_id", -1);
+                
+        for (Display display : displays) {
+            if (display == null || display.getDisplayId() == Display.DEFAULT_DISPLAY) {
+                continue;
+            }
+            String name = display.getName();
+            if (TextUtils.isEmpty(name)) {
+                name = "副屏幕";
+            }
+            choices.add(new DisplayChoice(display.getDisplayId(), name + " (ID: " + display.getDisplayId() + ")"));
+            if (display.getDisplayId() == currentSelectedId) {
+                selectedIndex = choices.size() - 1;
+            }
+        }
+        
+        if (choices.size() <= 1) {
+            Toast.makeText(this, "未检测到可用的副屏幕", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        
+        String[] items = new String[choices.size()];
+        for (int i = 0; i < choices.size(); i++) {
+            items[i] = choices.get(i).label;
+        }
+        
+        new AlertDialog.Builder(this)
+                .setTitle("选择投屏屏幕")
+                .setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
+                    DisplayChoice choice = choices.get(which);
+                    getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                            .edit()
+                            .putInt("cluster_display_id", choice.displayId)
+                            .apply();
+                    updateClusterDisplaySelectStatus();
+                    
+                    FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                    if (fwm != null) {
+                        fwm.onClusterMirrorConfigChanged();
+                    }
+                    dialog.dismiss();
+                })
+                .setNegativeButton("取消", null)
+                .show();
+    }
+
+    private void updateClusterDisplaySelectStatus() {
+        if (tvClusterDisplaySelectStatus == null) return;
+        int selectedId = getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
+                .getInt("cluster_display_id", -1);
+        if (selectedId < 0) {
+            tvClusterDisplaySelectStatus.setText("当前选择: 自动选择 (首个副屏幕)");
+        } else {
+            tvClusterDisplaySelectStatus.setText("当前选择: 屏幕 ID " + selectedId);
+        }
+    }
+
+
+    private static class DisplayChoice {
+        final int displayId;
+        final String label;
+
+        DisplayChoice(int displayId, String label) {
+            this.displayId = displayId;
+            this.label = label;
+        }
+
+        @Override
+        public String toString() {
+            return label;
+        }
     }
 }
