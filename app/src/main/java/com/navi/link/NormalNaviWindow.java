@@ -146,7 +146,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         // 常规导航窗口不处理巡航数据
     }
 

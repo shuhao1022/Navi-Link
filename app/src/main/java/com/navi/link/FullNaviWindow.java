@@ -220,7 +220,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         // 全数据导航不处理巡航
     }
 

@@ -53,7 +53,7 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         if (tvCnSpeed != null) {
             tvCnSpeed.setText(String.valueOf(speed));
             // 超速警告：限速>0 且 当前速度>限速 → 红色+闪烁 (受 overspeed_warning_enabled 开关控制)

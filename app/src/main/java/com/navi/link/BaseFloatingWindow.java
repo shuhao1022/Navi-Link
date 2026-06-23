@@ -42,7 +42,7 @@ public abstract class BaseFloatingWindow {
             String curRoadName, int carDirection
     );
 
-    public abstract void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist);
+    public abstract void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection);
 
     public abstract void updateTrafficLight(int status, int dir, int countdown);
 

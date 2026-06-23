@@ -133,6 +133,18 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalLaneEnabled;
     private TextView tvMinimalLaneStatus;
 
+    private MaterialCardView cardMinimalRoadNameToggle;
+    private SwitchCompat cbMinimalRoadNameEnabled;
+    private TextView tvMinimalRoadNameStatus;
+
+    private MaterialCardView cardMinimalDirectionToggle;
+    private SwitchCompat cbMinimalDirectionEnabled;
+    private TextView tvMinimalDirectionStatus;
+
+    private MaterialCardView cardMinimalAccentNaviInfoToggle;
+    private SwitchCompat cbMinimalAccentNaviInfoEnabled;
+    private TextView tvMinimalAccentNaviInfoStatus;
+
     private MaterialCardView cardAutoStartToggle;
     private SwitchCompat cbAutoStartEnabled;
     private TextView tvAutoStartStatus;
@@ -171,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean normalLaneEnabled = false;
     private boolean avoidForegroundEnabled = false;
     private boolean overspeedWarningEnabled = true;
-    private boolean minimalCameraEnabled = false;
+
     private boolean clusterMirrorEnabled = false;
     private int clusterDisplayId = -1;
     private boolean hideMainWhenClusterActive = false;
@@ -180,6 +192,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean normalTmcEnabled = true;
     private boolean normalBottomInfoEnabled = true;
     private boolean minimalLaneEnabled = false;
+
+    private boolean isMinimalCameraEnabled = false;
+    private boolean isMinimalRoadNameEnabled = true;
+    private boolean isMinimalDirectionEnabled = false;
+    private boolean isMinimalAccentNaviInfoEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -304,6 +321,18 @@ public class MainActivity extends AppCompatActivity {
         cardMinimalLaneToggle = findViewById(R.id.card_minimal_lane_toggle);
         cbMinimalLaneEnabled = findViewById(R.id.cb_minimal_lane_enabled);
         tvMinimalLaneStatus = findViewById(R.id.tv_minimal_lane_status);
+
+        cardMinimalRoadNameToggle = findViewById(R.id.card_minimal_road_name_toggle);
+        cbMinimalRoadNameEnabled = findViewById(R.id.cb_minimal_road_name_enabled);
+        tvMinimalRoadNameStatus = findViewById(R.id.tv_minimal_road_name_status);
+
+        cardMinimalDirectionToggle = findViewById(R.id.card_minimal_direction_toggle);
+        cbMinimalDirectionEnabled = findViewById(R.id.cb_minimal_direction_enabled);
+        tvMinimalDirectionStatus = findViewById(R.id.tv_minimal_direction_status);
+
+        cardMinimalAccentNaviInfoToggle = findViewById(R.id.card_minimal_accent_navi_info_toggle);
+        cbMinimalAccentNaviInfoEnabled = findViewById(R.id.cb_minimal_accent_navi_info_enabled);
+        tvMinimalAccentNaviInfoStatus = findViewById(R.id.tv_minimal_accent_navi_info_status);
     }
 
     private void loadPreferences() {
@@ -324,7 +353,10 @@ public class MainActivity extends AppCompatActivity {
         normalLaneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
         avoidForegroundEnabled = sp.getBoolean("hide_on_amap_foreground", false);
         overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
-        minimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
+        isMinimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
+        isMinimalRoadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
+        isMinimalDirectionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+        isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
@@ -354,10 +386,28 @@ public class MainActivity extends AppCompatActivity {
             tvOverspeedWarningStatus.setText(overspeedWarningEnabled ? "超速时车速红色报警并闪烁" : "已关闭超速红色提醒");
         }
         if (cbMinimalCameraEnabled != null) {
-            cbMinimalCameraEnabled.setChecked(minimalCameraEnabled);
+            cbMinimalCameraEnabled.setChecked(isMinimalCameraEnabled);
         }
         if (tvMinimalCameraStatus != null) {
-            tvMinimalCameraStatus.setText(minimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
+            tvMinimalCameraStatus.setText(isMinimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
+        }
+        if (cbMinimalRoadNameEnabled != null) {
+            cbMinimalRoadNameEnabled.setChecked(isMinimalRoadNameEnabled);
+        }
+        if (tvMinimalRoadNameStatus != null) {
+            tvMinimalRoadNameStatus.setText(isMinimalRoadNameEnabled ? "道路名称已启用" : "道路名称已禁用");
+        }
+        if (cbMinimalDirectionEnabled != null) {
+            cbMinimalDirectionEnabled.setChecked(isMinimalDirectionEnabled);
+        }
+        if (tvMinimalDirectionStatus != null) {
+            tvMinimalDirectionStatus.setText(isMinimalDirectionEnabled ? "方向显示已启用" : "方向显示已禁用");
+        }
+        if (cbMinimalAccentNaviInfoEnabled != null) {
+            cbMinimalAccentNaviInfoEnabled.setChecked(isMinimalAccentNaviInfoEnabled);
+        }
+        if (tvMinimalAccentNaviInfoStatus != null) {
+            tvMinimalAccentNaviInfoStatus.setText(isMinimalAccentNaviInfoEnabled ? "已启用" : "已禁用");
         }
         if (cbClusterMirrorEnabled != null) {
             cbClusterMirrorEnabled.setChecked(clusterMirrorEnabled);
@@ -424,7 +474,7 @@ public class MainActivity extends AppCompatActivity {
         List<ApplicationInfo> apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
         List<ApplicationInfo> amapApps = new ArrayList<>();
         for (ApplicationInfo app : apps) {
-            if (app.packageName != null && app.packageName.contains("com.autonavi")) {
+            if (app.packageName != null && (app.packageName.contains("com.autonavi")||app.name.contains("高德"))) {
                 amapApps.add(app);
             }
         }
@@ -525,8 +575,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void savePreferences() {
-        getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit()
-                .putBoolean(KEY_IS_MINIMAL, isMinimalStyle)
+        SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
+        editor.putBoolean(KEY_IS_MINIMAL, isMinimalStyle)
                 .putInt(KEY_STYLE_MODE, styleMode)
                 .putInt(KEY_THEME_COLOR, themeColor)
                 .putBoolean(KEY_IS_SERVICE_ONLY, startupMode == 1)
@@ -537,15 +587,18 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("normal_navi_lane_enabled", normalLaneEnabled)
                 .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
                 .putBoolean("overspeed_warning_enabled", overspeedWarningEnabled)
-                .putBoolean("minimal_camera_enabled", minimalCameraEnabled)
                 .putBoolean("cluster_mirror_enabled", clusterMirrorEnabled)
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
                 .putBoolean("auto_start", autoStartEnabled)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
-                .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled)
-                .apply();
+                .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled);
+        editor.putBoolean("minimal_camera_enabled", isMinimalCameraEnabled);
+        editor.putBoolean("minimal_road_name_enabled", isMinimalRoadNameEnabled);
+        editor.putBoolean("minimal_direction_enabled", isMinimalDirectionEnabled);
+        editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
+        editor.apply();
     }
 
     private void initThemeColorChips() {
@@ -647,6 +700,9 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
+        updateSwitchTheme(cbMinimalRoadNameEnabled, accentColor);
+        updateSwitchTheme(cbMinimalDirectionEnabled, accentColor);
+        updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
         sbScale.setProgressTintList(accentColorStateList);
@@ -822,12 +878,12 @@ public class MainActivity extends AppCompatActivity {
             cardOverspeedWarningToggle.setOnClickListener(v -> cbOverspeedWarningEnabled.toggle());
         }
 
-        cbMinimalCameraEnabled.setChecked(minimalCameraEnabled);
+        cbMinimalCameraEnabled.setChecked(isMinimalCameraEnabled);
         if (tvMinimalCameraStatus != null) {
-            tvMinimalCameraStatus.setText(minimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
+            tvMinimalCameraStatus.setText(isMinimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
         }
         CompoundButton.OnCheckedChangeListener minimalCameraListener = (buttonView, isChecked) -> {
-            minimalCameraEnabled = isChecked;
+            isMinimalCameraEnabled = isChecked;
             savePreferences();
             if (tvMinimalCameraStatus != null) {
                 tvMinimalCameraStatus.setText(isChecked ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
@@ -1001,6 +1057,69 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        if (cbMinimalRoadNameEnabled != null) {
+            cbMinimalRoadNameEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalRoadNameEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalRoadNameStatus != null) {
+                    tvMinimalRoadNameStatus.setText(isChecked ? "道路名称已启用" : "道路名称已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalRoadNameToggle != null) {
+            cardMinimalRoadNameToggle.setOnClickListener(v -> {
+                if (cbMinimalRoadNameEnabled != null) {
+                    cbMinimalRoadNameEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalDirectionEnabled != null) {
+            cbMinimalDirectionEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalDirectionEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalDirectionStatus != null) {
+                    tvMinimalDirectionStatus.setText(isChecked ? "方向显示已启用" : "方向显示已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalDirectionToggle != null) {
+            cardMinimalDirectionToggle.setOnClickListener(v -> {
+                if (cbMinimalDirectionEnabled != null) {
+                    cbMinimalDirectionEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalAccentNaviInfoEnabled != null) {
+            cbMinimalAccentNaviInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalAccentNaviInfoEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalAccentNaviInfoStatus != null) {
+                    tvMinimalAccentNaviInfoStatus.setText(isChecked ? "已启用" : "已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalAccentNaviInfoToggle != null) {
+            cardMinimalAccentNaviInfoToggle.setOnClickListener(v -> {
+                if (cbMinimalAccentNaviInfoEnabled != null) {
+                    cbMinimalAccentNaviInfoEnabled.toggle();
+                }
+            });
+        }
+
         // Set up click listeners for left menu items
         if (menuSystemAppearance != null) {
             menuSystemAppearance.setOnClickListener(v -> switchMenu(0));
@@ -1050,9 +1169,21 @@ public class MainActivity extends AppCompatActivity {
     private void checkPermissionAndStart() {
         if (!Settings.canDrawOverlays(this)) {
             tvStatus.setText("需要悬浮窗权限");
-            startActivityForResult(
-                    new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                            Uri.parse("package:" + getPackageName())), 100);
+            try {
+                startActivityForResult(
+                        new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:" + getPackageName())), 100);
+            } catch (android.content.ActivityNotFoundException e) {
+                // 车机系统可能被阉割了原生的悬浮窗权限界面，尝试跳转到应用详情页
+                Toast.makeText(this, "由于车机系统限制，请在系统设置中手动开启悬浮窗权限", Toast.LENGTH_LONG).show();
+                try {
+                    Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    intent.setData(Uri.parse("package:" + getPackageName()));
+                    startActivityForResult(intent, 100);
+                } catch (Exception ex) {
+                    Toast.makeText(this, "无法打开设置页面，请前往系统设置授权", Toast.LENGTH_LONG).show();
+                }
+            }
         } else {
             startFloatingService();
         }

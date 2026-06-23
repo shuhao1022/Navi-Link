@@ -18,6 +18,16 @@
         android:orientation="horizontal"
         android:gravity="bottom">
         <TextView
+            android:id="@+id/tv_min_direction"
+            android:textColor="#FF0099FF"
+            android:textSize="25sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="5dp"
+            android:gravity="center_vertical"
+            android:text=""
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"/>
+        <TextView
             android:id="@+id/tv_min_speed"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="3dp"
-            android:layout_marginBottom="5dp"
+            android:layout_marginBottom="0dp"
             android:text="km/h"
             android:textColor="#BBFFFFFF"
             android:textSize="12sp" />
@@ -75,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="2dp"
-            android:layout_marginBottom="4dp"
+            android:layout_marginBottom="0dp"
             android:text="米"
             android:textColor="#BBFFFFFF"
             android:textSize="14sp" />

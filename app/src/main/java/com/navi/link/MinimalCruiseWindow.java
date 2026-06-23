@@ -16,6 +16,8 @@ import org.json.JSONObject;
 public class MinimalCruiseWindow extends BaseFloatingWindow {
 
     private TextView tvCruiseSpeed;
+    private TextView tvCruiseUnit;
+    private TextView tvCruiseDirection;
     private TextView tvCruiseRoadName;
     private LinearLayout llTrafficLightsContainer;
     private View llMinCruiseCameraGroup;
@@ -32,6 +34,8 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     @Override
     protected void initViews() {
         tvCruiseSpeed = floatingView.findViewById(R.id.tv_cruise_speed);
+        tvCruiseUnit = floatingView.findViewById(R.id.tv_cruise_unit);
+        tvCruiseDirection = floatingView.findViewById(R.id.tv_cruise_direction);
         tvCruiseRoadName = floatingView.findViewById(R.id.tv_cruise_road_name);
         llTrafficLightsContainer = floatingView.findViewById(R.id.ll_traffic_lights_container);
         llMinCruiseCameraGroup = floatingView.findViewById(R.id.ll_min_cruise_camera_group);
@@ -56,7 +60,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         if (tvCruiseSpeed != null) {
             tvCruiseSpeed.setText(String.valueOf(speed));
             // 超速警告：限速>0 且 当前速度>限速 → 红色+闪烁
@@ -87,8 +91,23 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
                 tvCruiseSpeed.setTextColor(accentColor);
             }
         }
-        if (tvCruiseRoadName != null && roadName != null) {
-            tvCruiseRoadName.setText(roadName);
+        if (tvCruiseRoadName != null) {
+            boolean roadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
+            if (roadNameEnabled) {
+                tvCruiseRoadName.setText(roadName);
+                tvCruiseRoadName.setVisibility(View.VISIBLE);
+            } else {
+                tvCruiseRoadName.setVisibility(View.GONE);
+            }
+        }
+        if (tvCruiseDirection != null) {
+            boolean directionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+            if (directionEnabled && carDirection >= 0) {
+                tvCruiseDirection.setText(getDirectionText(carDirection));
+                tvCruiseDirection.setVisibility(View.VISIBLE);
+            } else {
+                tvCruiseDirection.setVisibility(View.GONE);
+            }
         }
         if (llMinCruiseCameraGroup != null) {
             boolean minimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
@@ -242,6 +261,13 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         if (tvCruiseSpeed != null && !isOverspeedBlinking) {
             tvCruiseSpeed.setTextColor(accentColor);
         }
+
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            if (tvCruiseRoadName != null) tvCruiseRoadName.setTextColor(accentColor);
+            if (tvCruiseUnit != null) tvCruiseUnit.setTextColor(accentColor);
+            if (tvCruiseDirection != null) tvCruiseDirection.setTextColor(accentColor);
+        }
     }
 
     @Override
@@ -253,6 +279,17 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         if (tvMinCruiseCameraDist != null) {
             tvMinCruiseCameraDist.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
         }
+        if (tvCruiseDirection != null) {
+            tvCruiseDirection.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+        }
+
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (tvCruiseRoadName != null) tvCruiseRoadName.setTextColor(accentColor);
+            if (tvCruiseUnit != null) tvCruiseUnit.setTextColor(accentColor);
+            if (tvCruiseDirection != null) tvCruiseDirection.setTextColor(accentColor);
+        }
     }
 
     @Override
@@ -262,6 +299,17 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         }
         if (tvMinCruiseCameraDist != null) {
             tvMinCruiseCameraDist.setTextColor(TEXT_PRIMARY_DARK);
+        }
+        if (tvCruiseDirection != null) {
+            tvCruiseDirection.setTextColor(TEXT_PRIMARY_DARK);
+        }
+
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (tvCruiseRoadName != null) tvCruiseRoadName.setTextColor(accentColor);
+            if (tvCruiseUnit != null) tvCruiseUnit.setTextColor(accentColor);
+            if (tvCruiseDirection != null) tvCruiseDirection.setTextColor(accentColor);
         }
     }
 

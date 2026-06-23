@@ -591,7 +591,7 @@ public class FloatingWindowManager {
     private void restoreCachedData() {
         if (!hasCachedData || activeWindow == null) return;
         if (currentMode == MODE_CRUISE) {
-            activeWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist);
+            activeWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
             if (cachedDriveWayJson != null) {
                 activeWindow.updateLaneLines(cachedDriveWayJson);
             }
@@ -1002,18 +1002,19 @@ public class FloatingWindowManager {
 
     // ======================== 巡航数据更新 ========================
 
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         hasCachedData = true;
         cachedSpeed = speed;
         cachedRoadName = roadName != null ? roadName : "";
         cachedCameraSpeed = cameraSpeed;
         cachedCameraDist = cameraDist;
+        cachedCarDirection = carDirection;
         if (isShowing && currentMode == MODE_CRUISE) {
             if (activeWindow != null && floatingView != null) {
-                activeWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist);
+                activeWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist, carDirection);
             }
             if (clusterActiveWindow != null && clusterFloatingView != null) {
-                clusterActiveWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist);
+                clusterActiveWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist, carDirection);
             }
             // 速度/路名文字变化后重新测量窗口，避免内容变宽时被旧宽度截断
             remeasureWindow();
@@ -1488,7 +1489,7 @@ public class FloatingWindowManager {
     private void restoreCachedDataForCluster() {
         if (!hasCachedData || clusterActiveWindow == null) return;
         if (currentMode == MODE_CRUISE) {
-            clusterActiveWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist);
+            clusterActiveWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
             if (cachedDriveWayJson != null) {
                 clusterActiveWindow.updateLaneLines(cachedDriveWayJson);
             }

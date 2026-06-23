@@ -16,6 +16,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     private TextView tvDistanceNumMin;
     private TextView tvDistanceUnitMin;
     private TextView tvRoadNameMin;
+    private TextView tvMinDirection;
 
     private View llTrafficLightGroupMin;
     private ImageView ivLightIconMin;
@@ -43,6 +44,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         tvDistanceNumMin = floatingView.findViewById(R.id.tv_distance_num_min);
         tvDistanceUnitMin = floatingView.findViewById(R.id.tv_distance_unit_min);
         tvRoadNameMin = floatingView.findViewById(R.id.tv_road_name_min);
+        tvMinDirection = floatingView.findViewById(R.id.tv_min_direction);
 
         llTrafficLightGroupMin = floatingView.findViewById(R.id.ll_traffic_light_group);
         if (llTrafficLightGroupMin != null) {
@@ -134,14 +136,29 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             tvDistanceUnitMin.setText(disNumIsNow(disNum) ? "进入" : disUnit);
         }
         if (tvRoadNameMin != null) {
-            tvRoadNameMin.setText(roadName);
+            boolean roadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
+            if (roadNameEnabled) {
+                tvRoadNameMin.setText(roadName);
+                tvRoadNameMin.setVisibility(View.VISIBLE);
+            } else {
+                tvRoadNameMin.setVisibility(View.GONE);
+            }
+        }
+        if (tvMinDirection != null) {
+            boolean directionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+            if (directionEnabled && carDirection >= 0) {
+                tvMinDirection.setText(getDirectionText(carDirection));
+                tvMinDirection.setVisibility(View.VISIBLE);
+            } else {
+                tvMinDirection.setVisibility(View.GONE);
+            }
         }
         mCameraDist = cameraDist;
         updateCameraDistVisibility();
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
         // 极简导航不处理巡航
     }
 
@@ -229,6 +246,16 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (tvMinSpeed != null && !isOverspeedBlinking) {
             tvMinSpeed.setTextColor(accentColor);
         }
+        
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            if (tvDistanceNumMin != null) tvDistanceNumMin.setTextColor(accentColor);
+            if (tvDistanceUnitMin != null) tvDistanceUnitMin.setTextColor(accentColor);
+            if (tvRoadNameMin != null) tvRoadNameMin.setTextColor(accentColor);
+            if (ivActionIconMin != null) ivActionIconMin.setColorFilter(accentColor);
+            if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(accentColor);
+            if (tvMinDirection != null) tvMinDirection.setTextColor(accentColor);
+        }
     }
 
     @Override
@@ -242,6 +269,18 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (ivActionIconMin != null) ivActionIconMin.setColorFilter(textPrimary);
         if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(textPrimary);
         if (tvMinNaviCameraDist != null) tvMinNaviCameraDist.setTextColor(textPrimary);
+        if (tvMinDirection != null) tvMinDirection.setTextColor(textPrimary);
+
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (tvDistanceNumMin != null) tvDistanceNumMin.setTextColor(accentColor);
+            if (tvDistanceUnitMin != null) tvDistanceUnitMin.setTextColor(accentColor);
+            if (tvRoadNameMin != null) tvRoadNameMin.setTextColor(accentColor);
+            if (ivActionIconMin != null) ivActionIconMin.setColorFilter(accentColor);
+            if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(accentColor);
+            if (tvMinDirection != null) tvMinDirection.setTextColor(accentColor);
+        }
     }
 
     @Override
@@ -252,6 +291,18 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (ivActionIconMin != null) ivActionIconMin.clearColorFilter();
         if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
         if (tvMinNaviCameraDist != null) tvMinNaviCameraDist.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvMinDirection != null) tvMinDirection.setTextColor(TEXT_PRIMARY_DARK);
+
+        boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        if (accentNaviInfo) {
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (tvDistanceNumMin != null) tvDistanceNumMin.setTextColor(accentColor);
+            if (tvDistanceUnitMin != null) tvDistanceUnitMin.setTextColor(accentColor);
+            if (tvRoadNameMin != null) tvRoadNameMin.setTextColor(accentColor);
+            if (ivActionIconMin != null) ivActionIconMin.setColorFilter(accentColor);
+            if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(accentColor);
+            if (tvMinDirection != null) tvMinDirection.setTextColor(accentColor);
+        }
     }
 
     @Override
