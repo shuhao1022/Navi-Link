@@ -121,9 +121,45 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbHideMainWhenClusterActive;
     private TextView tvHideMainWhenClusterActiveStatus;
 
+    private MaterialCardView cardNormalTmcToggle;
+    private SwitchCompat cbNormalTmcEnabled;
+    private TextView tvNormalTmcStatus;
+
+    private MaterialCardView cardNormalBottomInfoToggle;
+    private SwitchCompat cbNormalBottomInfoEnabled;
+    private TextView tvNormalBottomInfoStatus;
+
+    private MaterialCardView cardMinimalLaneToggle;
+    private SwitchCompat cbMinimalLaneEnabled;
+    private TextView tvMinimalLaneStatus;
+
     private MaterialCardView cardAutoStartToggle;
     private SwitchCompat cbAutoStartEnabled;
     private TextView tvAutoStartStatus;
+
+    // Menu elements
+    private MaterialCardView menuSystemAppearance;
+    private MaterialCardView menuFeaturesAvoidance;
+    private MaterialCardView menuLayoutNormal;
+    private MaterialCardView menuLayoutMinimal;
+
+    private View indicatorSystemAppearance;
+    private View indicatorFeaturesAvoidance;
+    private View indicatorLayoutNormal;
+    private View indicatorLayoutMinimal;
+
+    private TextView tvMenuSystemAppearance;
+    private TextView tvMenuFeaturesAvoidance;
+    private TextView tvMenuLayoutNormal;
+    private TextView tvMenuLayoutMinimal;
+
+    // Right side panels
+    private ScrollView panelSystemAppearance;
+    private ScrollView panelFeaturesAvoidance;
+    private ScrollView panelLayoutNormal;
+    private ScrollView panelLayoutMinimal;
+
+    private int selectedMenuIndex = 0;
 
     private boolean isMinimalStyle = false;
     private int styleMode = 0;
@@ -140,6 +176,10 @@ public class MainActivity extends AppCompatActivity {
     private int clusterDisplayId = -1;
     private boolean hideMainWhenClusterActive = false;
     private boolean autoStartEnabled = false;
+
+    private boolean normalTmcEnabled = true;
+    private boolean normalBottomInfoEnabled = true;
+    private boolean minimalLaneEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -230,6 +270,40 @@ public class MainActivity extends AppCompatActivity {
         androidx.core.view.WindowInsetsControllerCompat windowInsetsController =
                 androidx.core.view.WindowCompat.getInsetsController(getWindow(), getWindow().getDecorView());
         windowInsetsController.setAppearanceLightStatusBars(false);
+
+        // Bind menu UI elements
+        menuSystemAppearance = findViewById(R.id.menu_system_appearance);
+        menuFeaturesAvoidance = findViewById(R.id.menu_features_avoidance);
+        menuLayoutNormal = findViewById(R.id.menu_layout_normal);
+        menuLayoutMinimal = findViewById(R.id.menu_layout_minimal);
+
+        indicatorSystemAppearance = findViewById(R.id.indicator_system_appearance);
+        indicatorFeaturesAvoidance = findViewById(R.id.indicator_features_avoidance);
+        indicatorLayoutNormal = findViewById(R.id.indicator_layout_normal);
+        indicatorLayoutMinimal = findViewById(R.id.indicator_layout_minimal);
+
+        tvMenuSystemAppearance = findViewById(R.id.tv_menu_system_appearance);
+        tvMenuFeaturesAvoidance = findViewById(R.id.tv_menu_features_avoidance);
+        tvMenuLayoutNormal = findViewById(R.id.tv_menu_layout_normal);
+        tvMenuLayoutMinimal = findViewById(R.id.tv_menu_layout_minimal);
+
+        // Bind right side panel scroll views
+        panelSystemAppearance = findViewById(R.id.panel_system_appearance);
+        panelFeaturesAvoidance = findViewById(R.id.panel_features_avoidance);
+        panelLayoutNormal = findViewById(R.id.panel_layout_normal);
+        panelLayoutMinimal = findViewById(R.id.panel_layout_minimal);
+
+        cardNormalTmcToggle = findViewById(R.id.card_normal_tmc_toggle);
+        cbNormalTmcEnabled = findViewById(R.id.cb_normal_tmc_enabled);
+        tvNormalTmcStatus = findViewById(R.id.tv_normal_tmc_status);
+
+        cardNormalBottomInfoToggle = findViewById(R.id.card_normal_bottom_info_toggle);
+        cbNormalBottomInfoEnabled = findViewById(R.id.cb_normal_bottom_info_enabled);
+        tvNormalBottomInfoStatus = findViewById(R.id.tv_normal_bottom_info_status);
+
+        cardMinimalLaneToggle = findViewById(R.id.card_minimal_lane_toggle);
+        cbMinimalLaneEnabled = findViewById(R.id.cb_minimal_lane_enabled);
+        tvMinimalLaneStatus = findViewById(R.id.tv_minimal_lane_status);
     }
 
     private void loadPreferences() {
@@ -255,6 +329,9 @@ public class MainActivity extends AppCompatActivity {
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
         autoStartEnabled = sp.getBoolean("auto_start", false);
+        normalTmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
+        normalBottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
+        minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
  
         updateSeekBarToCurrentScale();
         
@@ -298,6 +375,25 @@ public class MainActivity extends AppCompatActivity {
             btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
         }
         updateClusterDisplaySelectStatus();
+
+        if (cbNormalTmcEnabled != null) {
+            cbNormalTmcEnabled.setChecked(normalTmcEnabled);
+        }
+        if (tvNormalTmcStatus != null) {
+            tvNormalTmcStatus.setText(normalTmcEnabled ? "TMC路况进度条已启用" : "TMC路况进度条已禁用");
+        }
+        if (cbNormalBottomInfoEnabled != null) {
+            cbNormalBottomInfoEnabled.setChecked(normalBottomInfoEnabled);
+        }
+        if (tvNormalBottomInfoStatus != null) {
+            tvNormalBottomInfoStatus.setText(normalBottomInfoEnabled ? "底栏到达信息已启用" : "底栏到达信息已禁用");
+        }
+        if (cbMinimalLaneEnabled != null) {
+            cbMinimalLaneEnabled.setChecked(minimalLaneEnabled);
+        }
+        if (tvMinimalLaneStatus != null) {
+            tvMinimalLaneStatus.setText(minimalLaneEnabled ? "车道线已启用" : "车道线已禁用");
+        }
 
         applyThemeToViews();
 
@@ -446,6 +542,9 @@ public class MainActivity extends AppCompatActivity {
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
                 .putBoolean("auto_start", autoStartEnabled)
+                .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
+                .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
+                .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled)
                 .apply();
     }
 
@@ -545,6 +644,9 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbClusterMirrorEnabled, accentColor);
         updateSwitchTheme(cbHideMainWhenClusterActive, accentColor);
         updateSwitchTheme(cbAutoStartEnabled, accentColor);
+        updateSwitchTheme(cbNormalTmcEnabled, accentColor);
+        updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
+        updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
         sbScale.setProgressTintList(accentColorStateList);
@@ -557,6 +659,20 @@ public class MainActivity extends AppCompatActivity {
 
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setTextColor(accentColor);
+        }
+
+        // Apply dynamic accent color to left menu indicator lines
+        if (indicatorSystemAppearance != null) {
+            indicatorSystemAppearance.setBackgroundColor(accentColor);
+        }
+        if (indicatorFeaturesAvoidance != null) {
+            indicatorFeaturesAvoidance.setBackgroundColor(accentColor);
+        }
+        if (indicatorLayoutNormal != null) {
+            indicatorLayoutNormal.setBackgroundColor(accentColor);
+        }
+        if (indicatorLayoutMinimal != null) {
+            indicatorLayoutMinimal.setBackgroundColor(accentColor);
         }
 
         MaterialCardView btnExitApp = findViewById(R.id.btn_exit_app);
@@ -821,6 +937,114 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+
+        if (cbNormalTmcEnabled != null) {
+            cbNormalTmcEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                normalTmcEnabled = isChecked;
+                savePreferences();
+                if (tvNormalTmcStatus != null) {
+                    tvNormalTmcStatus.setText(isChecked ? "TMC路况进度条已启用" : "TMC路况进度条已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardNormalTmcToggle != null) {
+            cardNormalTmcToggle.setOnClickListener(v -> {
+                if (cbNormalTmcEnabled != null) {
+                    cbNormalTmcEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbNormalBottomInfoEnabled != null) {
+            cbNormalBottomInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                normalBottomInfoEnabled = isChecked;
+                savePreferences();
+                if (tvNormalBottomInfoStatus != null) {
+                    tvNormalBottomInfoStatus.setText(isChecked ? "底栏到达信息已启用" : "底栏到达信息已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardNormalBottomInfoToggle != null) {
+            cardNormalBottomInfoToggle.setOnClickListener(v -> {
+                if (cbNormalBottomInfoEnabled != null) {
+                    cbNormalBottomInfoEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalLaneEnabled != null) {
+            cbMinimalLaneEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                minimalLaneEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalLaneStatus != null) {
+                    tvMinimalLaneStatus.setText(isChecked ? "车道线已启用" : "车道线已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalLaneToggle != null) {
+            cardMinimalLaneToggle.setOnClickListener(v -> {
+                if (cbMinimalLaneEnabled != null) {
+                    cbMinimalLaneEnabled.toggle();
+                }
+            });
+        }
+
+        // Set up click listeners for left menu items
+        if (menuSystemAppearance != null) {
+            menuSystemAppearance.setOnClickListener(v -> switchMenu(0));
+        }
+        if (menuFeaturesAvoidance != null) {
+            menuFeaturesAvoidance.setOnClickListener(v -> switchMenu(1));
+        }
+        if (menuLayoutNormal != null) {
+            menuLayoutNormal.setOnClickListener(v -> switchMenu(2));
+        }
+        if (menuLayoutMinimal != null) {
+            menuLayoutMinimal.setOnClickListener(v -> switchMenu(3));
+        }
+
+        // Initialize default selected panel
+        switchMenu(0);
+    }
+
+    private void switchMenu(int index) {
+        selectedMenuIndex = index;
+
+        // 1. Panels visibility
+        if (panelSystemAppearance != null) panelSystemAppearance.setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        if (panelFeaturesAvoidance != null) panelFeaturesAvoidance.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
+        if (panelLayoutNormal != null) panelLayoutNormal.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        if (panelLayoutMinimal != null) panelLayoutMinimal.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
+
+        // 2. Indicators visibility
+        if (indicatorSystemAppearance != null) indicatorSystemAppearance.setVisibility(index == 0 ? View.VISIBLE : View.INVISIBLE);
+        if (indicatorFeaturesAvoidance != null) indicatorFeaturesAvoidance.setVisibility(index == 1 ? View.VISIBLE : View.INVISIBLE);
+        if (indicatorLayoutNormal != null) indicatorLayoutNormal.setVisibility(index == 2 ? View.VISIBLE : View.INVISIBLE);
+        if (indicatorLayoutMinimal != null) indicatorLayoutMinimal.setVisibility(index == 3 ? View.VISIBLE : View.INVISIBLE);
+
+        // 3. Menu card background colors (selected gets #FF262626, others transparent)
+        if (menuSystemAppearance != null) menuSystemAppearance.setCardBackgroundColor(ColorStateList.valueOf(index == 0 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        if (menuFeaturesAvoidance != null) menuFeaturesAvoidance.setCardBackgroundColor(ColorStateList.valueOf(index == 1 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        if (menuLayoutNormal != null) menuLayoutNormal.setCardBackgroundColor(ColorStateList.valueOf(index == 2 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        if (menuLayoutMinimal != null) menuLayoutMinimal.setCardBackgroundColor(ColorStateList.valueOf(index == 3 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+
+        // 4. Menu text colors (selected gets #FFFFFFFF, others #FF888888)
+        if (tvMenuSystemAppearance != null) tvMenuSystemAppearance.setTextColor(index == 0 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (tvMenuFeaturesAvoidance != null) tvMenuFeaturesAvoidance.setTextColor(index == 1 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (tvMenuLayoutNormal != null) tvMenuLayoutNormal.setTextColor(index == 2 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (tvMenuLayoutMinimal != null) tvMenuLayoutMinimal.setTextColor(index == 3 ? Color.WHITE : Color.parseColor("#FF888888"));
     }
 
     private void checkPermissionAndStart() {

@@ -68,6 +68,15 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             ivLightArrow = llTrafficLightGroup.findViewById(R.id.iv_light_arrow);
             tvLightTime = llTrafficLightGroup.findViewById(R.id.tv_light_time);
         }
+
+        if (tmcProgressBar != null) {
+            boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
+            tmcProgressBar.setVisibility(tmcEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (layoutInfoBar != null) {
+            boolean bottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
+            layoutInfoBar.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
+        }
     }
 
     private boolean isNormalNaviLaneEnabled() {
@@ -320,7 +329,14 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     @Override
     public void updateTmcData(String tmcJson) {
         if (tmcProgressBar != null) {
-            tmcProgressBar.updateTmcData(tmcJson);
+            boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
+            if (tmcEnabled) {
+                tmcProgressBar.setVisibility(View.VISIBLE);
+                tmcProgressBar.updateTmcData(tmcJson);
+            } else {
+                tmcProgressBar.setVisibility(View.GONE);
+                tmcProgressBar.clear();
+            }
         }
     }
 

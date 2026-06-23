@@ -172,6 +172,18 @@ public class TmcProgressBar extends View {
         }
     }
 
+    /**
+     * 清除 TMC 数据，重置进度条
+     */
+    public void clear() {
+        totalDistance = 0;
+        finishDistance = 0;
+        segmentStatuses = null;
+        segmentDistances = null;
+        segmentCount = 0;
+        invalidate();
+    }
+
     private float dpToPx(float dp) {
         return dp * getResources().getDisplayMetrics().density;
     }

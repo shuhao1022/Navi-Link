@@ -74,6 +74,18 @@ public class FullNaviWindow extends BaseFloatingWindow {
         tvFullDirection = floatingView.findViewById(R.id.tv_full_direction);
         tmcProgressBarFull = floatingView.findViewById(R.id.tmc_progress_bar_full);
         laneLineViewFull = floatingView.findViewById(R.id.lane_line_view_full);
+
+        if (tmcProgressBarFull != null) {
+            boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
+            tmcProgressBarFull.setVisibility(tmcEnabled ? View.VISIBLE : View.GONE);
+        }
+        boolean bottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
+        if (tvSummaryFull != null) {
+            tvSummaryFull.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvEtaFull != null) {
+            tvEtaFull.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
+        }
     }
 
     @Override
@@ -276,7 +288,14 @@ public class FullNaviWindow extends BaseFloatingWindow {
     @Override
     public void updateTmcData(String tmcJson) {
         if (tmcProgressBarFull != null) {
-            tmcProgressBarFull.updateTmcData(tmcJson);
+            boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
+            if (tmcEnabled) {
+                tmcProgressBarFull.setVisibility(View.VISIBLE);
+                tmcProgressBarFull.updateTmcData(tmcJson);
+            } else {
+                tmcProgressBarFull.setVisibility(View.GONE);
+                tmcProgressBarFull.clear();
+            }
         }
     }
 
