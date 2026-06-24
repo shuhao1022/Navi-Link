@@ -10,7 +10,7 @@
 | 最低 SDK | Android 5.0 (API 21) |
 | 目标 SDK | Android 14 (API 34) |
 | 编译 SDK | 34 |
-| 版本 | 2.5.4 (versionCode 25) |
+| 版本 | 2.5.5 (versionCode 255) |
 | 开发语言 | Java |
 | 构建工具 | Gradle + AGP 8.5.0 |
 

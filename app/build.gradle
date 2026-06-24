@@ -10,8 +10,8 @@ android {
         applicationId "com.navi.link"
         minSdk 21
         targetSdk 34
-        versionCode 25
-        versionName "2.5.4"
+        versionCode 255
+        versionName "2.5.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
