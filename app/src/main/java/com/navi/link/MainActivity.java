@@ -105,6 +105,11 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvSys;
     private TextView tvStyle;
     private TextView tvOperation;
+    private TextView tvTitleClusterSettings;
+    private TextView tvTitleLayoutNormal;
+    private TextView tvTitleLayoutMinimal;
+    private TextView tvTitleAboutSoftware;
+    private TextView tvTitleAboutDevice;
     private SwitchCompat cbOverspeedWarningEnabled;
     private TextView tvOverspeedWarningStatus;
     private MaterialCardView cardOverspeedWarningToggle;
@@ -299,6 +304,11 @@ public class MainActivity extends AppCompatActivity {
         tvSys = findViewById(R.id.tv_sys);
         tvStyle = findViewById(R.id.tv_style);
         tvOperation = findViewById(R.id.tv_operation);
+        tvTitleClusterSettings = findViewById(R.id.tv_title_cluster_settings);
+        tvTitleLayoutNormal = findViewById(R.id.tv_title_layout_normal);
+        tvTitleLayoutMinimal = findViewById(R.id.tv_title_layout_minimal);
+        tvTitleAboutSoftware = findViewById(R.id.tv_title_about_software);
+        tvTitleAboutDevice = findViewById(R.id.tv_title_about_device);
         android.view.ViewGroup contentView = findViewById(android.R.id.content);
         View root = contentView.getChildAt(0);
         if (root != null) {
@@ -811,6 +821,12 @@ public class MainActivity extends AppCompatActivity {
         tvSys.setTextColor(accentColor);
         tvOperation.setTextColor(accentColor);
 
+        if (tvTitleClusterSettings != null) tvTitleClusterSettings.setTextColor(accentColor);
+        if (tvTitleLayoutNormal != null) tvTitleLayoutNormal.setTextColor(accentColor);
+        if (tvTitleLayoutMinimal != null) tvTitleLayoutMinimal.setTextColor(accentColor);
+        if (tvTitleAboutSoftware != null) tvTitleAboutSoftware.setTextColor(accentColor);
+        if (tvTitleAboutDevice != null) tvTitleAboutDevice.setTextColor(accentColor);
+
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setTextColor(accentColor);
         }
@@ -827,6 +843,10 @@ public class MainActivity extends AppCompatActivity {
         }
         if (indicatorLayoutMinimal != null) {
             indicatorLayoutMinimal.setBackgroundColor(accentColor);
+        }
+
+        if (indicatorAboutUs != null) {
+            indicatorAboutUs.setBackgroundColor(accentColor);
         }
 
         MaterialCardView btnExitApp = findViewById(R.id.btn_exit_app);
