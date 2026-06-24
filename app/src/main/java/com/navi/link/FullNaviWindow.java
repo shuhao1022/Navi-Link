@@ -21,7 +21,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
     private TextView tvSummaryFull;
     private TextView tvEtaFull;
     private TextView tvFullEndPoiName;
-    private TextView tvFullCameraDist;
+    private CameraWarningView tvFullCameraDist;
     private TextView tvFullLightCount;
     private CardView cvFullMiddle;
 
@@ -93,7 +93,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
             int icon, String disNum, String disUnit, String actionStr,
             String roadName, String summaryStr, String eta,
             int progress, int curSpeed,
-            int limitedSpeed, int cameraDist, int cameraSpeed,
+            int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
@@ -195,11 +195,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         }
 
         if (tvFullCameraDist != null) {
-            if (cameraDist > 0) {
-                tvFullCameraDist.setText(cameraDist + "米");
-            } else {
-                tvFullCameraDist.setText("--");
-            }
+            tvFullCameraDist.updateCameraInfo(cameraType, cameraDist, cameraSpeed);
         }
 
         if (tvFullLightCount != null) {
@@ -220,8 +216,8 @@ public class FullNaviWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
-        // 全数据导航不处理巡航
+    public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
+        // 全数据导航不处理巡航数据
     }
 
     @Override
@@ -347,7 +343,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(textSecondary);
         if (tvEtaFull != null) tvEtaFull.setTextColor(textSecondary);
         if (tvFullEndPoiName != null) tvFullEndPoiName.setTextColor(textPrimary);
-        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(textPrimary);
+        // tvFullCameraDist text color is handled by CameraWarningView natively (or ignore for FullNaviWindow since it has custom logic)
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(textPrimary);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(textPrimary);
     }
@@ -362,7 +358,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(TEXT_SECONDARY_DARK);
         if (tvEtaFull != null) tvEtaFull.setTextColor(TEXT_SECONDARY_DARK);
         if (tvFullEndPoiName != null) tvFullEndPoiName.setTextColor(TEXT_PRIMARY_DARK);
-        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(TEXT_PRIMARY_DARK);
+        // tvFullCameraDist text color is handled by CameraWarningView natively
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(TEXT_PRIMARY_DARK);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
     }

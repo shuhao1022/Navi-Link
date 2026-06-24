@@ -225,22 +225,10 @@
              android:gravity="center_vertical"
              android:layout_width="match_parent"
              android:layout_height="70dp">
-             <ImageView
-                 android:padding="10dp"
-                 android:background="@drawable/camera_shape"
-                 android:src="@mipmap/camera_icon"
-                 android:layout_width="40dp"
-                 android:layout_height="40dp"
-                 app:tint="#000000" />
-             <TextView
-                 android:textStyle="bold"
+             <com.navi.link.CameraWarningView
                  android:id="@+id/tv_full_camera_dist"
-                 android:layout_marginStart="10dp"
-                 android:textColor="#ffffff"
                  android:layout_width="wrap_content"
-                 android:layout_height="wrap_content"
-                 android:text="--"
-                 android:textSize="18sp"/>
+                 android:layout_height="wrap_content" />
             <LinearLayout
                 android:layout_width="0dp"
                 android:gravity="center"

@@ -20,9 +20,9 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     private TextView tvCruiseDirection;
     private TextView tvCruiseRoadName;
     private LinearLayout llTrafficLightsContainer;
-    private View llMinCruiseCameraGroup;
-    private TextView tvMinCruiseCameraDist;
+    private CameraWarningView llMinCruiseCameraGroup;
     private LaneLineView laneLineViewMin;
+    private View cruiseDividerMin;
 
     private int themeColor = 0xFF4FC3F7;
     private boolean isOverspeedBlinking = false;
@@ -39,8 +39,8 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         tvCruiseRoadName = floatingView.findViewById(R.id.tv_cruise_road_name);
         llTrafficLightsContainer = floatingView.findViewById(R.id.ll_traffic_lights_container);
         llMinCruiseCameraGroup = floatingView.findViewById(R.id.ll_min_cruise_camera_group);
-        tvMinCruiseCameraDist = floatingView.findViewById(R.id.tv_min_cruise_camera_dist);
         laneLineViewMin = floatingView.findViewById(R.id.lane_line_view_min);
+        cruiseDividerMin = floatingView.findViewById(R.id.cruise_divider);
         if (laneLineViewMin != null) {
             laneLineViewMin.setSimpleMode(true);
         }
@@ -52,7 +52,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
             int icon, String disNum, String disUnit, String actionStr,
             String roadName, String summaryStr, String eta,
             int progress, int curSpeed,
-            int limitedSpeed, int cameraDist, int cameraSpeed,
+            int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
@@ -60,12 +60,14 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
+        boolean speedEnabled = sp.getBoolean("minimal_speed_enabled", true);
         if (tvCruiseSpeed != null) {
             tvCruiseSpeed.setText(String.valueOf(speed));
-            // 超速警告：限速>0 且 当前速度>限速 → 红色+闪烁
+            // 超速警告：限速优先用cameraSpeed
+            int limit = cameraSpeed > 0 ? cameraSpeed : 0;
             boolean isOverspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
-            boolean overspeed = isOverspeedWarningEnabled && cameraSpeed > 0 && speed > cameraSpeed;
+            boolean overspeed = isOverspeedWarningEnabled && limit > 0 && speed > limit;
             if (overspeed) {
                 tvCruiseSpeed.setTextColor(Color.RED);
                 ObjectAnimator animator = (ObjectAnimator) tvCruiseSpeed.getTag();
@@ -90,6 +92,13 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
                 int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
                 tvCruiseSpeed.setTextColor(accentColor);
             }
+            tvCruiseSpeed.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvCruiseUnit != null) {
+            tvCruiseUnit.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (cruiseDividerMin != null) {
+            cruiseDividerMin.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
         if (tvCruiseRoadName != null) {
             boolean roadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
@@ -111,11 +120,8 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         }
         if (llMinCruiseCameraGroup != null) {
             boolean minimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
-            if (minimalCameraEnabled && cameraDist > 0) {
-                if (tvMinCruiseCameraDist != null) {
-                    tvMinCruiseCameraDist.setText(cameraDist + "米");
-                }
-                llMinCruiseCameraGroup.setVisibility(View.VISIBLE);
+            if (minimalCameraEnabled) {
+                llMinCruiseCameraGroup.updateCameraInfo(cameraType, cameraDist, cameraSpeed);
             } else {
                 llMinCruiseCameraGroup.setVisibility(View.GONE);
             }
@@ -276,9 +282,6 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         if (tvCruiseRoadName != null) {
             tvCruiseRoadName.setTextColor(textSecondary);
         }
-        if (tvMinCruiseCameraDist != null) {
-            tvMinCruiseCameraDist.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
-        }
         if (tvCruiseDirection != null) {
             tvCruiseDirection.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
         }
@@ -296,9 +299,6 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     public void resetToDefaultTextColors() {
         if (tvCruiseRoadName != null) {
             tvCruiseRoadName.setTextColor(TEXT_PRIMARY_DARK);
-        }
-        if (tvMinCruiseCameraDist != null) {
-            tvMinCruiseCameraDist.setTextColor(TEXT_PRIMARY_DARK);
         }
         if (tvCruiseDirection != null) {
             tvCruiseDirection.setTextColor(TEXT_PRIMARY_DARK);

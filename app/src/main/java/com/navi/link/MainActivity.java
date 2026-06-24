@@ -141,6 +141,14 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalDirectionEnabled;
     private TextView tvMinimalDirectionStatus;
 
+    private MaterialCardView cardMinimalSpeedToggle;
+    private SwitchCompat cbMinimalSpeedEnabled;
+    private TextView tvMinimalSpeedStatus;
+
+    private MaterialCardView cardMinimalLightCountToggle;
+    private SwitchCompat cbMinimalLightCountEnabled;
+    private TextView tvMinimalLightCountStatus;
+
     private MaterialCardView cardMinimalAccentNaviInfoToggle;
     private SwitchCompat cbMinimalAccentNaviInfoEnabled;
     private TextView tvMinimalAccentNaviInfoStatus;
@@ -196,6 +204,8 @@ public class MainActivity extends AppCompatActivity {
     private boolean isMinimalCameraEnabled = false;
     private boolean isMinimalRoadNameEnabled = true;
     private boolean isMinimalDirectionEnabled = false;
+    private boolean isMinimalSpeedEnabled = true;
+    private boolean isMinimalLightCountEnabled = false;
     private boolean isMinimalAccentNaviInfoEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
@@ -330,6 +340,14 @@ public class MainActivity extends AppCompatActivity {
         cbMinimalDirectionEnabled = findViewById(R.id.cb_minimal_direction_enabled);
         tvMinimalDirectionStatus = findViewById(R.id.tv_minimal_direction_status);
 
+        cardMinimalSpeedToggle = findViewById(R.id.card_minimal_speed_toggle);
+        cbMinimalSpeedEnabled = findViewById(R.id.cb_minimal_speed_enabled);
+        tvMinimalSpeedStatus = findViewById(R.id.tv_minimal_speed_status);
+
+        cardMinimalLightCountToggle = findViewById(R.id.card_minimal_light_count_toggle);
+        cbMinimalLightCountEnabled = findViewById(R.id.cb_minimal_light_count_enabled);
+        tvMinimalLightCountStatus = findViewById(R.id.tv_minimal_light_count_status);
+
         cardMinimalAccentNaviInfoToggle = findViewById(R.id.card_minimal_accent_navi_info_toggle);
         cbMinimalAccentNaviInfoEnabled = findViewById(R.id.cb_minimal_accent_navi_info_enabled);
         tvMinimalAccentNaviInfoStatus = findViewById(R.id.tv_minimal_accent_navi_info_status);
@@ -356,6 +374,8 @@ public class MainActivity extends AppCompatActivity {
         isMinimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
         isMinimalRoadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
         isMinimalDirectionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+        isMinimalSpeedEnabled = sp.getBoolean("minimal_speed_enabled", true);
+        isMinimalLightCountEnabled = sp.getBoolean("minimal_light_count_enabled", false);
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
@@ -402,6 +422,18 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvMinimalDirectionStatus != null) {
             tvMinimalDirectionStatus.setText(isMinimalDirectionEnabled ? "方向显示已启用" : "方向显示已禁用");
+        }
+        if (cbMinimalSpeedEnabled != null) {
+            cbMinimalSpeedEnabled.setChecked(isMinimalSpeedEnabled);
+        }
+        if (tvMinimalSpeedStatus != null) {
+            tvMinimalSpeedStatus.setText(isMinimalSpeedEnabled ? "车速显示已启用" : "车速显示已禁用");
+        }
+        if (cbMinimalLightCountEnabled != null) {
+            cbMinimalLightCountEnabled.setChecked(isMinimalLightCountEnabled);
+        }
+        if (tvMinimalLightCountStatus != null) {
+            tvMinimalLightCountStatus.setText(isMinimalLightCountEnabled ? "红绿灯计数已启用" : "红绿灯计数已禁用");
         }
         if (cbMinimalAccentNaviInfoEnabled != null) {
             cbMinimalAccentNaviInfoEnabled.setChecked(isMinimalAccentNaviInfoEnabled);
@@ -472,10 +504,40 @@ public class MainActivity extends AppCompatActivity {
     private void showAmapSelectionDialog() {
         PackageManager pm = getPackageManager();
         List<ApplicationInfo> apps = pm.getInstalledApplications(PackageManager.GET_META_DATA);
+        
+        // 在 Android 15 上，有时即使加了 queries，getInstalledApplications 依然会被系统阉割过滤
+        // 我们直接按包名硬拿一次，如果存在就手动塞进列表里
+        String[] knownPackages = {
+            "com.autonavi.amapautp", 
+            "com.autonavi.amapauto", 
+            "com.autonavi.minimap"
+        };
+        for (String kp : knownPackages) {
+            try {
+                ApplicationInfo info = pm.getApplicationInfo(kp, PackageManager.GET_META_DATA);
+                boolean exists = false;
+                for (ApplicationInfo a : apps) {
+                    if (kp.equals(a.packageName)) {
+                        exists = true; break;
+                    }
+                }
+                if (!exists) {
+                    apps.add(info);
+                }
+            } catch (Exception e) {
+                // 不存在该包名，忽略
+            }
+        }
+
         List<ApplicationInfo> amapApps = new ArrayList<>();
         for (ApplicationInfo app : apps) {
-            if (app.packageName != null && (app.packageName.contains("com.autonavi")||app.name.contains("高德"))) {
-                amapApps.add(app);
+            CharSequence labelSeq = pm.getApplicationLabel(app);
+            String label = labelSeq != null ? labelSeq.toString() : "";
+            if (app.packageName != null) {
+                String pkg = app.packageName.toLowerCase();
+                if (pkg.contains("autonavi") || pkg.contains("amap") || label.contains("高德")) {
+                    amapApps.add(app);
+                }
             }
         }
 
@@ -597,6 +659,8 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("minimal_camera_enabled", isMinimalCameraEnabled);
         editor.putBoolean("minimal_road_name_enabled", isMinimalRoadNameEnabled);
         editor.putBoolean("minimal_direction_enabled", isMinimalDirectionEnabled);
+        editor.putBoolean("minimal_speed_enabled", isMinimalSpeedEnabled);
+        editor.putBoolean("minimal_light_count_enabled", isMinimalLightCountEnabled);
         editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
         editor.apply();
     }
@@ -702,6 +766,8 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
         updateSwitchTheme(cbMinimalRoadNameEnabled, accentColor);
         updateSwitchTheme(cbMinimalDirectionEnabled, accentColor);
+        updateSwitchTheme(cbMinimalSpeedEnabled, accentColor);
+        updateSwitchTheme(cbMinimalLightCountEnabled, accentColor);
         updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
@@ -1095,6 +1161,48 @@ public class MainActivity extends AppCompatActivity {
             cardMinimalDirectionToggle.setOnClickListener(v -> {
                 if (cbMinimalDirectionEnabled != null) {
                     cbMinimalDirectionEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalSpeedEnabled != null) {
+            cbMinimalSpeedEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalSpeedEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalSpeedStatus != null) {
+                    tvMinimalSpeedStatus.setText(isChecked ? "车速显示已启用" : "车速显示已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalSpeedToggle != null) {
+            cardMinimalSpeedToggle.setOnClickListener(v -> {
+                if (cbMinimalSpeedEnabled != null) {
+                    cbMinimalSpeedEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalLightCountEnabled != null) {
+            cbMinimalLightCountEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalLightCountEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalLightCountStatus != null) {
+                    tvMinimalLightCountStatus.setText(isChecked ? "红绿灯计数已启用" : "红绿灯计数已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalLightCountToggle != null) {
+            cardMinimalLightCountToggle.setOnClickListener(v -> {
+                if (cbMinimalLightCountEnabled != null) {
+                    cbMinimalLightCountEnabled.toggle();
                 }
             });
         }

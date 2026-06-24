@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <FrameLayout
+        android:layout_width="40dp"
+        android:layout_height="40dp">
+        
+        <ImageView
+            android:id="@+id/iv_camera_icon"
+            android:padding="1dp"
+            android:background="@drawable/camera_shape"
+            android:src="@drawable/camera_default"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+            
+        <TextView
+            android:id="@+id/tv_camera_speed"
+            android:visibility="gone"
+            android:background="@drawable/bg_camera_speed_circle"
+            android:textColor="#000000"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:gravity="center"
+            android:layout_width="40dp"
+            android:layout_height="40dp" />
+            
+    </FrameLayout>
+
+    <TextView
+        android:id="@+id/tv_camera_dist"
+        android:textStyle="bold"
+        android:layout_marginStart="4dp"
+        android:textColor="#ffffff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="--"
+        android:textSize="20sp"/>
+
+</merge>

@@ -35,43 +35,18 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
-<LinearLayout
-    android:visibility="gone"
+<com.navi.link.CameraWarningView
+    android:visibility="visible"
     android:id="@+id/ll_cn_camera_dist"
-    android:gravity="center_vertical"
+    android:background="@drawable/bg_traffic_light_capsule"
+    android:paddingEnd="5dp"
+    android:paddingStart="4dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintTop_toTopOf="parent"
     android:layout_width="wrap_content"
-    android:layout_height="40dp">
-    <ImageView
-        android:padding="10dp"
-        android:background="@drawable/camera_shape"
-        android:src="@mipmap/camera_icon"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
-        app:tint="#000000" />
-    <TextView
-        android:textStyle="bold"
-        android:id="@+id/tv_cn_camera_dist"
-        android:layout_marginStart="2dp"
-        android:textColor="#ffffff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="180米"
-        android:textSize="18sp"/>
-</LinearLayout>
-                <TextView
-                    android:id="@+id/tv_cn_speed_unit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="3dp"
-                    android:layout_marginBottom="5dp"
-                    android:text="km/h"
-                    android:textColor="#BBFFFFFF"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="@id/tv_cn_speed"
-                    app:layout_constraintStart_toEndOf="@id/tv_cn_speed" />
+    android:layout_height="45dp" />
+
 
                 <View
                     android:id="@+id/cn_divider"
@@ -80,7 +55,7 @@
                     android:layout_marginStart="8dp"
                     android:background="#33FFFFFF"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tv_cn_speed_unit"
+                    app:layout_constraintStart_toEndOf="@id/tv_cn_speed"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <androidx.constraintlayout.widget.Barrier
@@ -88,7 +63,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     app:barrierDirection="start"
-                    app:constraint_referenced_ids="tv_cn_speed_limit,ll_cn_camera_dist" />
+                    app:constraint_referenced_ids="ll_cn_camera_dist" />
 
                 <TextView
                     android:id="@+id/tv_cn_road_name"
@@ -107,22 +82,6 @@
                     app:layout_constraintStart_toEndOf="@id/cn_divider"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <TextView
-
-                    android:id="@+id/tv_cn_speed_limit"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_marginStart="6dp"
-                    android:text="--"
-                    android:gravity="center"
-                    android:background="@drawable/camera_shape"
-                    android:textColor="#000000"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:visibility="gone"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 

@@ -10,7 +10,7 @@ import org.json.JSONArray;
 public class AmapNaviReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AmapNavi";
-    private boolean isLog = false;
+    private boolean isLog = true;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!"AUTONAVI_STANDARD_BROADCAST_SEND".equals(intent.getAction())) return;
@@ -173,6 +173,7 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         int limitedSpeed = intent.getIntExtra("LIMITED_SPEED", 0);
         int cameraDist = intent.getIntExtra("CAMERA_DIST", 0);
         int cameraSpeed = intent.getIntExtra("CAMERA_SPEED", 0);
+        int cameraType = intent.getIntExtra("CAMERA_TYPE", 0);
         String endPoiName = intent.getStringExtra("endPOIName");
         int totalLightNum = intent.getIntExtra("TRAFFIC_LIGHT_NUM", 0);
         int remainLightNum = intent.getIntExtra("routeRemainTrafficLightNum", 0);
@@ -180,7 +181,7 @@ public class AmapNaviReceiver extends BroadcastReceiver {
 
         manager.updateNaviInfo(icon, disNum, disUnit, "进入", roadName,
                 summaryStr, eta, progressPercentage, curSpeed,
-                limitedSpeed, cameraDist, cameraSpeed,
+                limitedSpeed, cameraType, cameraDist, cameraSpeed,
                 endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection);
 
         // 出口信息
@@ -194,8 +195,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         String curRoadName = intent.getStringExtra("CUR_ROAD_NAME");
         int cameraSpeed = intent.getIntExtra("CAMERA_SPEED", 0);
         int cameraDist = intent.getIntExtra("CAMERA_DIST", 0);
+        int cameraType = intent.getIntExtra("CAMERA_TYPE", 0);
         int carDirection = intent.getIntExtra("CAR_DIRECTION", -1);
         if (curRoadName == null) curRoadName = "未知道路";
-        manager.updateCruiseInfo(curSpeed, curRoadName, cameraSpeed, cameraDist, carDirection);
+        manager.updateCruiseInfo(curSpeed, curRoadName, cameraType, cameraSpeed, cameraDist, carDirection);
     }
 }

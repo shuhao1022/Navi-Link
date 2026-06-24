@@ -81,36 +81,17 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"/>
 
-        <LinearLayout
+        <com.navi.link.CameraWarningView
             android:id="@+id/ll_camera_dist_group"
             android:visibility="gone"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:layout_alignParentEnd="true"
-            android:gravity="center_vertical"
-            android:orientation="horizontal"
             android:background="@drawable/bg_traffic_light_capsule"
             android:paddingStart="4dp"
             android:paddingEnd="10dp"
             android:layout_width="wrap_content"
-            android:layout_height="50dp">
-            <ImageView
-                android:padding="9dp"
-                android:background="@drawable/camera_shape"
-                android:src="@mipmap/camera_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                app:tint="#000000" />
-            <TextView
-                android:id="@+id/tv_camera_dist"
-                android:textStyle="bold"
-                android:layout_marginStart="4dp"
-                android:textColor="#ffffff"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="--"
-                android:textSize="20sp"/>
-        </LinearLayout>
+            android:layout_height="50dp" />
         <LinearLayout
             android:gravity="center_vertical"
             android:layout_alignParentBottom="true"

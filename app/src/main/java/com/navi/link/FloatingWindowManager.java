@@ -128,6 +128,7 @@ public class FloatingWindowManager {
     private int cachedLimitedSpeed = 0;
     private int cachedCameraDist = 0;
     private int cachedCameraSpeed = 0;
+    private int cachedCameraType = 0;
     private String cachedEndPoiName = "";
     private int cachedTotalLightNum = 0;
     private int cachedRemainLightNum = 0;
@@ -321,7 +322,9 @@ public class FloatingWindowManager {
         cachedLightStatus = -1;
         cachedLightDir = -1;
         cachedLightCountdown = 0;
+        cachedSpeed = 0;
         cachedLimitedSpeed = 0;
+        cachedCameraType = 0;
         cachedCameraDist = 0;
         cachedCameraSpeed = 0;
         cachedEndPoiName = "";
@@ -354,6 +357,7 @@ public class FloatingWindowManager {
         // 1. 清理缓存数据
         cachedSpeed = 0;
         cachedRoadName = "";
+        cachedCameraType = 0;
         cachedCameraSpeed = 0;
         cachedCameraDist = 0;
         cachedDriveWayJson = null;
@@ -591,7 +595,9 @@ public class FloatingWindowManager {
     private void restoreCachedData() {
         if (!hasCachedData || activeWindow == null) return;
         if (currentMode == MODE_CRUISE) {
-            activeWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
+            if (activeWindow != null) {
+                activeWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraType, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
+            }
             if (cachedDriveWayJson != null) {
                 activeWindow.updateLaneLines(cachedDriveWayJson);
             }
@@ -607,6 +613,7 @@ public class FloatingWindowManager {
                     cachedProgress,
                     cachedSpeed,
                     cachedLimitedSpeed,
+                    cachedCameraType,
                     cachedCameraDist,
                     cachedCameraSpeed,
                     cachedEndPoiName,
@@ -682,10 +689,14 @@ public class FloatingWindowManager {
                 if (r > 0) {
                     gd.setCornerRadius(r * factor);
                 } else {
-                    float[] radii = gd.getCornerRadii();
-                    if (radii != null) {
-                        for (int i = 0; i < radii.length; i++) radii[i] *= factor;
-                        gd.setCornerRadii(radii);
+                    try {
+                        float[] radii = gd.getCornerRadii();
+                        if (radii != null) {
+                            for (int i = 0; i < radii.length; i++) radii[i] *= factor;
+                            gd.setCornerRadii(radii);
+                        }
+                    } catch (Exception e) {
+                        // Ignore NPE from some Android versions when radii array is null
                     }
                 }
             }
@@ -1002,19 +1013,20 @@ public class FloatingWindowManager {
 
     // ======================== 巡航数据更新 ========================
 
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
         hasCachedData = true;
         cachedSpeed = speed;
-        cachedRoadName = roadName != null ? roadName : "";
+        cachedRoadName = roadName;
+        cachedCameraType = cameraType;
         cachedCameraSpeed = cameraSpeed;
         cachedCameraDist = cameraDist;
         cachedCarDirection = carDirection;
         if (isShowing && currentMode == MODE_CRUISE) {
             if (activeWindow != null && floatingView != null) {
-                activeWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist, carDirection);
+                activeWindow.updateCruiseInfo(speed, roadName, cameraType, cameraSpeed, cameraDist, carDirection);
             }
             if (clusterActiveWindow != null && clusterFloatingView != null) {
-                clusterActiveWindow.updateCruiseInfo(speed, roadName, cameraSpeed, cameraDist, carDirection);
+                clusterActiveWindow.updateCruiseInfo(speed, roadName, cameraType, cameraSpeed, cameraDist, carDirection);
             }
             // 速度/路名文字变化后重新测量窗口，避免内容变宽时被旧宽度截断
             remeasureWindow();
@@ -1084,7 +1096,7 @@ public class FloatingWindowManager {
     public void updateNaviInfo(int icon, String disNum, String disUnit, String actionStr,
                                String roadName, String summaryStr, String eta,
                                int progress, int curSpeed,
-                               int limitedSpeed, int cameraDist, int cameraSpeed,
+                               int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
                                String endPoiName, int totalLightNum, int remainLightNum,
                                String curRoadName, int carDirection) {
         hasCachedData = true;
@@ -1098,6 +1110,7 @@ public class FloatingWindowManager {
         cachedProgress = progress;
         cachedSpeed = curSpeed;
         cachedLimitedSpeed = limitedSpeed;
+        cachedCameraType = cameraType;
         cachedCameraDist = cameraDist;
         cachedCameraSpeed = cameraSpeed;
         cachedEndPoiName = endPoiName != null ? endPoiName : "";
@@ -1109,14 +1122,14 @@ public class FloatingWindowManager {
             if (activeWindow != null && floatingView != null) {
                 activeWindow.updateNaviInfo(
                         icon, disNum, disUnit, actionStr, roadName, summaryStr, eta,
-                        progress, curSpeed, limitedSpeed, cameraDist, cameraSpeed,
+                        progress, curSpeed, limitedSpeed, cameraType, cameraDist, cameraSpeed,
                         endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection
                 );
             }
             if (clusterActiveWindow != null && clusterFloatingView != null) {
                 clusterActiveWindow.updateNaviInfo(
                         icon, disNum, disUnit, actionStr, roadName, summaryStr, eta,
-                        progress, curSpeed, limitedSpeed, cameraDist, cameraSpeed,
+                        progress, curSpeed, limitedSpeed, cameraType, cameraDist, cameraSpeed,
                         endPoiName, totalLightNum, remainLightNum, curRoadName, carDirection
                 );
             }
@@ -1489,7 +1502,9 @@ public class FloatingWindowManager {
     private void restoreCachedDataForCluster() {
         if (!hasCachedData || clusterActiveWindow == null) return;
         if (currentMode == MODE_CRUISE) {
-            clusterActiveWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
+            if (clusterActiveWindow != null) {
+                clusterActiveWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraType, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
+            }
             if (cachedDriveWayJson != null) {
                 clusterActiveWindow.updateLaneLines(cachedDriveWayJson);
             }
@@ -1505,6 +1520,7 @@ public class FloatingWindowManager {
                     cachedProgress,
                     cachedSpeed,
                     cachedLimitedSpeed,
+                    cachedCameraType,
                     cachedCameraDist,
                     cachedCameraSpeed,
                     cachedEndPoiName,

@@ -30,9 +30,10 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     private String mExitName = "";
     private String mExitDirection = "";
 
-    private View llCameraDistGroup;
-    private TextView tvCameraDist;
+    private CameraWarningView cameraWarningView;
     private int mCameraDist = 0;
+    private int mCameraSpeed = 0;
+    private int mCameraType = 0;
     private int mTrafficLightCountdown = 0;
 
     private View llTrafficLightGroup;
@@ -59,8 +60,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         tvNaviLightCount = floatingView.findViewById(R.id.tv_navi_light_count);
         vDivider = floatingView.findViewById(R.id.v_divider);
         laneLineView = floatingView.findViewById(R.id.lane_line_view);
-        llCameraDistGroup = floatingView.findViewById(R.id.ll_camera_dist_group);
-        tvCameraDist = floatingView.findViewById(R.id.tv_camera_dist);
+        cameraWarningView = floatingView.findViewById(R.id.ll_camera_dist_group);
 
         llTrafficLightGroup = floatingView.findViewById(R.id.ll_traffic_light_group);
         if (llTrafficLightGroup != null) {
@@ -88,7 +88,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             int icon, String disNum, String disUnit, String actionStr,
             String roadName, String summaryStr, String eta,
             int progress, int curSpeed,
-            int limitedSpeed, int cameraDist, int cameraSpeed,
+            int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
@@ -129,6 +129,8 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         mOriginalRoadName = roadName;
         updateRoadAndExitViews();
         mCameraDist = cameraDist;
+        mCameraSpeed = cameraSpeed;
+        mCameraType = cameraType;
         updateCameraDistVisibility();
         if (tvSummary != null) {
             tvSummary.setText(summaryStr);
@@ -146,7 +148,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
         // 常规导航窗口不处理巡航数据
     }
 
@@ -201,18 +203,11 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     }
 
     private void updateCameraDistVisibility() {
-        if (llCameraDistGroup == null) return;
+        if (cameraWarningView == null) return;
         if (mTrafficLightCountdown > 0) {
-            llCameraDistGroup.setVisibility(View.GONE);
+            cameraWarningView.setVisibility(View.GONE);
         } else {
-            if (mCameraDist > 0) {
-                if (tvCameraDist != null) {
-                    tvCameraDist.setText(mCameraDist + "米");
-                }
-                llCameraDistGroup.setVisibility(View.VISIBLE);
-            } else {
-                llCameraDistGroup.setVisibility(View.GONE);
-            }
+            cameraWarningView.updateCameraInfo(mCameraType, mCameraDist, mCameraSpeed);
         }
     }
 
@@ -308,7 +303,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (ivTurnIcon != null) ivTurnIcon.setColorFilter(textPrimary);
         if (vDivider != null) vDivider.setBackgroundColor(textPrimary);
         if (tvExitInfo != null) tvExitInfo.setTextColor(textSecondary);
-        if (tvCameraDist != null) tvCameraDist.setTextColor(textPrimary);
+        if (cameraWarningView != null) cameraWarningView.setTextColor(textPrimary);
     }
 
     @Override
@@ -323,7 +318,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (ivTurnIcon != null) ivTurnIcon.clearColorFilter();
         if (vDivider != null) vDivider.setBackgroundColor(TEXT_PRIMARY_DARK);
         if (tvExitInfo != null) tvExitInfo.setTextColor(TEXT_SECONDARY_DARK);
-        if (tvCameraDist != null) tvCameraDist.setTextColor(TEXT_PRIMARY_DARK);
+        if (cameraWarningView != null) cameraWarningView.setTextColor(TEXT_PRIMARY_DARK);
     }
 
     @Override

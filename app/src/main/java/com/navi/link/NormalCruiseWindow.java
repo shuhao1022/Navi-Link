@@ -16,11 +16,9 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
 
     private TextView tvCnSpeed;
     private TextView tvCnRoadName;
-    private TextView tvCnSpeedLimit;
     private LinearLayout llCnTrafficLightsContainer;
     private LaneLineView laneLineView;
-    private View llCnCameraDist;
-    private TextView tvCnCameraDist;
+    private CameraWarningView llCnCameraDist;
 
     private boolean isOverspeedBlinking = false;
     private int themeColor = Color.BLACK;
@@ -33,11 +31,9 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     protected void initViews() {
         tvCnSpeed = floatingView.findViewById(R.id.tv_cn_speed);
         tvCnRoadName = floatingView.findViewById(R.id.tv_cn_road_name);
-        tvCnSpeedLimit = floatingView.findViewById(R.id.tv_cn_speed_limit);
         llCnTrafficLightsContainer = floatingView.findViewById(R.id.ll_cn_traffic_lights_container);
         laneLineView = floatingView.findViewById(R.id.lane_line_view);
         llCnCameraDist = floatingView.findViewById(R.id.ll_cn_camera_dist);
-        tvCnCameraDist = floatingView.findViewById(R.id.tv_cn_camera_dist);
     }
 
     @Override
@@ -45,7 +41,7 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
             int icon, String disNum, String disUnit, String actionStr,
             String roadName, String summaryStr, String eta,
             int progress, int curSpeed,
-            int limitedSpeed, int cameraDist, int cameraSpeed,
+            int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
@@ -53,7 +49,7 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection) {
+    public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
         if (tvCnSpeed != null) {
             tvCnSpeed.setText(String.valueOf(speed));
             // 超速警告：限速>0 且 当前速度>限速 → 红色+闪烁 (受 overspeed_warning_enabled 开关控制)
@@ -87,36 +83,12 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         if (tvCnRoadName != null && roadName != null) {
             tvCnRoadName.setText(roadName);
         }
-        updateCruiseCameraAndLimit(cameraSpeed, cameraDist);
+        updateCruiseCameraAndLimit(cameraType, cameraSpeed, cameraDist);
     }
 
-    private void updateCruiseCameraAndLimit(int cameraSpeed, int cameraDist) {
-        if (cameraSpeed > 0) {
-            if (tvCnSpeedLimit != null) {
-                tvCnSpeedLimit.setText(String.valueOf(cameraSpeed));
-                tvCnSpeedLimit.setVisibility(View.VISIBLE);
-            }
-            if (llCnCameraDist != null) {
-                llCnCameraDist.setVisibility(View.GONE);
-            }
-        } else if (cameraDist > 0) {
-            if (llCnCameraDist != null) {
-                if (tvCnCameraDist != null) {
-                    tvCnCameraDist.setText(cameraDist + "米");
-                }
-                llCnCameraDist.setVisibility(View.VISIBLE);
-            }
-            if (tvCnSpeedLimit != null) {
-                tvCnSpeedLimit.setVisibility(View.GONE);
-            }
-        } else {
-            if (tvCnSpeedLimit != null) {
-                tvCnSpeedLimit.setText("0");
-                tvCnSpeedLimit.setVisibility(View.VISIBLE);
-            }
-            if (llCnCameraDist != null) {
-                llCnCameraDist.setVisibility(View.GONE);
-            }
+    private void updateCruiseCameraAndLimit(int cameraType, int cameraSpeed, int cameraDist) {
+        if (llCnCameraDist != null) {
+            llCnCameraDist.updateCameraInfo(cameraType, cameraDist, cameraSpeed);
         }
     }
 
@@ -267,13 +239,11 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(textPrimary);
-        if (tvCnCameraDist != null) tvCnCameraDist.setTextColor(textPrimary);
     }
 
     @Override
     public void resetToDefaultTextColors() {
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(TEXT_PRIMARY_DARK);
-        if (tvCnCameraDist != null) tvCnCameraDist.setTextColor(TEXT_PRIMARY_DARK);
     }
 
     @Override

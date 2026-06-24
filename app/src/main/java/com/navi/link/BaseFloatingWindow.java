@@ -37,12 +37,12 @@ public abstract class BaseFloatingWindow {
             int icon, String disNum, String disUnit, String actionStr,
             String roadName, String summaryStr, String eta,
             int progress, int curSpeed,
-            int limitedSpeed, int cameraDist, int cameraSpeed,
+            int limitedSpeed, int cameraType, int cameraDist, int cameraSpeed,
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     );
 
-    public abstract void updateCruiseInfo(int speed, String roadName, int cameraSpeed, int cameraDist, int carDirection);
+    public abstract void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection);
 
     public abstract void updateTrafficLight(int status, int dir, int countdown);
 
