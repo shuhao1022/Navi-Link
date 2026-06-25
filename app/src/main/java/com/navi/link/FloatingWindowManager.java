@@ -138,6 +138,10 @@ public class FloatingWindowManager {
     private String cachedDriveWayJson = null;
     private String cachedExitName = "";
     private String cachedExitDirection = "";
+    private String cachedSapaName = "";
+    private String cachedSapaDist = "";
+    private String cachedNextSapaName = "";
+    private String cachedNextSapaDist = "";
 
     // Runnable
     private final Runnable naviSwitchRunnable = this::doNaviSwitch;
@@ -336,6 +340,10 @@ public class FloatingWindowManager {
         cachedDriveWayJson = null;
         cachedExitName = "";
         cachedExitDirection = "";
+        cachedSapaName = "";
+        cachedSapaDist = "";
+        cachedNextSapaName = "";
+        cachedNextSapaDist = "";
 
         hasActiveData = false;
         currentMode = MODE_CRUISE;
@@ -630,6 +638,9 @@ public class FloatingWindowManager {
             }
             if (cachedExitName != null) {
                 activeWindow.updateExitInfo(cachedExitName, cachedExitDirection);
+            }
+            if (cachedSapaName != null && !cachedSapaName.isEmpty()) {
+                activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
             }
             if (cachedLightCountdown > 0) {
                 activeWindow.updateTrafficLight(cachedLightStatus, cachedLightDir, cachedLightCountdown);
@@ -1154,6 +1165,20 @@ public class FloatingWindowManager {
         }
     }
 
+    public void updateSapaInfo(String sapaName, String sapaDist, String nextSapaName, String nextSapaDist) {
+        cachedSapaName = sapaName != null ? sapaName.trim() : "";
+        cachedSapaDist = sapaDist != null ? sapaDist.trim() : "";
+        cachedNextSapaName = nextSapaName != null ? nextSapaName.trim() : "";
+        cachedNextSapaDist = nextSapaDist != null ? nextSapaDist.trim() : "";
+        if (!isShowing || currentMode != MODE_NAVI) return;
+        if (activeWindow != null && floatingView != null) {
+            activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+        }
+        if (clusterActiveWindow != null && clusterFloatingView != null) {
+            clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+        }
+    }
+
     // ======================== 红绿灯更新 ========================
 
     public void updateTrafficLight(int status, int dir, int countdown) {
@@ -1537,6 +1562,9 @@ public class FloatingWindowManager {
             }
             if (cachedExitName != null && !cachedExitName.isEmpty()) {
                 clusterActiveWindow.updateExitInfo(cachedExitName, cachedExitDirection);
+            }
+            if (cachedSapaName != null && !cachedSapaName.isEmpty()) {
+                clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
             }
             if (cachedLightStatus != -1) {
                 clusterActiveWindow.updateTrafficLight(cachedLightStatus, cachedLightDir, cachedLightCountdown);

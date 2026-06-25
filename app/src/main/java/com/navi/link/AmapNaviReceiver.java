@@ -188,6 +188,13 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         String exitName = intent.getStringExtra("EXIT_NAME_INFO");
         String exitDirection = intent.getStringExtra("EXIT_DIRECTION_INFO");
         manager.updateExitInfo(exitName, exitDirection);
+
+        // 服务区信息
+        String sapaName = intent.getStringExtra("SAPA_NAME");
+        String sapaDist = intent.getStringExtra("SAPA_DIST_AUTO");
+        String nextSapaName = intent.getStringExtra("NEXT_SAPA_NAME");
+        String nextSapaDist = intent.getStringExtra("NEXT_SAPA_DIST_AUTO");
+        manager.updateSapaInfo(sapaName, sapaDist, nextSapaName, nextSapaDist);
     }
 
     private void handleCruiseInfo(Intent intent, FloatingWindowManager manager) {

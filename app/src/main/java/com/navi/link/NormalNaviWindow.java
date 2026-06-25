@@ -3,6 +3,7 @@ package com.navi.link;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.animation.ObjectAnimator;
@@ -25,6 +26,12 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     private TextView tvNaviLightCount;
     private View vDivider;
     private LaneLineView laneLineView;
+    private View layoutBottomContainer;
+    private View layoutSapaGroup;
+    private TextView tvSapaName1;
+    private TextView tvSapaDist1;
+    private TextView tvSapaName2;
+    private TextView tvSapaDist2;
 
     private String mOriginalRoadName = "";
     private String mExitName = "";
@@ -62,6 +69,13 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         laneLineView = floatingView.findViewById(R.id.lane_line_view);
         cameraWarningView = floatingView.findViewById(R.id.ll_camera_dist_group);
 
+        layoutBottomContainer = floatingView.findViewById(R.id.layout_bottom_container);
+        layoutSapaGroup = floatingView.findViewById(R.id.layout_sapa_group);
+        tvSapaName1 = floatingView.findViewById(R.id.tv_sapa_name_1);
+        tvSapaDist1 = floatingView.findViewById(R.id.tv_sapa_dist_1);
+        tvSapaName2 = floatingView.findViewById(R.id.tv_sapa_name_2);
+        tvSapaDist2 = floatingView.findViewById(R.id.tv_sapa_dist_2);
+
         llTrafficLightGroup = floatingView.findViewById(R.id.ll_traffic_light_group);
         if (llTrafficLightGroup != null) {
             ivLightIcon = llTrafficLightGroup.findViewById(R.id.iv_light_icon);
@@ -77,6 +91,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             boolean bottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
             layoutInfoBar.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
         }
+        updateBottomContainerVisibility();
     }
 
     private boolean isNormalNaviLaneEnabled() {
@@ -255,17 +270,18 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         boolean isDark = isDarkThemeColor(themeColor);
         int accentColor = isDark ? Color.WHITE : themeColor;
 
-        if (layoutInfoBar != null) {
+        View targetBgView = layoutBottomContainer != null ? layoutBottomContainer : layoutInfoBar;
+        if (targetBgView != null) {
             int cornerPx = Math.round(dpToPx(12) * FloatingWindowManager.getInstance().getScale());
             if (backgroundMode == 2) {
-                layoutInfoBar.setBackground(null);
+                targetBgView.setBackground(null);
             } else if (backgroundMode == 1) {
                 GradientDrawable bgDrawable = new GradientDrawable();
                 bgDrawable.setShape(GradientDrawable.RECTANGLE);
                 int semiColor = (themeColor & 0x00FFFFFF) | 0x80000000;
                 bgDrawable.setColor(semiColor);
                 bgDrawable.setCornerRadii(new float[]{0, 0, 0, 0, cornerPx, cornerPx, cornerPx, cornerPx});
-                layoutInfoBar.setBackground(bgDrawable);
+                targetBgView.setBackground(bgDrawable);
             } else {
                 int bgColor;
                 if (isDark) {
@@ -283,7 +299,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
                 bgDrawable.setShape(GradientDrawable.RECTANGLE);
                 bgDrawable.setColor(bgColor);
                 bgDrawable.setCornerRadii(new float[]{0, 0, 0, 0, cornerPx, cornerPx, cornerPx, cornerPx});
-                layoutInfoBar.setBackground(bgDrawable);
+                targetBgView.setBackground(bgDrawable);
             }
         }
     }
@@ -302,8 +318,39 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (tvNaviLightCount != null) tvNaviLightCount.setTextColor(textPrimary);
         if (ivTurnIcon != null) ivTurnIcon.setColorFilter(textPrimary);
         if (vDivider != null) vDivider.setBackgroundColor(textPrimary);
-        if (tvExitInfo != null) tvExitInfo.setTextColor(textSecondary);
+        if (tvExitInfo != null) {
+            tvExitInfo.setTextColor(textSecondary);
+            Drawable exitBg = tvExitInfo.getBackground();
+            if (exitBg instanceof GradientDrawable) {
+                ((GradientDrawable) exitBg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
+            }
+        }
         if (cameraWarningView != null) cameraWarningView.setTextColor(textPrimary);
+
+        if (tvSapaName1 != null) tvSapaName1.setTextColor(textPrimary);
+        if (tvSapaDist1 != null) tvSapaDist1.setTextColor(textPrimary);
+        if (tvSapaName2 != null) tvSapaName2.setTextColor(textPrimary);
+        if (tvSapaDist2 != null) tvSapaDist2.setTextColor(textPrimary);
+        TextView tvSapaBadge1 = floatingView.findViewById(R.id.tv_sapa_badge_1);
+        TextView tvSapaBadge2 = floatingView.findViewById(R.id.tv_sapa_badge_2);
+        if (tvSapaBadge1 != null) {
+            tvSapaBadge1.setTextColor(textSecondary);
+            Drawable bg = tvSapaBadge1.getBackground();
+            if (bg instanceof GradientDrawable) {
+                ((GradientDrawable) bg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
+            }
+        }
+        if (tvSapaBadge2 != null) {
+            tvSapaBadge2.setTextColor(textSecondary);
+            Drawable bg = tvSapaBadge2.getBackground();
+            if (bg instanceof GradientDrawable) {
+                ((GradientDrawable) bg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
+            }
+        }
+        View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider);
+        if (sapaDivider != null) {
+            sapaDivider.setBackgroundColor(isNightMode ? 0x2AFFFFFF : 0x2A000000);
+        }
     }
 
     @Override
@@ -317,8 +364,39 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (tvNaviLightCount != null) tvNaviLightCount.setTextColor(TEXT_PRIMARY_DARK);
         if (ivTurnIcon != null) ivTurnIcon.clearColorFilter();
         if (vDivider != null) vDivider.setBackgroundColor(TEXT_PRIMARY_DARK);
-        if (tvExitInfo != null) tvExitInfo.setTextColor(TEXT_SECONDARY_DARK);
+        if (tvExitInfo != null) {
+            tvExitInfo.setTextColor(TEXT_SECONDARY_DARK);
+            Drawable exitBg = tvExitInfo.getBackground();
+            if (exitBg instanceof GradientDrawable) {
+                ((GradientDrawable) exitBg.mutate()).setColor(0x33FFFFFF);
+            }
+        }
         if (cameraWarningView != null) cameraWarningView.setTextColor(TEXT_PRIMARY_DARK);
+
+        if (tvSapaName1 != null) tvSapaName1.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaDist1 != null) tvSapaDist1.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaName2 != null) tvSapaName2.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaDist2 != null) tvSapaDist2.setTextColor(TEXT_PRIMARY_DARK);
+        TextView tvSapaBadge1 = floatingView.findViewById(R.id.tv_sapa_badge_1);
+        TextView tvSapaBadge2 = floatingView.findViewById(R.id.tv_sapa_badge_2);
+        if (tvSapaBadge1 != null) {
+            tvSapaBadge1.setTextColor(TEXT_SECONDARY_DARK);
+            Drawable bg = tvSapaBadge1.getBackground();
+            if (bg instanceof GradientDrawable) {
+                ((GradientDrawable) bg.mutate()).setColor(0x33FFFFFF);
+            }
+        }
+        if (tvSapaBadge2 != null) {
+            tvSapaBadge2.setTextColor(TEXT_SECONDARY_DARK);
+            Drawable bg = tvSapaBadge2.getBackground();
+            if (bg instanceof GradientDrawable) {
+                ((GradientDrawable) bg.mutate()).setColor(0x33FFFFFF);
+            }
+        }
+        View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider);
+        if (sapaDivider != null) {
+            sapaDivider.setBackgroundColor(0x2AFFFFFF);
+        }
     }
 
     @Override
@@ -332,6 +410,55 @@ public class NormalNaviWindow extends BaseFloatingWindow {
                 tmcProgressBar.setVisibility(View.GONE);
                 tmcProgressBar.clear();
             }
+        }
+    }
+
+    @Override
+    public void updateSapaInfo(String sapaName, String sapaDist, String nextSapaName, String nextSapaDist) {
+        boolean hasFirst = sapaName != null && !sapaName.trim().isEmpty();
+        if (!hasFirst) {
+            if (layoutSapaGroup != null) {
+                layoutSapaGroup.setVisibility(View.GONE);
+            }
+            updateBottomContainerVisibility();
+            return;
+        }
+
+        if (layoutSapaGroup != null) {
+            layoutSapaGroup.setVisibility(View.VISIBLE);
+        }
+
+        if (tvSapaName1 != null) {
+            tvSapaName1.setText(sapaName);
+        }
+        if (tvSapaDist1 != null) {
+            tvSapaDist1.setText(sapaDist != null ? sapaDist : "");
+        }
+
+        boolean hasSecond = nextSapaName != null && !nextSapaName.trim().isEmpty();
+        View row2 = floatingView.findViewById(R.id.layout_sapa_row_2);
+        if (row2 != null) {
+            row2.setVisibility(hasSecond ? View.VISIBLE : View.GONE);
+        }
+        if (hasSecond) {
+            if (tvSapaName2 != null) {
+                tvSapaName2.setText(nextSapaName);
+            }
+            if (tvSapaDist2 != null) {
+                tvSapaDist2.setText(nextSapaDist != null ? nextSapaDist : "");
+            }
+        }
+        updateBottomContainerVisibility();
+    }
+
+    private void updateBottomContainerVisibility() {
+        if (layoutBottomContainer == null) return;
+        boolean bottomInfoVisible = layoutInfoBar != null && layoutInfoBar.getVisibility() == View.VISIBLE;
+        boolean sapaVisible = layoutSapaGroup != null && layoutSapaGroup.getVisibility() == View.VISIBLE;
+        if (bottomInfoVisible || sapaVisible) {
+            layoutBottomContainer.setVisibility(View.VISIBLE);
+        } else {
+            layoutBottomContainer.setVisibility(View.GONE);
         }
     }
 

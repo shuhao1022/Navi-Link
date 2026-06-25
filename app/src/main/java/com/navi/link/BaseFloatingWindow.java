@@ -62,6 +62,9 @@ public abstract class BaseFloatingWindow {
     // 更新TMC路况条
     public void updateTmcData(String tmcJson) {}
 
+    // 更新最近的两个服务区信息
+    public void updateSapaInfo(String sapaName, String sapaDist, String nextSapaName, String nextSapaDist) {}
+
     // ======================== 通用辅助方法 ========================
 
     protected boolean isDarkThemeColor(int color) {
