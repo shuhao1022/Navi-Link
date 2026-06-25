@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Navi-Link · 让导航无界连接</title>
+  <meta name="description" content="Navi-Link —— 车机导航悬浮窗助手。极简灵动岛、车道级引导、红绿灯倒计时，与高德地图无缝联动。" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%A7%AD%3C/text%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <!-- 流动光斑背景 -->
+  <div class="aurora">
+    <span class="blob blob-1"></span>
+    <span class="blob blob-2"></span>
+    <span class="blob blob-3"></span>
+    <span class="blob blob-4"></span>
+  </div>
+
+  <!-- 顶部玻璃导航 -->
+  <header class="glass-nav liquid" id="nav">
+    <a class="brand" href="#top">
+      <span class="brand-mark">🧭</span>
+      <span class="brand-name">Navi-Link</span>
+    </a>
+    <nav class="nav-links">
+      <a href="#features">特性</a>
+      <a href="#download">下载</a>
+      <a href="#release">更新</a>
+    </nav>
+    <a class="nav-cta" href="#download">立即获取</a>
+  </header>
+
+  <main id="top">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge glass-pill">
+        <span class="dot"></span>
+        <span id="hero-version-tag">正在获取最新版本…</span>
+      </div>
+      <h1 class="hero-title">
+        让导航<span class="grad-text">无界连接</span>
+      </h1>
+      <p class="hero-sub">
+        车机悬浮窗导航助手。灵动岛式极简界面、车道级引导、红绿灯倒计时，<br />
+        与高德地图无缝联动，把每一段旅程都映在眼前。
+      </p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" id="hero-download" href="#download">
+          <span class="btn-icon">⬇</span>
+          <span id="hero-download-text">下载最新版</span>
+        </a>
+        <a class="btn btn-ghost" href="#features">了解特性</a>
+      </div>
+
+      <!-- 设备预览玻璃卡 -->
+      <div class="hero-preview glass-card liquid">
+        <div class="preview-screen">
+          <div class="island">
+            <div class="island-turn">↰</div>
+            <div class="island-info">
+              <div class="island-road">中山北路</div>
+              <div class="island-dist">还有 <b>320</b> 米</div>
+            </div>
+            <div class="island-light">
+              <span class="light-num">12</span>
+            </div>
+          </div>
+          <div class="preview-lanes">
+            <span class="lane on">⬆</span>
+            <span class="lane">⬈</span>
+            <span class="lane">⬆</span>
+            <span class="lane on">↱</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 特性 -->
+    <section class="features" id="features">
+      <h2 class="section-title">为驾驶而生的细节</h2>
+      <div class="feature-grid">
+        <article class="glass-card feature">
+          <div class="feature-ico">🪟</div>
+          <h3>灵动岛悬浮窗</h3>
+          <p>极简、标准、完整三种样式，悬浮于任意车机界面之上，随心切换。</p>
+        </article>
+        <article class="glass-card feature">
+          <div class="feature-ico">🛣️</div>
+          <h3>车道级引导</h3>
+          <p>实时车道线渲染，清晰指示推荐车道，复杂路口也从容应对。</p>
+        </article>
+        <article class="glass-card feature">
+          <div class="feature-ico">🚦</div>
+          <h3>红绿灯倒计时</h3>
+          <p>路口信号灯读秒一目了然，起步停车更有底。</p>
+        </article>
+        <article class="glass-card feature">
+          <div class="feature-ico">📟</div>
+          <h3>仪表盘镜像</h3>
+          <p>可投射至副屏 / 仪表盘，导航信息与驾驶视线同在。</p>
+        </article>
+        <article class="glass-card feature">
+          <div class="feature-ico">⚡</div>
+          <h3>开机自启</h3>
+          <p>上车即用，连接电源自动唤起服务，无需手动开启。</p>
+        </article>
+        <article class="glass-card feature">
+          <div class="feature-ico">🎨</div>
+          <h3>主题随心</h3>
+          <p>多种主色调与背景透明度，融入你的座舱风格。</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- 下载 -->
+    <section class="download" id="download">
+      <div class="glass-card liquid download-card">
+        <h2 class="section-title">立即下载</h2>
+        <p class="download-meta" id="download-meta">正在获取最新版本信息…</p>
+        <a class="btn btn-primary btn-lg" id="download-btn" href="#" aria-disabled="true">
+          <span class="btn-icon">⬇</span>
+          <span id="download-btn-text">获取中…</span>
+        </a>
+        <div class="download-extra">
+          <span id="download-size"></span>
+          <span id="download-count"></span>
+        </div>
+        <p class="download-hint">下载完成后，在车机上安装即可。需开启「允许安装未知来源应用」。</p>
+      </div>
+    </section>
+
+    <!-- 最新发布 / 更新日志 -->
+    <section class="release" id="release">
+      <div class="release-head">
+        <h2 class="section-title">最新发布</h2>
+        <button class="btn btn-ghost btn-sync" id="sync-btn" title="强制从 GitHub 同步最新发布">
+          <span class="sync-icon">⟳</span>
+          <span id="sync-text">手动同步</span>
+        </button>
+      </div>
+      <div class="glass-card liquid release-card" id="release-card">
+        <div class="release-loading" id="release-loading">正在加载发布信息…</div>
+        <div class="release-content" id="release-content" hidden>
+          <div class="release-title-row">
+            <h3 id="release-title">—</h3>
+            <span class="release-date glass-pill" id="release-date"></span>
+          </div>
+          <div class="release-notes markdown" id="release-notes"></div>
+        </div>
+        <div class="release-error" id="release-error" hidden></div>
+      </div>
+      <p class="sync-status" id="sync-status"></p>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="brand-mark">🧭</span>
+      <span>Navi-Link</span>
+      <span class="footer-dot">·</span>
+      <span>让导航无界连接</span>
+    </div>
+    <p class="footer-copy">© <span id="year"></span> Navi-Link Project</p>
+  </footer>
+
+  <!-- 液态玻璃 SVG 折射滤镜：尺寸为 0 但仍在文档流中（不能 display:none，否则引用失效）。
+       仅 Chromium 内核 + 高端设备会通过 JS 门控启用（<html class="has-liquid"）；
+       Safari/Firefox 不支持 backdrop-filter:url()，自动退化为纯模糊。 -->
+  <svg width="0" height="0" aria-hidden="true"
+       style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <filter id="liquid-glass"
+              x="-25%" y="-25%" width="150%" height="150%"
+              filterUnits="objectBoundingBox"
+              color-interpolation-filters="sRGB">
+        <!-- 低频柔和噪声（玻璃用 fractalNoise） -->
+        <feTurbulence type="fractalNoise"
+                      baseFrequency="0.009 0.013"
+                      numOctaves="2"
+                      seed="9"
+                      stitchTiles="stitch"
+                      result="noise" />
+        <!-- 中性灰 #808080 = 通道值 0.5 = 零位移（中心保持清晰） -->
+        <feFlood flood-color="#808080" result="flat" />
+        <!-- 径向遮罩：中心黑（不动）、边缘白（强折射）。# 与 % 须编码为 %23 / %25 -->
+        <feImage result="edgeMask"
+          xlink:href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='200'><radialGradient id='r' cx='50%25' cy='50%25' r='60%25'><stop offset='42%25' stop-color='black'/><stop offset='100%25' stop-color='white'/></radialGradient><rect width='100%25' height='100%25' fill='url(%23r)'/></svg>" />
+        <!-- 边缘保留噪声、中心归零，合成「边缘强、中心弱」位移图 -->
+        <feComposite in="noise" in2="edgeMask" operator="in" result="edgeNoise" />
+        <feMerge result="dispMap">
+          <feMergeNode in="flat" />
+          <feMergeNode in="edgeNoise" />
+        </feMerge>
+        <!-- 折射：X 用 R 通道、Y 用 G 通道 -->
+        <feDisplacementMap in="SourceGraphic" in2="dispMap"
+                           scale="26"
+                           xChannelSelector="R" yChannelSelector="G"
+                           result="displaced" />
+        <!-- 折射后补一点磨砂，统一质感 -->
+        <feGaussianBlur in="displaced" stdDeviation="0.5" />
+      </filter>
+    </defs>
+  </svg>
+
+  <script src="/app.js"></script>
+</body>
+</html>

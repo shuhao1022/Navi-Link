@@ -1,0 +1,23 @@
+[Unit]
+Description=Navi-Link 官网与 Release 更新 API 服务
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 按实际部署路径修改
+WorkingDirectory=/opt/navi-link/server
+ExecStart=/usr/bin/node server.js
+Restart=on-failure
+RestartSec=5
+# 通过 .env 读取配置；也可在此用 Environment= 覆盖
+# Environment=PORT=3000
+# Environment=GITHUB_TOKEN=ghp_xxx
+User=pi
+Group=pi
+# 安全加固
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

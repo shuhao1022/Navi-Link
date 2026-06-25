@@ -917,6 +917,60 @@
                             </HorizontalScrollView>
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
+
+                    <!-- 关于 / 检查更新 -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:id="@+id/card_check_update"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        app:cardBackgroundColor="#FF1E1E1E"
+                        app:cardCornerRadius="16dp"
+                        app:cardElevation="0dp"
+                        app:strokeWidth="0dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:foreground="?android:attr/selectableItemBackground">
+
+                        <LinearLayout
+                            android:orientation="horizontal"
+                            android:gravity="center_vertical"
+                            android:paddingHorizontal="16dp"
+                            android:paddingVertical="16dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1">
+
+                                <TextView
+                                    android:text="检查更新"
+                                    android:textSize="15sp"
+                                    android:textColor="#FFFFFFFF"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+
+                                <TextView
+                                    android:id="@+id/tv_version_status"
+                                    android:text="当前版本"
+                                    android:textSize="12sp"
+                                    android:textColor="#FF888888"
+                                    android:layout_marginTop="2dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+                            </LinearLayout>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="›"
+                                android:textSize="22sp"
+                                android:textColor="#FF666666" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
             </ScrollView>
 

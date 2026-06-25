@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- APK 下载到 cacheDir/apk 下，通过 FileProvider 暴露给安装器 -->
+    <cache-path
+        name="apk_cache"
+        path="apk/" />
+    <external-cache-path
+        name="apk_external_cache"
+        path="apk/" />
+</paths>
