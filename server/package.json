@@ -1,0 +1,15 @@
+{
+  "name": "navi-link-server",
+  "version": "1.0.0",
+  "description": "Navi-Link 官网与 Release 更新 API 服务（树莓派部署）",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}

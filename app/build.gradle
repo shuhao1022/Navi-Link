@@ -14,12 +14,46 @@ android {
         versionName "2.5.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // 更新服务地址。App 通过该服务（部署于自有服务器）获取版本信息与下载安装包，
+        // 由服务器缓存 GitHub 数据，客户端无需直连 GitHub。
+        // 仅作编译期常量，不在界面显示。可被 gradle 属性/环境变量覆盖。
+        def updateBaseUrl = (project.findProperty('NAVI_UPDATE_BASE_URL')
+                ?: System.getenv('NAVI_UPDATE_BASE_URL')) ?: 'https://navi-link.zuoqirun.top'
+        buildConfigField "String", "UPDATE_BASE_URL", "\"${updateBaseUrl}\""
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    // 签名配置：优先读取环境变量 / Gradle 属性（供 CI 使用），
+    // 本地未配置时回退到仓库内的 navi.jks（仅用于本地调试构建）。
+    signingConfigs {
+        release {
+            def storeFilePath = (project.findProperty('NAVI_STORE_FILE') ?: System.getenv('NAVI_STORE_FILE')) ?: '../navi.jks'
+            def storePass = (project.findProperty('NAVI_STORE_PASSWORD') ?: System.getenv('NAVI_STORE_PASSWORD')) ?: ''
+            def keyAliasProp = (project.findProperty('NAVI_KEY_ALIAS') ?: System.getenv('NAVI_KEY_ALIAS')) ?: ''
+            def keyPass = (project.findProperty('NAVI_KEY_PASSWORD') ?: System.getenv('NAVI_KEY_PASSWORD')) ?: ''
+            def f = file(storeFilePath)
+            if (f.exists() && !storePass.isEmpty() && !keyAliasProp.isEmpty()) {
+                storeFile f
+                storePassword storePass
+                keyAlias keyAliasProp
+                keyPassword keyPass
+            }
+        }
     }
 
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            // 仅当签名信息齐全时启用签名，否则走默认（debug 或未签名），避免本地构建失败
+            def rel = signingConfigs.release
+            if (rel.storeFile != null && rel.storePassword != null && rel.keyAlias != null) {
+                signingConfig rel
+            }
         }
     }
     compileOptions {

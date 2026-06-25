@@ -245,9 +245,64 @@ public class MainActivity extends AppCompatActivity {
         loadPreferences();
         setupListeners();
         updateStatusText();
+        setupUpdateEntry();
         if (savedInstanceState == null) {
             checkPermissionAndStart();
+            // 启动时静默检查更新（仅在有新版本时弹窗）
+            UpdateChecker.checkForUpdate(BuildConfig.VERSION_NAME, false, updateCallback(false));
         }
+    }
+
+    // ── 应用内更新 ──────────────────────────────────────────────
+    private TextView tvVersionStatus;
+
+    /** 绑定"检查更新"入口卡片，展示当前版本，点击手动检查。 */
+    private void setupUpdateEntry() {
+        tvVersionStatus = findViewById(R.id.tv_version_status);
+        if (tvVersionStatus != null) {
+            tvVersionStatus.setText("当前版本 v" + BuildConfig.VERSION_NAME);
+        }
+        View card = findViewById(R.id.card_check_update);
+        if (card != null) {
+            card.setOnClickListener(v -> {
+                if (tvVersionStatus != null) tvVersionStatus.setText("正在检查更新…");
+                UpdateChecker.checkForUpdate(BuildConfig.VERSION_NAME, true, updateCallback(true));
+            });
+        }
+    }
+
+    /** 构造更新检查回调。manual=true 时，"已最新/失败"也会给出提示。 */
+    private UpdateChecker.Callback updateCallback(boolean manual) {
+        return new UpdateChecker.Callback() {
+            @Override
+            public void onUpdateAvailable(UpdateChecker.UpdateInfo info) {
+                if (isFinishing() || isDestroyed()) return;
+                if (tvVersionStatus != null) {
+                    tvVersionStatus.setText("发现新版本 v" + info.versionName);
+                }
+                UpdateDialog.show(MainActivity.this, BuildConfig.VERSION_NAME, info);
+            }
+
+            @Override
+            public void onNoUpdate(boolean manual) {
+                if (tvVersionStatus != null) {
+                    tvVersionStatus.setText("当前版本 v" + BuildConfig.VERSION_NAME + "（已是最新）");
+                }
+                if (manual) {
+                    Toast.makeText(MainActivity.this, "已是最新版本", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onError(String message, boolean manual) {
+                if (tvVersionStatus != null) {
+                    tvVersionStatus.setText("当前版本 v" + BuildConfig.VERSION_NAME);
+                }
+                if (manual) {
+                    Toast.makeText(MainActivity.this, "检查更新失败：" + message, Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
     }
 
     private void initViews() {
