@@ -197,6 +197,9 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             tvLightTime.setText(String.valueOf(countdown));
         }
 
+        // 应用红绿灯填充背景样式
+        applyTrafficLightStyle(llTrafficLightGroup, ivLightIcon, status, true);
+
         if (countdown <= 5) {
             ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroup.getTag();
             if (animator == null) {

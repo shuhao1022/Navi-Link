@@ -212,6 +212,9 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         if (lightArrow != null) lightArrow.setImageResource(getCruiseLightDirRes(dir));
         if (lightTime != null) lightTime.setText(String.valueOf(countdown));
 
+        // 应用红绿灯填充背景样式（巡航模式）
+        applyTrafficLightStyle(view, lightIcon, status, false);
+
         if (countdown > 0) {
             view.setVisibility(View.VISIBLE);
             if (countdown <= 5) {

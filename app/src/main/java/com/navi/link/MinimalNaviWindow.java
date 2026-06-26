@@ -213,6 +213,9 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             tvLightTimeMin.setText(String.valueOf(countdown));
         }
 
+        // 应用红绿灯填充背景样式
+        applyTrafficLightStyle(llTrafficLightGroupMin, ivLightIconMin, status, true);
+
         if (countdown <= 5) {
             ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupMin.getTag();
             if (animator == null) {

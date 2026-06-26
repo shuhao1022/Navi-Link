@@ -104,6 +104,7 @@ public class FloatingWindowManager {
     private int naturalHeight;
     private int savedPosX = -1;
     private int savedPosY = -1;
+    private boolean isAutoCenteringEnabled = false;
 
     private boolean shouldHideAfterRecreate = false;
     private boolean isWindowVisible = true;
@@ -199,6 +200,12 @@ public class FloatingWindowManager {
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         clusterSavedPosX = sp.getInt("cluster_window_pos_x", -1);
         clusterSavedPosY = sp.getInt("cluster_window_pos_y", -1);
+        isAutoCenteringEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
+    }
+
+    public void setAutoCenteringEnabled(boolean enabled) {
+        this.isAutoCenteringEnabled = enabled;
+        remeasureWindow();
     }
 
     /** 当前模式对应的缩放索引: 常规/常规巡航=0, 灵动岛/灵动岛巡航=1, 全数据=2 */
@@ -532,7 +539,10 @@ public class FloatingWindowManager {
         int viewWidth = naturalWidth;
         int viewHeight = naturalHeight;
 
-        if (savedPosX >= 0 && savedPosY >= 0) {
+        if (isAutoCenteringEnabled) {
+            layoutParams.x = (screenWidth - viewWidth) / 2;
+            layoutParams.y = (savedPosY >= 0) ? Math.max(0, Math.min(savedPosY, screenHeight - Math.max(viewHeight, 1))) : dpToPx(80);
+        } else if (savedPosX >= 0 && savedPosY >= 0) {
             // 有保存的位置，恢复它
             layoutParams.x = Math.max(0, Math.min(savedPosX, screenWidth - Math.max(viewWidth, 1)));
             layoutParams.y = Math.max(0, Math.min(savedPosY, screenHeight - Math.max(viewHeight, 1)));
@@ -985,7 +995,12 @@ public class FloatingWindowManager {
                         handler.removeCallbacks(longPressCheck);
                     }
                     if (isDragging && !isPositionLocked) {
-                        layoutParams.x = initialWindowX + (int) dx;
+                        if (isAutoCenteringEnabled) {
+                            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+                            layoutParams.x = (screenWidth - naturalWidth) / 2;
+                        } else {
+                            layoutParams.x = initialWindowX + (int) dx;
+                        }
                         layoutParams.y = initialWindowY + (int) dy;
                         try {
                             windowManager.updateViewLayout(floatingView, layoutParams);
@@ -1084,8 +1099,14 @@ public class FloatingWindowManager {
     private void remeasureWindow() {
         if (floatingView != null && layoutParams != null) {
             measureNaturalSize();
-            layoutParams.width = naturalWidth;
-            layoutParams.height = naturalHeight;
+            int newWidth = naturalWidth;
+            int newHeight = naturalHeight;
+            if (isAutoCenteringEnabled) {
+                int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+                layoutParams.x = (screenWidth - newWidth) / 2;
+            }
+            layoutParams.width = newWidth;
+            layoutParams.height = newHeight;
             try {
                 windowManager.updateViewLayout(floatingView, layoutParams);
             } catch (Exception ignored) {
@@ -1236,11 +1257,11 @@ public class FloatingWindowManager {
         int correctedX = Math.max(0, Math.min(layoutParams.x, screenWidth - viewWidth));
         int correctedY = Math.max(0, Math.min(layoutParams.y, screenHeight - viewHeight));
         
-        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
-                .edit()
-                .putInt("window_pos_x", correctedX)
-                .putInt("window_pos_y", correctedY)
-                .apply();
+        SharedPreferences.Editor editor = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE).edit();
+        if (!isAutoCenteringEnabled) {
+            editor.putInt("window_pos_x", correctedX);
+        }
+        editor.putInt("window_pos_y", correctedY).apply();
     }
 
     // ======================== 副屏投屏支持 (Cluster Mirror) ========================

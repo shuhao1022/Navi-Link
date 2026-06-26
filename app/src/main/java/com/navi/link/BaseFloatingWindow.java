@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.widget.ImageView;
 import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
@@ -172,6 +173,76 @@ public abstract class BaseFloatingWindow {
     }
 
     public void updateCruiseTrafficLights(JSONArray lightsArray) {}
+
+    // ======================== 红绿灯填充背景样式 ========================
+
+    // 与 ic_traffic_light_red/green/yellow 资源颜色一致
+    private static final int TL_FILL_COLOR_RED = 0xFFFF3333;
+    private static final int TL_FILL_COLOR_YELLOW = 0xFFCC9900;
+    private static final int TL_FILL_COLOR_GREEN = 0xFF34C759;
+
+    /**
+     * 获取红绿灯填充背景颜色
+     * @param status 灯状态码
+     * @param isNavi true=导航模式, false=巡航模式
+     */
+    protected int getTrafficLightFillColor(int status, boolean isNavi) {
+        if (isNavi) {
+            // 导航：status=4绿, 1红, else黄
+            if (status == 4) return TL_FILL_COLOR_GREEN;
+            if (status == 1) return TL_FILL_COLOR_RED;
+            return TL_FILL_COLOR_YELLOW;
+        } else {
+            // 巡航：status=1绿, 0红, else黄
+            if (status == 1) return TL_FILL_COLOR_GREEN;
+            if (status == 0) return TL_FILL_COLOR_RED;
+            return TL_FILL_COLOR_YELLOW;
+        }
+    }
+
+    /**
+     * 检查是否启用了红绿灯胶囊填充背景样式
+     */
+    protected boolean isTrafficLightFillEnabled() {
+        return sp.getBoolean("traffic_light_fill_enabled", false);
+    }
+
+    /**
+     * 应用红绿灯填充背景样式（胶囊背景色跟随灯颜色）
+     * 新样式：胶囊背景填充灯色，隐藏左侧红绿灯图标
+     * 旧样式：深蓝背景+白色描边，显示红绿灯图标
+     * @param capsuleView 胶囊容器
+     * @param lightIcon 红绿灯圆形图标（新样式下隐藏）
+     * @param status 红绿灯状态码
+     * @param isNavi 是否为导航模式
+     */
+    protected void applyTrafficLightStyle(View capsuleView, ImageView lightIcon, int status, boolean isNavi) {
+        if (capsuleView == null) return;
+
+        if (isTrafficLightFillEnabled()) {
+            int fillColor = getTrafficLightFillColor(status, isNavi);
+            float density = context.getResources().getDisplayMetrics().density;
+
+            // 获取当前缩放值，使圆角和描边与缩放匹配
+            float currentScale = 1.0f;
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                currentScale = fwm.getScale();
+            }
+
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            drawable.setColor(fillColor);
+            drawable.setCornerRadius(30 * density * currentScale);
+            drawable.setStroke((int) (2 * density * currentScale + 0.5f), 0xFFFFFFFF);
+            capsuleView.setBackground(drawable);
+
+            if (lightIcon != null) lightIcon.setVisibility(View.GONE);
+        } else {
+            capsuleView.setBackgroundResource(R.drawable.bg_traffic_light_capsule);
+            if (lightIcon != null) lightIcon.setVisibility(View.VISIBLE);
+        }
+    }
 
     protected void scaleViewRecursive(View view, float factor) {
         if (view instanceof TextView) {

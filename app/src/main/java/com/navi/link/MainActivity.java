@@ -117,6 +117,8 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalCameraEnabled;
     private TextView tvMinimalCameraStatus;
     private MaterialCardView cardMinimalCameraToggle;
+    private MaterialCardView cardMinimalAutocenterToggle;
+    private SwitchCompat cbMinimalAutocenterEnabled;
     private MaterialCardView cardClusterMirrorToggle;
     private SwitchCompat cbClusterMirrorEnabled;
     private TextView tvClusterMirrorStatus;
@@ -162,6 +164,12 @@ public class MainActivity extends AppCompatActivity {
     private MaterialCardView cardAutoStartToggle;
     private SwitchCompat cbAutoStartEnabled;
     private TextView tvAutoStartStatus;
+
+    // 红绿灯填充背景样式
+    private MaterialCardView cardTrafficLightFillToggle;
+    private SwitchCompat cbTrafficLightFillEnabled;
+    private TextView tvTrafficLightFillStatus;
+    private boolean isTrafficLightFillEnabled = false;
 
     // Menu elements
     private MaterialCardView menuSystemAppearance;
@@ -230,6 +238,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isMinimalSpeedEnabled = true;
     private boolean isMinimalLightCountEnabled = false;
     private boolean isMinimalAccentNaviInfoEnabled = false;
+    private boolean isMinimalAutocenterEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -346,6 +355,8 @@ public class MainActivity extends AppCompatActivity {
         cbMinimalCameraEnabled = findViewById(R.id.cb_minimal_camera_enabled);
         tvMinimalCameraStatus = findViewById(R.id.tv_minimal_camera_status);
         cardMinimalCameraToggle = findViewById(R.id.card_minimal_camera_toggle);
+        cardMinimalAutocenterToggle = findViewById(R.id.card_minimal_autocenter_toggle);
+        cbMinimalAutocenterEnabled = findViewById(R.id.cb_minimal_autocenter_enabled);
         cbClusterMirrorEnabled = findViewById(R.id.cb_cluster_mirror_enabled);
         tvClusterMirrorStatus = findViewById(R.id.tv_cluster_mirror_status);
         cardClusterMirrorToggle = findViewById(R.id.card_cluster_mirror_toggle);
@@ -358,6 +369,9 @@ public class MainActivity extends AppCompatActivity {
         cardAutoStartToggle = findViewById(R.id.card_auto_start_toggle);
         cbAutoStartEnabled = findViewById(R.id.cb_auto_start_enabled);
         tvAutoStartStatus = findViewById(R.id.tv_auto_start_status);
+        cardTrafficLightFillToggle = findViewById(R.id.card_traffic_light_fill_toggle);
+        cbTrafficLightFillEnabled = findViewById(R.id.cb_traffic_light_fill_enabled);
+        tvTrafficLightFillStatus = findViewById(R.id.tv_traffic_light_fill_status);
         llThemeColors = findViewById(R.id.ll_theme_colors);
         tvSys = findViewById(R.id.tv_sys);
         tvStyle = findViewById(R.id.tv_style);
@@ -480,6 +494,7 @@ public class MainActivity extends AppCompatActivity {
         isMinimalSpeedEnabled = sp.getBoolean("minimal_speed_enabled", true);
         isMinimalLightCountEnabled = sp.getBoolean("minimal_light_count_enabled", false);
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        isMinimalAutocenterEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
@@ -487,6 +502,7 @@ public class MainActivity extends AppCompatActivity {
         normalTmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
         normalBottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
         minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
+        isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
  
         updateSeekBarToCurrentScale();
         
@@ -513,6 +529,9 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvMinimalCameraStatus != null) {
             tvMinimalCameraStatus.setText(isMinimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
+        }
+        if (cbMinimalAutocenterEnabled != null) {
+            cbMinimalAutocenterEnabled.setChecked(isMinimalAutocenterEnabled);
         }
         if (cbMinimalRoadNameEnabled != null) {
             cbMinimalRoadNameEnabled.setChecked(isMinimalRoadNameEnabled);
@@ -555,6 +574,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvAutoStartStatus != null) {
             tvAutoStartStatus.setText(autoStartEnabled ? "已启用开机自启（如未生效，请在车机设置中允许本应用的自启动权限）" : "已关闭开机自启功能");
+        }
+        if (cbTrafficLightFillEnabled != null) {
+            cbTrafficLightFillEnabled.setChecked(isTrafficLightFillEnabled);
+        }
+        if (tvTrafficLightFillStatus != null) {
+            tvTrafficLightFillStatus.setText(isTrafficLightFillEnabled ? "红绿灯胶囊背景已填充灯色" : "深蓝胶囊背景");
         }
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
@@ -756,6 +781,7 @@ public class MainActivity extends AppCompatActivity {
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
                 .putBoolean("auto_start", autoStartEnabled)
+                .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
                 .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled);
@@ -765,6 +791,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("minimal_speed_enabled", isMinimalSpeedEnabled);
         editor.putBoolean("minimal_light_count_enabled", isMinimalLightCountEnabled);
         editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
+        editor.putBoolean("minimal_autocenter_enabled", isMinimalAutocenterEnabled);
         editor.apply();
     }
 
@@ -861,9 +888,11 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbAvoidForegroundEnabled, accentColor);
         updateSwitchTheme(cbOverspeedWarningEnabled, accentColor);
         updateSwitchTheme(cbMinimalCameraEnabled, accentColor);
+        updateSwitchTheme(cbMinimalAutocenterEnabled, accentColor);
         updateSwitchTheme(cbClusterMirrorEnabled, accentColor);
         updateSwitchTheme(cbHideMainWhenClusterActive, accentColor);
         updateSwitchTheme(cbAutoStartEnabled, accentColor);
+        updateSwitchTheme(cbTrafficLightFillEnabled, accentColor);
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
@@ -1137,6 +1166,28 @@ public class MainActivity extends AppCompatActivity {
             cardAutoStartToggle.setOnClickListener(v -> cbAutoStartEnabled.toggle());
         }
 
+        // 红绿灯填充背景样式开关
+        if (cbTrafficLightFillEnabled != null) {
+            cbTrafficLightFillEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrafficLightFillEnabled = isChecked;
+                savePreferences();
+                if (tvTrafficLightFillStatus != null) {
+                    tvTrafficLightFillStatus.setText(isChecked ? "红绿灯胶囊背景已填充灯色" : "深蓝胶囊背景");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardTrafficLightFillToggle != null) {
+            cardTrafficLightFillToggle.setOnClickListener(v -> {
+                if (cbTrafficLightFillEnabled != null) {
+                    cbTrafficLightFillEnabled.toggle();
+                }
+            });
+        }
+
         if (cardClusterDisplaySelect != null) {
             cardClusterDisplaySelect.setOnClickListener(v -> showClusterDisplaySelectionDialog());
         }
@@ -1338,6 +1389,24 @@ public class MainActivity extends AppCompatActivity {
             cardMinimalAccentNaviInfoToggle.setOnClickListener(v -> {
                 if (cbMinimalAccentNaviInfoEnabled != null) {
                     cbMinimalAccentNaviInfoEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalAutocenterEnabled != null) {
+            cbMinimalAutocenterEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalAutocenterEnabled = isChecked;
+                savePreferences();
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.setAutoCenteringEnabled(isChecked);
+                }
+            });
+        }
+        if (cardMinimalAutocenterToggle != null) {
+            cardMinimalAutocenterToggle.setOnClickListener(v -> {
+                if (cbMinimalAutocenterEnabled != null) {
+                    cbMinimalAutocenterEnabled.toggle();
                 }
             });
         }

@@ -244,6 +244,9 @@ public class FullNaviWindow extends BaseFloatingWindow {
             tvLightTimeFull.setText(String.valueOf(countdown));
         }
 
+        // 应用红绿灯填充背景样式
+        applyTrafficLightStyle(llTrafficLightGroupFull, ivLightIconFull, status, true);
+
         if (countdown <= 5) {
             ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupFull.getTag();
             if (animator == null) {
