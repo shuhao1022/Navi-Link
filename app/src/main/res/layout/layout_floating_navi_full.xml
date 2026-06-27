@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:ellipsize="marquee"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:maxWidth="200dp"
                 android:text="居里夫人大道"
                 android:textColor="#FFFFFF"

@@ -6,13 +6,14 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
+import androidx.annotation.RequiresApi;
 
 public class AutoMapService extends Service {
 
@@ -49,11 +50,8 @@ public class AutoMapService extends Service {
 
         amapNaviReceiver = new AmapNaviReceiver();
         IntentFilter filter = new IntentFilter("AUTONAVI_STANDARD_BROADCAST_SEND");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(amapNaviReceiver, filter, Context.RECEIVER_EXPORTED);
-        } else {
-            registerReceiver(amapNaviReceiver, filter);
-        }
+        ContextCompat.registerReceiver(this, amapNaviReceiver, filter,
+                ContextCompat.RECEIVER_EXPORTED);
 
         // App启动时主动询问高德当前昼夜模式
         requestAmapDayNightState();
@@ -93,9 +91,19 @@ public class AutoMapService extends Service {
 
     private void createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, "悬浮窗导航", NotificationManager.IMPORTANCE_LOW);
+            Api26Impl.createNotificationChannel(this);
+        }
+    }
+
+    private static final class Api26Impl {
+        private Api26Impl() {}
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        static void createNotificationChannel(Service service) {
+            NotificationChannel channel = new NotificationChannel(
+                    CHANNEL_ID, "悬浮窗导航", NotificationManager.IMPORTANCE_LOW);
             channel.setDescription("悬浮窗导航服务运行中");
-            NotificationManager manager = getSystemService(NotificationManager.class);
+            NotificationManager manager = service.getSystemService(NotificationManager.class);
             if (manager != null) {
                 manager.createNotificationChannel(channel);
             }
@@ -103,13 +111,17 @@ public class AutoMapService extends Service {
     }
 
     private Notification buildNotification() {
+        int pendingIntentFlags = PendingIntent.FLAG_UPDATE_CURRENT;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            pendingIntentFlags |= PendingIntent.FLAG_IMMUTABLE;
+        }
         return new NotificationCompat.Builder(this, CHANNEL_ID)
                 .setContentTitle("Navi-Link")
                 .setContentText("悬浮窗导航运行中")
                 .setSmallIcon(R.drawable.ic_notification)
                 .setContentIntent(PendingIntent.getActivity(this, 0,
                         new Intent(this, MainActivity.class),
-                        PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
+                        pendingIntentFlags))
                 .setOngoing(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
                 .build();

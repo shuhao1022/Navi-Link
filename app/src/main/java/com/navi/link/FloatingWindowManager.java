@@ -4,7 +4,6 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -22,6 +21,8 @@ import android.widget.Toast;
 import android.hardware.display.DisplayManager;
 import android.view.Display;
 import android.util.Log;
+
+import androidx.core.view.ViewCompat;
 
 import org.json.JSONArray;
 
@@ -472,7 +473,7 @@ public class FloatingWindowManager {
                 savedPosY = layoutParams.y;
             }
             try {
-                if (floatingView.isAttachedToWindow()) {
+                if (ViewCompat.isAttachedToWindow(floatingView)) {
                     windowManager.removeView(floatingView);
                 }
             } catch (Exception ignored) {
@@ -710,26 +711,7 @@ public class FloatingWindowManager {
                 Math.round(view.getPaddingBottom() * factor));
 
         // 缩放背景 drawable 圆角 (getCornerRadius/getCornerRadii 均为 API 24+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Drawable bg = view.getBackground();
-            if (bg instanceof GradientDrawable) {
-                GradientDrawable gd = (GradientDrawable) bg.mutate();
-                float r = gd.getCornerRadius();
-                if (r > 0) {
-                    gd.setCornerRadius(r * factor);
-                } else {
-                    try {
-                        float[] radii = gd.getCornerRadii();
-                        if (radii != null) {
-                            for (int i = 0; i < radii.length; i++) radii[i] *= factor;
-                            gd.setCornerRadii(radii);
-                        }
-                    } catch (Exception e) {
-                        // Ignore NPE from some Android versions when radii array is null
-                    }
-                }
-            }
-        }
+        PlatformCompat.scaleGradientCorners(view.getBackground(), factor);
 
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp != null) {
@@ -1434,7 +1416,8 @@ public class FloatingWindowManager {
     private void dismissClusterMirror() {
         if (clusterFloatingView != null && clusterWindowManager != null) {
             try {
-                if (clusterFloatingView.isAttachedToWindow() || clusterFloatingView.getParent() != null) {
+                if (ViewCompat.isAttachedToWindow(clusterFloatingView)
+                        || clusterFloatingView.getParent() != null) {
                     clusterWindowManager.removeView(clusterFloatingView);
                 }
             } catch (Exception ignored) {}

@@ -73,7 +73,9 @@ public final class ApkDownloader {
                     return;
                 }
 
-                final long total = conn.getContentLengthLong();
+                // getContentLengthLong() was added in API 24. APK files are far
+                // below the legacy int limit, so this API 1 method is sufficient.
+                final long total = conn.getContentLength();
                 long downloaded = 0;
                 long lastPosted = 0;
 
@@ -117,7 +119,7 @@ public final class ApkDownloader {
         String current = urlStr;
         for (int i = 0; i <= MAX_REDIRECTS; i++) {
             URL url = new URL(current);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+            HttpURLConnection conn = NetworkCompat.open(url);
             conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
             conn.setReadTimeout(READ_TIMEOUT_MS);
             conn.setInstanceFollowRedirects(false);

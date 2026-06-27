@@ -43,6 +43,8 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
+import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.widget.CompoundButtonCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
@@ -887,17 +889,19 @@ public class MainActivity extends AppCompatActivity {
         updateBackgroundModeSelection();
 
         // 单选按钮（RadioButton）的着色
-        if (rbStartAmap != null) rbStartAmap.setButtonTintList(accentColorStateList);
+        if (rbStartAmap != null) {
+            CompoundButtonCompat.setButtonTintList(rbStartAmap, accentColorStateList);
+        }
 
         // 更新单选按钮（RadioButton）的着色
-        rbNormal.setButtonTintList(accentColorStateList);
-        rbMinimal.setButtonTintList(accentColorStateList);
-        rbFull.setButtonTintList(accentColorStateList);
-        rbServiceOnly.setButtonTintList(accentColorStateList);
-        rbNormalStart.setButtonTintList(accentColorStateList);
-        rbBgDark.setButtonTintList(accentColorStateList);
-        rbBgSemi.setButtonTintList(accentColorStateList);
-        rbBgTransparent.setButtonTintList(accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbNormal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbMinimal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbFull, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbServiceOnly, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbNormalStart, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgDark, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgSemi, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgTransparent, accentColorStateList);
 
         // 更新开关（SwitchCompat）的主题颜色
         updateSwitchTheme(cbCruiseEnabled, accentColor);
@@ -921,8 +925,18 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
-        sbScale.setProgressTintList(accentColorStateList);
-        sbScale.setThumbTintList(accentColorStateList);
+        if (sbScale.getProgressDrawable() != null) {
+            android.graphics.drawable.Drawable progressDrawable =
+                    DrawableCompat.wrap(sbScale.getProgressDrawable().mutate());
+            DrawableCompat.setTint(progressDrawable, accentColor);
+            sbScale.setProgressDrawable(progressDrawable);
+        }
+        if (sbScale.getThumb() != null) {
+            android.graphics.drawable.Drawable thumbDrawable =
+                    DrawableCompat.wrap(sbScale.getThumb().mutate());
+            DrawableCompat.setTintList(thumbDrawable, accentColorStateList);
+            sbScale.setThumb(thumbDrawable);
+        }
         tvScaleValue.setTextColor(accentColor);
 
         tvStyle.setTextColor(accentColor);
@@ -1525,19 +1539,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissionAndStart() {
-        if (!Settings.canDrawOverlays(this)) {
+        if (!OverlayPermissionCompat.canDrawOverlays(this)) {
             tvStatus.setText("需要悬浮窗权限");
             try {
                 startActivityForResult(
                         new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName())), 100);
+                                Uri.parse("package:" + getPackageName())),
+                        REQUEST_OVERLAY_PERMISSION);
             } catch (android.content.ActivityNotFoundException e) {
                 // 车机系统可能被阉割了原生的悬浮窗权限界面，尝试跳转到应用详情页
                 Toast.makeText(this, "由于车机系统限制，请在系统设置中手动开启悬浮窗权限", Toast.LENGTH_LONG).show();
                 try {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.setData(Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(intent, 100);
+                    startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
                 } catch (Exception ex) {
                     Toast.makeText(this, "无法打开设置页面，请前往系统设置授权", Toast.LENGTH_LONG).show();
                 }
@@ -1550,18 +1565,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && Settings.canDrawOverlays(this)) {
+        if (requestCode == REQUEST_OVERLAY_PERMISSION
+                && OverlayPermissionCompat.canDrawOverlays(this)) {
             startFloatingService();
         }
     }
 
     private void startFloatingService() {
-        Intent intent = new Intent(this, AutoMapService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+        PlatformCompat.startService(this, new Intent(this, AutoMapService.class));
         updateStatusText();
         scheduleStatusRefresh();
     }
@@ -1790,9 +1801,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             java.io.File path = android.os.Environment.getDataDirectory();
             android.os.StatFs stat = new android.os.StatFs(path.getPath());
-            long blockSize = stat.getBlockSizeLong();
-            long totalBlocks = stat.getBlockCountLong();
-            long availableBlocks = stat.getAvailableBlocksLong();
+            long[] storageStats = PlatformCompat.getStorageStats(stat);
+            long blockSize = storageStats[0];
+            long totalBlocks = storageStats[1];
+            long availableBlocks = storageStats[2];
             long totalRom = totalBlocks * blockSize;
             long availRom = availableBlocks * blockSize;
             return formatByteSize(availRom) + " 可用 / 共 " + formatByteSize(totalRom);

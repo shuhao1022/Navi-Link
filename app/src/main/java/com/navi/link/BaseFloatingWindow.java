@@ -2,9 +2,6 @@ package com.navi.link;
 
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.GradientDrawable;
-import android.os.Build;
 import android.util.TypedValue;
 import android.view.View;
 import android.view.ViewGroup;
@@ -185,22 +182,7 @@ public abstract class BaseFloatingWindow {
                 Math.round(view.getPaddingRight() * factor),
                 Math.round(view.getPaddingBottom() * factor));
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Drawable bg = view.getBackground();
-            if (bg instanceof GradientDrawable) {
-                GradientDrawable gd = (GradientDrawable) bg.mutate();
-                float r = gd.getCornerRadius();
-                if (r > 0) {
-                    gd.setCornerRadius(r * factor);
-                } else {
-                    float[] radii = gd.getCornerRadii();
-                    if (radii != null) {
-                        for (int i = 0; i < radii.length; i++) radii[i] *= factor;
-                        gd.setCornerRadii(radii);
-                    }
-                }
-            }
-        }
+        PlatformCompat.scaleGradientCorners(view.getBackground(), factor);
 
         int minH = view.getMinimumHeight();
         if (minH > 0) view.setMinimumHeight(Math.round(minH * factor));

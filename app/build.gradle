@@ -8,7 +8,9 @@ android {
 
     defaultConfig {
         applicationId "com.navi.link"
-        minSdk 21
+        // Android 4.2 (API 17) and above. Keep newer platform APIs behind
+        // explicit SDK checks so the same APK remains usable on legacy head units.
+        minSdk 17
         targetSdk 34
         versionCode 257
         versionName "2.5.7"

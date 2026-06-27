@@ -2,9 +2,7 @@ package com.navi.link;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +42,7 @@ public class RouterActivity extends AppCompatActivity {
      * 「只启动服务」模式：有权限时根据服务状态启动或提示；无权限时跳转配置页
      */
     private void handleServiceOnlyMode() {
-        if (!Settings.canDrawOverlays(this)) {
+        if (!OverlayPermissionCompat.canDrawOverlays(this)) {
             startMainActivity();
             return;
         }
@@ -60,7 +58,7 @@ public class RouterActivity extends AppCompatActivity {
     }
 
     private void handleStartAmapMode(SharedPreferences sp) {
-        if (!Settings.canDrawOverlays(this)) {
+        if (!OverlayPermissionCompat.canDrawOverlays(this)) {
             startMainActivity();
             return;
         }
@@ -92,11 +90,6 @@ public class RouterActivity extends AppCompatActivity {
     }
 
     private void startAutoMapService() {
-        Intent intent = new Intent(this, AutoMapService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+        PlatformCompat.startService(this, new Intent(this, AutoMapService.class));
     }
 }

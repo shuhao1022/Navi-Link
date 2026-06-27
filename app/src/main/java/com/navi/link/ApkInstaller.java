@@ -10,6 +10,7 @@ import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 
 import java.io.File;
@@ -51,7 +52,8 @@ public final class ApkInstaller {
         }
 
         // 1) 系统 PackageInstaller
-        if (tryPackageInstaller(context, apkFile)) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
+                && Api21Installer.install(context, apkFile)) {
             Log.i(TAG, "使用 PackageInstaller 安装");
             return;
         }
@@ -72,47 +74,52 @@ public final class ApkInstaller {
     }
 
     // ── 1) PackageInstaller ─────────────────────────────────────
-    private static boolean tryPackageInstaller(Context context, File apkFile) {
-        PackageInstaller.Session session = null;
-        try {
-            PackageInstaller installer = context.getPackageManager().getPackageInstaller();
-            PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
-                    PackageInstaller.SessionParams.MODE_FULL_INSTALL);
+    private static final class Api21Installer {
+        private Api21Installer() {}
 
-            int sessionId = installer.createSession(params);
-            session = installer.openSession(sessionId);
+        @RequiresApi(Build.VERSION_CODES.LOLLIPOP)
+        static boolean install(Context context, File apkFile) {
+            PackageInstaller.Session session = null;
+            try {
+                PackageInstaller installer = context.getPackageManager().getPackageInstaller();
+                PackageInstaller.SessionParams params = new PackageInstaller.SessionParams(
+                        PackageInstaller.SessionParams.MODE_FULL_INSTALL);
 
-            // 写入 APK 数据
-            try (InputStream in = new FileInputStream(apkFile);
-                 OutputStream out = session.openWrite("base.apk", 0, apkFile.length())) {
-                byte[] buf = new byte[16384];
-                int n;
-                while ((n = in.read(buf)) != -1) {
-                    out.write(buf, 0, n);
+                int sessionId = installer.createSession(params);
+                session = installer.openSession(sessionId);
+
+                // 写入 APK 数据
+                try (InputStream in = new FileInputStream(apkFile);
+                     OutputStream out = session.openWrite("base.apk", 0, apkFile.length())) {
+                    byte[] buf = new byte[16384];
+                    int n;
+                    while ((n = in.read(buf)) != -1) {
+                        out.write(buf, 0, n);
+                    }
+                    session.fsync(out);
                 }
-                session.fsync(out);
-            }
 
-            // 结果回调 PendingIntent → InstallResultReceiver
-            Intent intent = new Intent(context, InstallResultReceiver.class);
-            int flags = PendingIntent.FLAG_UPDATE_CURRENT;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
-                flags |= PendingIntent.FLAG_MUTABLE;
-            }
-            PendingIntent pi = PendingIntent.getBroadcast(
-                    context, sessionId, intent, flags);
+                // 结果回调 PendingIntent → InstallResultReceiver
+                Intent intent = new Intent(context, InstallResultReceiver.class);
+                int flags = PendingIntent.FLAG_UPDATE_CURRENT;
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    flags |= PendingIntent.FLAG_MUTABLE;
+                }
+                PendingIntent pi = PendingIntent.getBroadcast(
+                        context, sessionId, intent, flags);
 
-            session.commit(pi.getIntentSender());
-            // commit 成功（系统会随后通过 receiver 弹确认框）
-            return true;
-        } catch (Exception e) {
-            Log.w(TAG, "PackageInstaller 安装失败，准备回退", e);
-            if (session != null) {
-                try { session.abandon(); } catch (Exception ignore) {}
+                session.commit(pi.getIntentSender());
+                // commit 成功（系统会随后通过 receiver 弹确认框）
+                return true;
+            } catch (Exception e) {
+                Log.w(TAG, "PackageInstaller 安装失败，准备回退", e);
+                if (session != null) {
+                    try { session.abandon(); } catch (Exception ignore) {}
+                }
+                return false;
+            } finally {
+                if (session != null) session.close();
             }
-            return false;
-        } finally {
-            if (session != null) session.close();
         }
     }
 
@@ -166,6 +173,11 @@ public final class ApkInstaller {
 
     // ── 工具 ────────────────────────────────────────────────────
     private static Uri uriFor(Context context, File apkFile) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
+            // Android 4.x package installers expect a file:// URI. File URI
+            // exposure is only prohibited for apps targeting Android 7.0+.
+            return Uri.fromFile(apkFile);
+        }
         String authority = context.getPackageName() + ".fileprovider";
         return FileProvider.getUriForFile(context, authority, apkFile);
     }

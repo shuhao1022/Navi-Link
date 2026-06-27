@@ -7,10 +7,10 @@
 | 项目属性 | 值 |
 |---------|---|
 | 包名 | `com.navi.link` |
-| 最低 SDK | Android 5.0 (API 21) |
+| 最低 SDK | Android 4.2 (API 17) |
 | 目标 SDK | Android 14 (API 34) |
 | 编译 SDK | 34 |
-| 版本 | 2.5.5 (versionCode 255) |
+| 版本 | 2.5.7 (versionCode 257) |
 | 开发语言 | Java |
 | 构建工具 | Gradle + AGP 8.5.0 |
 
@@ -346,7 +346,7 @@ APK 输出命名格式：`Navi-Link-v{versionName}-{buildType}-{yyyyMMddHHmm}.ap
 
 ### 运行要求
 
-1. Android 5.0 (API 21) 及以上系统
+1. Android 4.2 (API 17) 及以上系统
 2. 必须授予「悬浮窗」权限
 3. 必须安装高德地图车机版或手机版（用于发出导航广播）
 4. Android 13+ 需授予「通知」权限
