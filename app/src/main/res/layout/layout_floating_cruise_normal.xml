@@ -69,6 +69,7 @@
                     android:id="@+id/tv_cn_road_name"
                     android:layout_width="0dp"
                     android:textStyle="bold"
+                    android:gravity="center_horizontal"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="6dp"
@@ -89,7 +90,7 @@
             <LinearLayout
                 android:id="@+id/ll_cn_traffic_lights_container"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_marginTop="6dp"
                 android:gravity="center"
                 android:orientation="horizontal"

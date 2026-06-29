@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import org.json.JSONArray;
@@ -75,9 +74,14 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
                 }
                 tvCnSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色
-                int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                tvCnSpeed.setTextColor(accentColor);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvCnSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色
+                    int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+                    tvCnSpeed.setTextColor(accentColor);
+                }
             }
         }
         if (tvCnRoadName != null && roadName != null) {
@@ -112,30 +116,29 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         }
 
         if (count != childCount) {
-            for (int i = 0; i < childCount; i++) {
-                View child = container.getChildAt(i);
-                if (child != null) {
-                    ObjectAnimator animator = (ObjectAnimator) child.getTag();
-                    if (animator != null) {
-                        animator.cancel();
-                        child.setTag(null);
-                    }
-                }
-            }
             container.removeAllViews();
-            android.view.LayoutInflater inflater = android.view.LayoutInflater.from(context);
-            int layoutRes = (count >= 3)
-                    ? R.layout.item_cruise_traffic_light_small
-                    : R.layout.item_cruise_traffic_light;
+            float scale = FloatingWindowManager.getInstance().getScale();
             for (int i = 0; i < count; i++) {
                 try {
                     JSONObject lightObj = lightsArray.getJSONObject(i);
-                    View lightView = inflater.inflate(layoutRes, container, false);
-                    float scale = FloatingWindowManager.getInstance().getScale();
+                    TrafficLightView lightView = new TrafficLightView(context);
+                    lightView.setCompact(count >= 3);
+                    LinearLayout.LayoutParams llLp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
+                    llLp.setMarginStart(dpToPx(5));
+                    lightView.setLayoutParams(llLp);
                     if (scale != 1.0f) {
                         scaleViewRecursive(lightView, scale);
                     }
-                    updateSingleLightView(lightView, lightObj);
+                    int status = lightObj.getInt("status");
+                    int countdown = lightObj.getInt("countdown");
+                    int dir = lightObj.getInt("dir");
+                    if (countdown > 0) {
+                        lightView.setData(status, dir, countdown, false);
+                    } else {
+                        lightView.setVisibility(View.GONE);
+                    }
                     container.addView(lightView);
                 } catch (Exception ignored) {
                 }
@@ -143,13 +146,23 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         } else {
             for (int i = 0; i < count; i++) {
                 try {
-                    updateSingleLightView(container.getChildAt(i), lightsArray.getJSONObject(i));
+                    TrafficLightView lightView = (TrafficLightView) container.getChildAt(i);
+                    JSONObject lightObj = lightsArray.getJSONObject(i);
+                    int status = lightObj.getInt("status");
+                    int countdown = lightObj.getInt("countdown");
+                    int dir = lightObj.getInt("dir");
+                    if (countdown > 0) {
+                        lightView.setVisibility(View.VISIBLE);
+                        lightView.setData(status, dir, countdown, false);
+                    } else {
+                        lightView.setVisibility(View.GONE);
+                    }
                 } catch (Exception ignored) {
                 }
             }
         }
         container.setVisibility(View.VISIBLE);
-        
+
         // 所有灯都倒计时为0时隐藏容器
         boolean allGone = true;
         for (int i = 0; i < container.getChildCount(); i++) {
@@ -160,50 +173,6 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         }
         if (allGone) {
             container.setVisibility(View.GONE);
-        }
-    }
-
-    private void updateSingleLightView(View view, JSONObject jsonObj) throws Exception {
-        int status = jsonObj.getInt("status");
-        int countdown = jsonObj.getInt("countdown");
-        int dir = jsonObj.getInt("dir");
-
-        ImageView lightIcon = view.findViewById(R.id.iv_light_icon);
-        ImageView lightArrow = view.findViewById(R.id.iv_light_arrow);
-        TextView lightTime = view.findViewById(R.id.tv_light_time);
-
-        if (lightIcon != null) lightIcon.setImageResource(getCruiseLightIconRes(status));
-        if (lightArrow != null) lightArrow.setImageResource(getCruiseLightDirRes(dir));
-        if (lightTime != null) lightTime.setText(String.valueOf(countdown));
-
-        if (countdown > 0) {
-            view.setVisibility(View.VISIBLE);
-            if (countdown <= 5) {
-                ObjectAnimator animator = (ObjectAnimator) view.getTag();
-                if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(view, "alpha", 1f, 0.3f);
-                    newAnimator.setDuration(500);
-                    newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                    newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                    newAnimator.start();
-                    view.setTag(newAnimator);
-                }
-            } else {
-                ObjectAnimator animator = (ObjectAnimator) view.getTag();
-                if (animator != null) {
-                    animator.cancel();
-                    view.setTag(null);
-                }
-                view.setAlpha(1f);
-            }
-        } else {
-            view.setVisibility(View.GONE);
-            ObjectAnimator animator = (ObjectAnimator) view.getTag();
-            if (animator != null) {
-                animator.cancel();
-                view.setTag(null);
-            }
-            view.setAlpha(1f);
         }
     }
 
@@ -229,12 +198,19 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
         if (tvCnSpeed != null && !isOverspeedBlinking) {
-            tvCnSpeed.setTextColor(accentColor);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvCnSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvCnSpeed.setTextColor(accentColor);
+            }
         }
     }
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 
@@ -250,16 +226,6 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     public void onDestroy() {
         super.onDestroy();
         if (llCnTrafficLightsContainer != null) {
-            for (int i = 0; i < llCnTrafficLightsContainer.getChildCount(); i++) {
-                View child = llCnTrafficLightsContainer.getChildAt(i);
-                if (child != null) {
-                    ObjectAnimator animator = (ObjectAnimator) child.getTag();
-                    if (animator != null) {
-                        animator.cancel();
-                        child.setTag(null);
-                    }
-                }
-            }
             llCnTrafficLightsContainer.removeAllViews();
         }
         if (tvCnSpeed != null) {

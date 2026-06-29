@@ -1,10 +1,12 @@
 package com.navi.link;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
 import android.os.Handler;
@@ -22,6 +24,8 @@ import android.widget.Toast;
 import android.hardware.display.DisplayManager;
 import android.view.Display;
 import android.util.Log;
+
+import androidx.core.view.ViewCompat;
 
 import org.json.JSONArray;
 
@@ -104,6 +108,7 @@ public class FloatingWindowManager {
     private int naturalHeight;
     private int savedPosX = -1;
     private int savedPosY = -1;
+    private boolean isAutoCenteringEnabled = false;
 
     private boolean shouldHideAfterRecreate = false;
     private boolean isWindowVisible = true;
@@ -140,8 +145,16 @@ public class FloatingWindowManager {
     private String cachedExitDirection = "";
     private String cachedSapaName = "";
     private String cachedSapaDist = "";
+    private int cachedSapaType = 0;
     private String cachedNextSapaName = "";
     private String cachedNextSapaDist = "";
+    private int cachedNextSapaType = 0;
+
+    private int cachedCrossMap = 0;
+
+    // 超速警告红色边框
+    private View overspeedBorderView;
+    private ObjectAnimator borderAnimator;
 
     // Runnable
     private final Runnable naviSwitchRunnable = this::doNaviSwitch;
@@ -199,6 +212,12 @@ public class FloatingWindowManager {
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         clusterSavedPosX = sp.getInt("cluster_window_pos_x", -1);
         clusterSavedPosY = sp.getInt("cluster_window_pos_y", -1);
+        isAutoCenteringEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
+    }
+
+    public void setAutoCenteringEnabled(boolean enabled) {
+        this.isAutoCenteringEnabled = enabled;
+        remeasureWindow();
     }
 
     /** 当前模式对应的缩放索引: 常规/常规巡航=0, 灵动岛/灵动岛巡航=1, 全数据=2 */
@@ -342,8 +361,14 @@ public class FloatingWindowManager {
         cachedExitDirection = "";
         cachedSapaName = "";
         cachedSapaDist = "";
+        cachedSapaType = 0;
         cachedNextSapaName = "";
         cachedNextSapaDist = "";
+        cachedNextSapaType = 0;
+
+        cachedCrossMap = 0;
+
+        setOverspeedWarning(false);
 
         hasActiveData = false;
         currentMode = MODE_CRUISE;
@@ -444,7 +469,10 @@ public class FloatingWindowManager {
         // 先保存旧位置（如果窗口已存在）
         int oldSavedPosX = savedPosX;
         int oldSavedPosY = savedPosY;
-        
+
+        // 重置路口放大图状态，避免脏数据导致 toggle 后误隐藏
+        cachedCrossMap = 0;
+
         loadPreferences();
         scaleTarget = null;
         dismissClusterMirror();
@@ -457,7 +485,7 @@ public class FloatingWindowManager {
                 savedPosY = layoutParams.y;
             }
             try {
-                if (floatingView.isAttachedToWindow()) {
+                if (ViewCompat.isAttachedToWindow(floatingView)) {
                     windowManager.removeView(floatingView);
                 }
             } catch (Exception ignored) {
@@ -481,16 +509,17 @@ public class FloatingWindowManager {
         }
 
         View inflated = LayoutInflater.from(context).inflate(layoutRes, null);
-        floatingView = inflated;
 
-        // 灵动岛/全数据模式外层需要 FrameLayout
+        // 统一包裹 FrameLayout：超速红色边框覆盖层、主题背景等共用同一个容器
+        FrameLayout wrapper = new FrameLayout(context);
+        wrapper.setClipChildren(false);
+        wrapper.setClipToPadding(false);
+        wrapper.addView(inflated, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.WRAP_CONTENT,
+                FrameLayout.LayoutParams.WRAP_CONTENT));
+
+        // 设置缩放目标
         if (currentMode == MODE_NAVI && styleMode >= 1) {
-            FrameLayout frameLayout = new FrameLayout(context);
-            frameLayout.setClipChildren(false);
-            frameLayout.setClipToPadding(false);
-            frameLayout.addView(inflated, new FrameLayout.LayoutParams(
-                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT));
-            floatingView = frameLayout;
             scaleTarget = inflated;
         } else {
             scaleTarget = null;
@@ -501,6 +530,27 @@ public class FloatingWindowManager {
         if (scale != 1.0f) {
             physicalScaleContent(inflated);
         }
+
+        // 创建超速红色边框覆盖层（圆角跟随窗口样式）
+        boolean isIslandStyle = styleMode == 1;
+        int cornerDp = isIslandStyle ? 40 : 12;
+        int cornerPx = Math.round(dpToPx(cornerDp) * getScale());
+        View borderView = new View(context);
+        GradientDrawable borderDrawable = new GradientDrawable();
+        borderDrawable.setShape(GradientDrawable.RECTANGLE);
+        borderDrawable.setStroke(Math.round(dpToPx(3) * getScale()), Color.RED);
+        borderDrawable.setColor(Color.TRANSPARENT);
+        borderDrawable.setCornerRadius(cornerPx);
+        borderView.setBackground(borderDrawable);
+        borderView.setVisibility(View.GONE);
+        borderView.setClickable(false);
+        borderView.setFocusable(false);
+        wrapper.addView(borderView, new FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT,
+                FrameLayout.LayoutParams.MATCH_PARENT));
+        overspeedBorderView = borderView;
+
+        floatingView = wrapper;
 
         if (activeWindow != null) {
             activeWindow.onDestroy();
@@ -532,7 +582,10 @@ public class FloatingWindowManager {
         int viewWidth = naturalWidth;
         int viewHeight = naturalHeight;
 
-        if (savedPosX >= 0 && savedPosY >= 0) {
+        if (isAutoCenteringEnabled) {
+            layoutParams.x = (screenWidth - viewWidth) / 2;
+            layoutParams.y = (savedPosY >= 0) ? Math.max(0, Math.min(savedPosY, screenHeight - Math.max(viewHeight, 1))) : dpToPx(80);
+        } else if (savedPosX >= 0 && savedPosY >= 0) {
             // 有保存的位置，恢复它
             layoutParams.x = Math.max(0, Math.min(savedPosX, screenWidth - Math.max(viewWidth, 1)));
             layoutParams.y = Math.max(0, Math.min(savedPosY, screenHeight - Math.max(viewHeight, 1)));
@@ -640,12 +693,13 @@ public class FloatingWindowManager {
                 activeWindow.updateExitInfo(cachedExitName, cachedExitDirection);
             }
             if (cachedSapaName != null && !cachedSapaName.isEmpty()) {
-                activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+                activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedSapaType, cachedNextSapaName, cachedNextSapaDist, cachedNextSapaType);
             }
             if (cachedLightCountdown > 0) {
                 activeWindow.updateTrafficLight(cachedLightStatus, cachedLightDir, cachedLightCountdown);
             }
         }
+        checkAndUpdateOverspeed();
     }
 
     // ======================== 缩放 ========================
@@ -691,27 +745,8 @@ public class FloatingWindowManager {
                 Math.round(view.getPaddingRight() * factor),
                 Math.round(view.getPaddingBottom() * factor));
 
-        // 缩放背景 drawable 圆角 (getCornerRadius/getCornerRadii 均为 API 24+)
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            Drawable bg = view.getBackground();
-            if (bg instanceof GradientDrawable) {
-                GradientDrawable gd = (GradientDrawable) bg.mutate();
-                float r = gd.getCornerRadius();
-                if (r > 0) {
-                    gd.setCornerRadius(r * factor);
-                } else {
-                    try {
-                        float[] radii = gd.getCornerRadii();
-                        if (radii != null) {
-                            for (int i = 0; i < radii.length; i++) radii[i] *= factor;
-                            gd.setCornerRadii(radii);
-                        }
-                    } catch (Exception e) {
-                        // Ignore NPE from some Android versions when radii array is null
-                    }
-                }
-            }
-        }
+        // 缩放背景 drawable 圆角 (通过 PlatformCompat 兼容 API < 24)
+        PlatformCompat.scaleGradientCorners(view.getBackground(), factor);
 
         ViewGroup.LayoutParams lp = view.getLayoutParams();
         if (lp != null) {
@@ -908,11 +943,13 @@ public class FloatingWindowManager {
     public void updateFloatingWindowVisibility() {
         SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
         boolean hideOnForeground = sp.getBoolean("hide_on_amap_foreground", false);
+        boolean hideOnCrossMap = sp.getBoolean("hide_on_cross_map", false);
         boolean hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
 
         boolean isClusterActive = isClusterMirrorEnabled && clusterFloatingView != null;
         boolean shouldHideMain = (hideOnForeground && isAmapForeground)
-                || (hideMainWhenClusterActive && isClusterActive);
+                || (hideMainWhenClusterActive && isClusterActive)
+                || (hideOnCrossMap && cachedCrossMap == 1 && currentMode == MODE_NAVI);
 
         if (floatingView != null) {
             if (shouldHideMain) {
@@ -985,7 +1022,12 @@ public class FloatingWindowManager {
                         handler.removeCallbacks(longPressCheck);
                     }
                     if (isDragging && !isPositionLocked) {
-                        layoutParams.x = initialWindowX + (int) dx;
+                        if (isAutoCenteringEnabled) {
+                            int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+                            layoutParams.x = (screenWidth - naturalWidth) / 2;
+                        } else {
+                            layoutParams.x = initialWindowX + (int) dx;
+                        }
                         layoutParams.y = initialWindowY + (int) dy;
                         try {
                             windowManager.updateViewLayout(floatingView, layoutParams);
@@ -1042,6 +1084,7 @@ public class FloatingWindowManager {
             // 速度/路名文字变化后重新测量窗口，避免内容变宽时被旧宽度截断
             remeasureWindow();
         }
+        checkAndUpdateOverspeed();
     }
 
     public void updateLaneLines(String driveWayJson) {
@@ -1084,8 +1127,14 @@ public class FloatingWindowManager {
     private void remeasureWindow() {
         if (floatingView != null && layoutParams != null) {
             measureNaturalSize();
-            layoutParams.width = naturalWidth;
-            layoutParams.height = naturalHeight;
+            int newWidth = naturalWidth;
+            int newHeight = naturalHeight;
+            if (isAutoCenteringEnabled) {
+                int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
+                layoutParams.x = (screenWidth - newWidth) / 2;
+            }
+            layoutParams.width = newWidth;
+            layoutParams.height = newHeight;
             try {
                 windowManager.updateViewLayout(floatingView, layoutParams);
             } catch (Exception ignored) {
@@ -1100,6 +1149,52 @@ public class FloatingWindowManager {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    // ======================== 超速警告红色边框 ========================
+
+    private void setOverspeedWarning(boolean isOverspeed) {
+        if (overspeedBorderView == null) return;
+        if (isOverspeed) {
+            overspeedBorderView.setVisibility(View.VISIBLE);
+            if (borderAnimator == null || !borderAnimator.isRunning()) {
+                startBorderBlink();
+            }
+        } else {
+            stopBorderBlink();
+            overspeedBorderView.setVisibility(View.GONE);
+        }
+    }
+
+    private void startBorderBlink() {
+        if (borderAnimator != null) borderAnimator.cancel();
+        borderAnimator = ObjectAnimator.ofFloat(overspeedBorderView, "alpha", 1.0f, 0.2f);
+        borderAnimator.setDuration(500);
+        borderAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        borderAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        borderAnimator.start();
+    }
+
+    private void stopBorderBlink() {
+        if (borderAnimator != null) {
+            borderAnimator.cancel();
+            borderAnimator = null;
+        }
+        if (overspeedBorderView != null) {
+            overspeedBorderView.setAlpha(1f);
+        }
+    }
+
+    private void checkAndUpdateOverspeed() {
+        SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        boolean overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
+        boolean isOverspeed;
+        if (currentMode == MODE_NAVI) {
+            isOverspeed = overspeedWarningEnabled && cachedLimitedSpeed > 0 && cachedSpeed > cachedLimitedSpeed;
+        } else {
+            isOverspeed = overspeedWarningEnabled && cachedCameraSpeed > 0 && cachedSpeed > cachedCameraSpeed;
+        }
+        setOverspeedWarning(isOverspeed);
     }
 
     // ======================== 导航数据更新 ========================
@@ -1146,6 +1241,7 @@ public class FloatingWindowManager {
             }
             remeasureWindow();
         }
+        checkAndUpdateOverspeed();
     }
 
     /**
@@ -1165,18 +1261,29 @@ public class FloatingWindowManager {
         }
     }
 
-    public void updateSapaInfo(String sapaName, String sapaDist, String nextSapaName, String nextSapaDist) {
+    public void updateSapaInfo(String sapaName, String sapaDist, int sapaType, String nextSapaName, String nextSapaDist, int nextSapaType) {
         cachedSapaName = sapaName != null ? sapaName.trim() : "";
         cachedSapaDist = sapaDist != null ? sapaDist.trim() : "";
+        cachedSapaType = sapaType;
         cachedNextSapaName = nextSapaName != null ? nextSapaName.trim() : "";
         cachedNextSapaDist = nextSapaDist != null ? nextSapaDist.trim() : "";
+        cachedNextSapaType = nextSapaType;
         if (!isShowing || currentMode != MODE_NAVI) return;
         if (activeWindow != null && floatingView != null) {
-            activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+            activeWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedSapaType, cachedNextSapaName, cachedNextSapaDist, cachedNextSapaType);
         }
         if (clusterActiveWindow != null && clusterFloatingView != null) {
-            clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+            clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedSapaType, cachedNextSapaName, cachedNextSapaDist, cachedNextSapaType);
         }
+    }
+
+    /**
+     * 更新路口放大图状态（高德 10019 广播 EXTRA_CROSS_MAP）
+     */
+    public void updateCrossMapStatus(int hasCrossMap) {
+        if (cachedCrossMap == hasCrossMap) return;
+        cachedCrossMap = hasCrossMap;
+        updateFloatingWindowVisibility();
     }
 
     // ======================== 红绿灯更新 ========================
@@ -1236,11 +1343,11 @@ public class FloatingWindowManager {
         int correctedX = Math.max(0, Math.min(layoutParams.x, screenWidth - viewWidth));
         int correctedY = Math.max(0, Math.min(layoutParams.y, screenHeight - viewHeight));
         
-        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
-                .edit()
-                .putInt("window_pos_x", correctedX)
-                .putInt("window_pos_y", correctedY)
-                .apply();
+        SharedPreferences.Editor editor = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE).edit();
+        if (!isAutoCenteringEnabled) {
+            editor.putInt("window_pos_x", correctedX);
+        }
+        editor.putInt("window_pos_y", correctedY).apply();
     }
 
     // ======================== 副屏投屏支持 (Cluster Mirror) ========================
@@ -1392,7 +1499,8 @@ public class FloatingWindowManager {
     private void dismissClusterMirror() {
         if (clusterFloatingView != null && clusterWindowManager != null) {
             try {
-                if (clusterFloatingView.isAttachedToWindow() || clusterFloatingView.getParent() != null) {
+                if (ViewCompat.isAttachedToWindow(clusterFloatingView)
+                        || clusterFloatingView.getParent() != null) {
                     clusterWindowManager.removeView(clusterFloatingView);
                 }
             } catch (Exception ignored) {}
@@ -1564,7 +1672,7 @@ public class FloatingWindowManager {
                 clusterActiveWindow.updateExitInfo(cachedExitName, cachedExitDirection);
             }
             if (cachedSapaName != null && !cachedSapaName.isEmpty()) {
-                clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedNextSapaName, cachedNextSapaDist);
+                clusterActiveWindow.updateSapaInfo(cachedSapaName, cachedSapaDist, cachedSapaType, cachedNextSapaName, cachedNextSapaDist, cachedNextSapaType);
             }
             if (cachedLightStatus != -1) {
                 clusterActiveWindow.updateTrafficLight(cachedLightStatus, cachedLightDir, cachedLightCountdown);

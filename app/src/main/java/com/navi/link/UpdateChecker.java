@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -124,7 +123,7 @@ public final class UpdateChecker {
         HttpURLConnection conn = null;
         try {
             URL url = new URL(urlStr);
-            conn = (HttpURLConnection) url.openConnection();
+            conn = NetworkCompat.open(url);
             conn.setRequestMethod("GET");
             conn.setConnectTimeout(CONNECT_TIMEOUT_MS);
             conn.setReadTimeout(READ_TIMEOUT_MS);
@@ -149,7 +148,7 @@ public final class UpdateChecker {
     private static String readAll(InputStream is) throws Exception {
         StringBuilder sb = new StringBuilder();
         try (BufferedReader br = new BufferedReader(
-                new InputStreamReader(is, StandardCharsets.UTF_8))) {
+                new InputStreamReader(is, "UTF-8"))) {
             String line;
             while ((line = br.readLine()) != null) {
                 sb.append(line).append('\n');

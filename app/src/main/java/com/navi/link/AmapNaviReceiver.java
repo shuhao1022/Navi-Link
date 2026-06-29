@@ -74,6 +74,13 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             } else if (extraState == 25) {
                 manager.onCruiseEnded();
             }
+
+            // 路口放大图状态（EXTRA_CROSS_MAP = 1 表示有路口放大图）
+            if (intent.hasExtra("EXTRA_CROSS_MAP")) {
+                int crossMap = intent.getIntExtra("EXTRA_CROSS_MAP", 0);
+                manager.updateCrossMapStatus(crossMap);
+            }
+
             return;
         }
 
@@ -192,9 +199,11 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         // 服务区信息
         String sapaName = intent.getStringExtra("SAPA_NAME");
         String sapaDist = intent.getStringExtra("SAPA_DIST_AUTO");
+        int sapaType = intent.getIntExtra("SAPA_TYPE", 0);
         String nextSapaName = intent.getStringExtra("NEXT_SAPA_NAME");
         String nextSapaDist = intent.getStringExtra("NEXT_SAPA_DIST_AUTO");
-        manager.updateSapaInfo(sapaName, sapaDist, nextSapaName, nextSapaDist);
+        int nextSapaType = intent.getIntExtra("NEXT_SAPA_TYPE", 0);
+        manager.updateSapaInfo(sapaName, sapaDist, sapaType, nextSapaName, nextSapaDist, nextSapaType);
     }
 
     private void handleCruiseInfo(Intent intent, FloatingWindowManager manager) {

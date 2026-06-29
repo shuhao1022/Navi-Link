@@ -19,11 +19,9 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     private TextView tvMinDirection;
     private TextView tvMinLightCount;
     private View minDividerMin;
+    private View naviMinDivider;
 
-    private View llTrafficLightGroupMin;
-    private ImageView ivLightIconMin;
-    private ImageView ivLightArrowMin;
-    private TextView tvLightTimeMin;
+    private TrafficLightView llTrafficLightGroupMin;
 
     private CameraWarningView llMinNaviCameraGroup;
 
@@ -51,13 +49,9 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         tvMinDirection = floatingView.findViewById(R.id.tv_min_direction);
         tvMinLightCount = floatingView.findViewById(R.id.tv_min_light_count);
         minDividerMin = floatingView.findViewById(R.id.min_divider);
+        naviMinDivider = floatingView.findViewById(R.id.navi_min_divider);
 
         llTrafficLightGroupMin = floatingView.findViewById(R.id.ll_traffic_light_group);
-        if (llTrafficLightGroupMin != null) {
-            ivLightIconMin = llTrafficLightGroupMin.findViewById(R.id.iv_light_icon);
-            ivLightArrowMin = llTrafficLightGroupMin.findViewById(R.id.iv_light_arrow);
-            tvLightTimeMin = llTrafficLightGroupMin.findViewById(R.id.tv_light_time);
-        }
 
         llMinNaviCameraGroup = floatingView.findViewById(R.id.ll_min_navi_camera_group);
 
@@ -104,6 +98,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             }
         }
         boolean speedEnabled = sp.getBoolean("minimal_speed_enabled", true);
+        boolean turnInfoEnabled = sp.getBoolean("minimal_turn_info_enabled", true);
         if (tvMinSpeed != null) {
             tvMinSpeed.setText(String.valueOf(curSpeed));
             // 超速警告：限速优先用cameraSpeed，为0则用limitedSpeed
@@ -130,9 +125,14 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
                 }
                 tvMinSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色
-                int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                tvMinSpeed.setTextColor(accentColor);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvMinSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色
+                    int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+                    tvMinSpeed.setTextColor(accentColor);
+                }
             }
             tvMinSpeed.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
@@ -140,7 +140,19 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             tvMinSpeedUnit.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
         if (minDividerMin != null) {
-            minDividerMin.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
+            minDividerMin.setVisibility(speedEnabled && turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (ivActionIconMin != null) {
+            ivActionIconMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvDistanceNumMin != null) {
+            tvDistanceNumMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvDistanceUnitMin != null) {
+            tvDistanceUnitMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (naviMinDivider != null) {
+            naviMinDivider.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
         }
         if (tvDistanceNumMin != null) {
             tvDistanceNumMin.setText(disNum);
@@ -189,48 +201,13 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     @Override
     public void updateTrafficLight(int status, int dir, int countdown) {
         mTrafficLightCountdown = countdown;
-        if (llTrafficLightGroupMin == null) {
-            return;
-        }
+        if (llTrafficLightGroupMin == null) return;
         if (countdown <= 0) {
-            llTrafficLightGroupMin.setVisibility(View.GONE);
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupMin.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroupMin.setTag(null);
-            }
-            llTrafficLightGroupMin.setAlpha(1f);
+            llTrafficLightGroupMin.clear();
             return;
         }
         llTrafficLightGroupMin.setVisibility(View.VISIBLE);
-        if (ivLightIconMin != null) {
-            ivLightIconMin.setImageResource(getNaviLightIconRes(status));
-        }
-        if (ivLightArrowMin != null) {
-            ivLightArrowMin.setImageResource(getNaviLightDirRes(dir));
-        }
-        if (tvLightTimeMin != null) {
-            tvLightTimeMin.setText(String.valueOf(countdown));
-        }
-
-        if (countdown <= 5) {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupMin.getTag();
-            if (animator == null) {
-                ObjectAnimator newAnimator = ObjectAnimator.ofFloat(llTrafficLightGroupMin, "alpha", 1f, 0.3f);
-                newAnimator.setDuration(500);
-                newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                newAnimator.start();
-                llTrafficLightGroupMin.setTag(newAnimator);
-            }
-        } else {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupMin.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroupMin.setTag(null);
-            }
-            llTrafficLightGroupMin.setAlpha(1f);
-        }
+        llTrafficLightGroupMin.setData(status, dir, countdown, true);
     }
 
     private void updateCameraDistVisibility() {
@@ -265,7 +242,13 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
         if (tvMinSpeed != null && !isOverspeedBlinking) {
-            tvMinSpeed.setTextColor(accentColor);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvMinSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvMinSpeed.setTextColor(accentColor);
+            }
         }
         
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
@@ -282,6 +265,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 
@@ -332,14 +316,6 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (llTrafficLightGroupMin != null) {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroupMin.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroupMin.setTag(null);
-            }
-            llTrafficLightGroupMin.setAlpha(1f);
-        }
         if (tvMinSpeed != null) {
             ObjectAnimator animator = (ObjectAnimator) tvMinSpeed.getTag();
             if (animator != null) {

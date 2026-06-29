@@ -43,8 +43,10 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.graphics.Insets;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.core.widget.CompoundButtonCompat;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
@@ -102,6 +104,11 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbAvoidForegroundEnabled;
     private TextView tvAvoidForegroundStatus;
     private MaterialCardView cardAvoidForegroundToggle;
+
+    private boolean crossMapHideEnabled = false;
+    private SwitchCompat cbCrossMapHideEnabled;
+    private TextView tvCrossMapHideStatus;
+    private MaterialCardView cardCrossMapHideToggle;
     private TextView tvSys;
     private TextView tvStyle;
     private TextView tvOperation;
@@ -117,6 +124,8 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalCameraEnabled;
     private TextView tvMinimalCameraStatus;
     private MaterialCardView cardMinimalCameraToggle;
+    private MaterialCardView cardMinimalAutocenterToggle;
+    private SwitchCompat cbMinimalAutocenterEnabled;
     private MaterialCardView cardClusterMirrorToggle;
     private SwitchCompat cbClusterMirrorEnabled;
     private TextView tvClusterMirrorStatus;
@@ -147,6 +156,10 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalDirectionEnabled;
     private TextView tvMinimalDirectionStatus;
 
+    private MaterialCardView cardMinimalTurnInfoToggle;
+    private SwitchCompat cbMinimalTurnInfoEnabled;
+    private TextView tvMinimalTurnInfoStatus;
+
     private MaterialCardView cardMinimalSpeedToggle;
     private SwitchCompat cbMinimalSpeedEnabled;
     private TextView tvMinimalSpeedStatus;
@@ -162,6 +175,12 @@ public class MainActivity extends AppCompatActivity {
     private MaterialCardView cardAutoStartToggle;
     private SwitchCompat cbAutoStartEnabled;
     private TextView tvAutoStartStatus;
+
+    // 红绿灯填充背景样式
+    private MaterialCardView cardTrafficLightFillToggle;
+    private SwitchCompat cbTrafficLightFillEnabled;
+    private TextView tvTrafficLightFillStatus;
+    private boolean isTrafficLightFillEnabled = false;
 
     // Menu elements
     private MaterialCardView menuSystemAppearance;
@@ -227,9 +246,11 @@ public class MainActivity extends AppCompatActivity {
     private boolean isMinimalCameraEnabled = false;
     private boolean isMinimalRoadNameEnabled = true;
     private boolean isMinimalDirectionEnabled = false;
+    private boolean isMinimalTurnInfoEnabled = true;
     private boolean isMinimalSpeedEnabled = true;
     private boolean isMinimalLightCountEnabled = false;
     private boolean isMinimalAccentNaviInfoEnabled = false;
+    private boolean isMinimalAutocenterEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -340,12 +361,18 @@ public class MainActivity extends AppCompatActivity {
         cbAvoidForegroundEnabled = findViewById(R.id.cb_avoid_foreground_enabled);
         tvAvoidForegroundStatus = findViewById(R.id.tv_avoid_foreground_status);
         cardAvoidForegroundToggle = findViewById(R.id.card_avoid_foreground_toggle);
+
+        cbCrossMapHideEnabled = findViewById(R.id.cb_cross_map_hide_enabled);
+        tvCrossMapHideStatus = findViewById(R.id.tv_cross_map_hide_status);
+        cardCrossMapHideToggle = findViewById(R.id.card_cross_map_hide_toggle);
         cbOverspeedWarningEnabled = findViewById(R.id.cb_overspeed_warning_enabled);
         tvOverspeedWarningStatus = findViewById(R.id.tv_overspeed_warning_status);
         cardOverspeedWarningToggle = findViewById(R.id.card_overspeed_warning_toggle);
         cbMinimalCameraEnabled = findViewById(R.id.cb_minimal_camera_enabled);
         tvMinimalCameraStatus = findViewById(R.id.tv_minimal_camera_status);
         cardMinimalCameraToggle = findViewById(R.id.card_minimal_camera_toggle);
+        cardMinimalAutocenterToggle = findViewById(R.id.card_minimal_autocenter_toggle);
+        cbMinimalAutocenterEnabled = findViewById(R.id.cb_minimal_autocenter_enabled);
         cbClusterMirrorEnabled = findViewById(R.id.cb_cluster_mirror_enabled);
         tvClusterMirrorStatus = findViewById(R.id.tv_cluster_mirror_status);
         cardClusterMirrorToggle = findViewById(R.id.card_cluster_mirror_toggle);
@@ -358,6 +385,9 @@ public class MainActivity extends AppCompatActivity {
         cardAutoStartToggle = findViewById(R.id.card_auto_start_toggle);
         cbAutoStartEnabled = findViewById(R.id.cb_auto_start_enabled);
         tvAutoStartStatus = findViewById(R.id.tv_auto_start_status);
+        cardTrafficLightFillToggle = findViewById(R.id.card_traffic_light_fill_toggle);
+        cbTrafficLightFillEnabled = findViewById(R.id.cb_traffic_light_fill_enabled);
+        tvTrafficLightFillStatus = findViewById(R.id.tv_traffic_light_fill_status);
         llThemeColors = findViewById(R.id.ll_theme_colors);
         tvSys = findViewById(R.id.tv_sys);
         tvStyle = findViewById(R.id.tv_style);
@@ -443,6 +473,10 @@ public class MainActivity extends AppCompatActivity {
         cbMinimalDirectionEnabled = findViewById(R.id.cb_minimal_direction_enabled);
         tvMinimalDirectionStatus = findViewById(R.id.tv_minimal_direction_status);
 
+        cardMinimalTurnInfoToggle = findViewById(R.id.card_minimal_turn_info_toggle);
+        cbMinimalTurnInfoEnabled = findViewById(R.id.cb_minimal_turn_info_enabled);
+        tvMinimalTurnInfoStatus = findViewById(R.id.tv_minimal_turn_info_status);
+
         cardMinimalSpeedToggle = findViewById(R.id.card_minimal_speed_toggle);
         cbMinimalSpeedEnabled = findViewById(R.id.cb_minimal_speed_enabled);
         tvMinimalSpeedStatus = findViewById(R.id.tv_minimal_speed_status);
@@ -477,9 +511,11 @@ public class MainActivity extends AppCompatActivity {
         isMinimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
         isMinimalRoadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
         isMinimalDirectionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+        isMinimalTurnInfoEnabled = sp.getBoolean("minimal_turn_info_enabled", true);
         isMinimalSpeedEnabled = sp.getBoolean("minimal_speed_enabled", true);
         isMinimalLightCountEnabled = sp.getBoolean("minimal_light_count_enabled", false);
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
+        isMinimalAutocenterEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
@@ -487,6 +523,8 @@ public class MainActivity extends AppCompatActivity {
         normalTmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
         normalBottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
         minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
+        isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
+        crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
  
         updateSeekBarToCurrentScale();
         
@@ -502,6 +540,12 @@ public class MainActivity extends AppCompatActivity {
         if (tvAvoidForegroundStatus != null) {
             tvAvoidForegroundStatus.setText(avoidForegroundEnabled ? "高德前台时隐藏悬浮窗" : "前台正常显示浮窗");
         }
+        if (cbCrossMapHideEnabled != null) {
+            cbCrossMapHideEnabled.setChecked(crossMapHideEnabled);
+        }
+        if (tvCrossMapHideStatus != null) {
+            tvCrossMapHideStatus.setText(crossMapHideEnabled ? "路口放大图时隐藏悬浮窗" : "路口放大图时正常显示浮窗");
+        }
         if (cbOverspeedWarningEnabled != null) {
             cbOverspeedWarningEnabled.setChecked(overspeedWarningEnabled);
         }
@@ -514,6 +558,9 @@ public class MainActivity extends AppCompatActivity {
         if (tvMinimalCameraStatus != null) {
             tvMinimalCameraStatus.setText(isMinimalCameraEnabled ? "灵动岛布局显示摄像头距离" : "已关闭灵动岛摄像头显示");
         }
+        if (cbMinimalAutocenterEnabled != null) {
+            cbMinimalAutocenterEnabled.setChecked(isMinimalAutocenterEnabled);
+        }
         if (cbMinimalRoadNameEnabled != null) {
             cbMinimalRoadNameEnabled.setChecked(isMinimalRoadNameEnabled);
         }
@@ -525,6 +572,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvMinimalDirectionStatus != null) {
             tvMinimalDirectionStatus.setText(isMinimalDirectionEnabled ? "方向显示已启用" : "方向显示已禁用");
+        }
+        if (cbMinimalTurnInfoEnabled != null) {
+            cbMinimalTurnInfoEnabled.setChecked(isMinimalTurnInfoEnabled);
+        }
+        if (tvMinimalTurnInfoStatus != null) {
+            tvMinimalTurnInfoStatus.setText(isMinimalTurnInfoEnabled ? "转向信息已启用" : "转向信息已禁用");
         }
         if (cbMinimalSpeedEnabled != null) {
             cbMinimalSpeedEnabled.setChecked(isMinimalSpeedEnabled);
@@ -555,6 +608,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvAutoStartStatus != null) {
             tvAutoStartStatus.setText(autoStartEnabled ? "已启用开机自启（如未生效，请在车机设置中允许本应用的自启动权限）" : "已关闭开机自启功能");
+        }
+        if (cbTrafficLightFillEnabled != null) {
+            cbTrafficLightFillEnabled.setChecked(isTrafficLightFillEnabled);
+        }
+        if (tvTrafficLightFillStatus != null) {
+            tvTrafficLightFillStatus.setText(isTrafficLightFillEnabled ? "红绿灯胶囊背景已填充灯色" : "深蓝胶囊背景");
         }
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
@@ -751,20 +810,24 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("cruise_enabled", cruiseEnabled)
                 .putBoolean("normal_navi_lane_enabled", normalLaneEnabled)
                 .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
+                .putBoolean("hide_on_cross_map", crossMapHideEnabled)
                 .putBoolean("overspeed_warning_enabled", overspeedWarningEnabled)
                 .putBoolean("cluster_mirror_enabled", clusterMirrorEnabled)
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
                 .putBoolean("auto_start", autoStartEnabled)
+                .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
                 .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled);
         editor.putBoolean("minimal_camera_enabled", isMinimalCameraEnabled);
         editor.putBoolean("minimal_road_name_enabled", isMinimalRoadNameEnabled);
         editor.putBoolean("minimal_direction_enabled", isMinimalDirectionEnabled);
+        editor.putBoolean("minimal_turn_info_enabled", isMinimalTurnInfoEnabled);
         editor.putBoolean("minimal_speed_enabled", isMinimalSpeedEnabled);
         editor.putBoolean("minimal_light_count_enabled", isMinimalLightCountEnabled);
         editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
+        editor.putBoolean("minimal_autocenter_enabled", isMinimalAutocenterEnabled);
         editor.apply();
     }
 
@@ -843,39 +906,55 @@ public class MainActivity extends AppCompatActivity {
         updateBackgroundModeSelection();
 
         // 单选按钮（RadioButton）的着色
-        if (rbStartAmap != null) rbStartAmap.setButtonTintList(accentColorStateList);
+        if (rbStartAmap != null) {
+            CompoundButtonCompat.setButtonTintList(rbStartAmap, accentColorStateList);
+        }
 
         // 更新单选按钮（RadioButton）的着色
-        rbNormal.setButtonTintList(accentColorStateList);
-        rbMinimal.setButtonTintList(accentColorStateList);
-        rbFull.setButtonTintList(accentColorStateList);
-        rbServiceOnly.setButtonTintList(accentColorStateList);
-        rbNormalStart.setButtonTintList(accentColorStateList);
-        rbBgDark.setButtonTintList(accentColorStateList);
-        rbBgSemi.setButtonTintList(accentColorStateList);
-        rbBgTransparent.setButtonTintList(accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbNormal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbMinimal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbFull, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbServiceOnly, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbNormalStart, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgDark, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgSemi, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbBgTransparent, accentColorStateList);
 
         // 更新开关（SwitchCompat）的主题颜色
         updateSwitchTheme(cbCruiseEnabled, accentColor);
         updateSwitchTheme(cbNormalLaneEnabled, accentColor);
         updateSwitchTheme(cbAvoidForegroundEnabled, accentColor);
+        updateSwitchTheme(cbCrossMapHideEnabled, accentColor);
         updateSwitchTheme(cbOverspeedWarningEnabled, accentColor);
         updateSwitchTheme(cbMinimalCameraEnabled, accentColor);
+        updateSwitchTheme(cbMinimalAutocenterEnabled, accentColor);
         updateSwitchTheme(cbClusterMirrorEnabled, accentColor);
         updateSwitchTheme(cbHideMainWhenClusterActive, accentColor);
         updateSwitchTheme(cbAutoStartEnabled, accentColor);
+        updateSwitchTheme(cbTrafficLightFillEnabled, accentColor);
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
         updateSwitchTheme(cbMinimalRoadNameEnabled, accentColor);
         updateSwitchTheme(cbMinimalDirectionEnabled, accentColor);
+        updateSwitchTheme(cbMinimalTurnInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalSpeedEnabled, accentColor);
         updateSwitchTheme(cbMinimalLightCountEnabled, accentColor);
         updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
-        sbScale.setProgressTintList(accentColorStateList);
-        sbScale.setThumbTintList(accentColorStateList);
+        if (sbScale.getProgressDrawable() != null) {
+            android.graphics.drawable.Drawable progressDrawable =
+                    DrawableCompat.wrap(sbScale.getProgressDrawable().mutate());
+            DrawableCompat.setTint(progressDrawable, accentColor);
+            sbScale.setProgressDrawable(progressDrawable);
+        }
+        if (sbScale.getThumb() != null) {
+            android.graphics.drawable.Drawable thumbDrawable =
+                    DrawableCompat.wrap(sbScale.getThumb().mutate());
+            DrawableCompat.setTintList(thumbDrawable, accentColorStateList);
+            sbScale.setThumb(thumbDrawable);
+        }
         tvScaleValue.setTextColor(accentColor);
 
         tvStyle.setTextColor(accentColor);
@@ -1038,6 +1117,27 @@ public class MainActivity extends AppCompatActivity {
             cardAvoidForegroundToggle.setOnClickListener(v -> cbAvoidForegroundEnabled.toggle());
         }
 
+        cbCrossMapHideEnabled.setChecked(crossMapHideEnabled);
+        if (tvCrossMapHideStatus != null) {
+            tvCrossMapHideStatus.setText(crossMapHideEnabled ? "路口放大图时隐藏悬浮窗" : "路口放大图时正常显示浮窗");
+        }
+        CompoundButton.OnCheckedChangeListener crossMapHideListener = (buttonView, isChecked) -> {
+            crossMapHideEnabled = isChecked;
+            savePreferences();
+            if (tvCrossMapHideStatus != null) {
+                tvCrossMapHideStatus.setText(isChecked ? "路口放大图时隐藏悬浮窗" : "路口放大图时正常显示浮窗");
+            }
+            // 立即更新悬浮窗可见性
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.updateFloatingWindowVisibility();
+            }
+        };
+        cbCrossMapHideEnabled.setOnCheckedChangeListener(crossMapHideListener);
+        if (cardCrossMapHideToggle != null) {
+            cardCrossMapHideToggle.setOnClickListener(v -> cbCrossMapHideEnabled.toggle());
+        }
+
         cbOverspeedWarningEnabled.setChecked(overspeedWarningEnabled);
         if (tvOverspeedWarningStatus != null) {
             tvOverspeedWarningStatus.setText(overspeedWarningEnabled ? "超速时车速红色报警并闪烁" : "已关闭超速红色提醒");
@@ -1135,6 +1235,28 @@ public class MainActivity extends AppCompatActivity {
         cbAutoStartEnabled.setOnCheckedChangeListener(autoStartListener);
         if (cardAutoStartToggle != null) {
             cardAutoStartToggle.setOnClickListener(v -> cbAutoStartEnabled.toggle());
+        }
+
+        // 红绿灯填充背景样式开关
+        if (cbTrafficLightFillEnabled != null) {
+            cbTrafficLightFillEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrafficLightFillEnabled = isChecked;
+                savePreferences();
+                if (tvTrafficLightFillStatus != null) {
+                    tvTrafficLightFillStatus.setText(isChecked ? "红绿灯胶囊背景已填充灯色" : "深蓝胶囊背景");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardTrafficLightFillToggle != null) {
+            cardTrafficLightFillToggle.setOnClickListener(v -> {
+                if (cbTrafficLightFillEnabled != null) {
+                    cbTrafficLightFillEnabled.toggle();
+                }
+            });
         }
 
         if (cardClusterDisplaySelect != null) {
@@ -1279,6 +1401,27 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        if (cbMinimalTurnInfoEnabled != null) {
+            cbMinimalTurnInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalTurnInfoEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalTurnInfoStatus != null) {
+                    tvMinimalTurnInfoStatus.setText(isChecked ? "转向信息已启用" : "转向信息已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalTurnInfoToggle != null) {
+            cardMinimalTurnInfoToggle.setOnClickListener(v -> {
+                if (cbMinimalTurnInfoEnabled != null) {
+                    cbMinimalTurnInfoEnabled.toggle();
+                }
+            });
+        }
+
         if (cbMinimalSpeedEnabled != null) {
             cbMinimalSpeedEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 isMinimalSpeedEnabled = isChecked;
@@ -1338,6 +1481,24 @@ public class MainActivity extends AppCompatActivity {
             cardMinimalAccentNaviInfoToggle.setOnClickListener(v -> {
                 if (cbMinimalAccentNaviInfoEnabled != null) {
                     cbMinimalAccentNaviInfoEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalAutocenterEnabled != null) {
+            cbMinimalAutocenterEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalAutocenterEnabled = isChecked;
+                savePreferences();
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.setAutoCenteringEnabled(isChecked);
+                }
+            });
+        }
+        if (cardMinimalAutocenterToggle != null) {
+            cardMinimalAutocenterToggle.setOnClickListener(v -> {
+                if (cbMinimalAutocenterEnabled != null) {
+                    cbMinimalAutocenterEnabled.toggle();
                 }
             });
         }
@@ -1417,19 +1578,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void checkPermissionAndStart() {
-        if (!Settings.canDrawOverlays(this)) {
+        if (!OverlayPermissionCompat.canDrawOverlays(this)) {
             tvStatus.setText("需要悬浮窗权限");
             try {
                 startActivityForResult(
                         new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                                Uri.parse("package:" + getPackageName())), 100);
+                                Uri.parse("package:" + getPackageName())),
+                        REQUEST_OVERLAY_PERMISSION);
             } catch (android.content.ActivityNotFoundException e) {
                 // 车机系统可能被阉割了原生的悬浮窗权限界面，尝试跳转到应用详情页
                 Toast.makeText(this, "由于车机系统限制，请在系统设置中手动开启悬浮窗权限", Toast.LENGTH_LONG).show();
                 try {
                     Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
                     intent.setData(Uri.parse("package:" + getPackageName()));
-                    startActivityForResult(intent, 100);
+                    startActivityForResult(intent, REQUEST_OVERLAY_PERMISSION);
                 } catch (Exception ex) {
                     Toast.makeText(this, "无法打开设置页面，请前往系统设置授权", Toast.LENGTH_LONG).show();
                 }
@@ -1442,18 +1604,14 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 100 && Settings.canDrawOverlays(this)) {
+        if (requestCode == REQUEST_OVERLAY_PERMISSION
+                && OverlayPermissionCompat.canDrawOverlays(this)) {
             startFloatingService();
         }
     }
 
     private void startFloatingService() {
-        Intent intent = new Intent(this, AutoMapService.class);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            startForegroundService(intent);
-        } else {
-            startService(intent);
-        }
+        PlatformCompat.startService(this, new Intent(this, AutoMapService.class));
         updateStatusText();
         scheduleStatusRefresh();
     }
@@ -1682,9 +1840,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             java.io.File path = android.os.Environment.getDataDirectory();
             android.os.StatFs stat = new android.os.StatFs(path.getPath());
-            long blockSize = stat.getBlockSizeLong();
-            long totalBlocks = stat.getBlockCountLong();
-            long availableBlocks = stat.getAvailableBlocksLong();
+            long[] storageStats = PlatformCompat.getStorageStats(stat);
+            long blockSize = storageStats[0];
+            long totalBlocks = storageStats[1];
+            long availableBlocks = storageStats[2];
             long totalRom = totalBlocks * blockSize;
             long availRom = availableBlocks * blockSize;
             return formatByteSize(availRom) + " 可用 / 共 " + formatByteSize(totalRom);

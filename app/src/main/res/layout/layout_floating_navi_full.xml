@@ -47,12 +47,12 @@
                 android:textColor="#BBFFFFFF"
                 android:textSize="10sp"/>
         </RelativeLayout>
-        <include
+        <com.navi.link.TrafficLightView
+            android:id="@+id/ll_traffic_light_group"
             android:visibility="gone"
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
-            layout="@layout/layout_floating_traffic_light_group"/>
+            android:layout_height="50dp"/>
         <TextView
             android:layout_alignParentEnd="true"
             android:background="@drawable/camera_shape"
@@ -165,7 +165,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="12dp"
                 android:ellipsize="marquee"
-                android:maxLines="1"
+                android:singleLine="true"
                 android:maxWidth="200dp"
                 android:text="居里夫人大道"
                 android:textColor="#FFFFFF"

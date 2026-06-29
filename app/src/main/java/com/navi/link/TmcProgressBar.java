@@ -82,16 +82,18 @@ public class TmcProgressBar extends View {
         float barTop = centerY - barHeight / 2;
         float barBottom = centerY + barHeight / 2;
 
+        RectF barRect = new RectF(0, barTop, width, barBottom);
+
         if (totalDistance <= 0 || segmentCount == 0) {
             // 无数据，画灰色底条
             barPaint.setColor(COLOR_BACKGROUND);
-            canvas.drawRoundRect(0, barTop, width, barBottom, barHeight / 2, barHeight / 2, barPaint);
+            canvas.drawRoundRect(barRect, barHeight / 2, barHeight / 2, barPaint);
             return;
         }
 
         // 裁剪为圆角矩形，确保左右都有圆角
         Path clipPath = new Path();
-        clipPath.addRoundRect(0, barTop, width, barBottom, barHeight / 2, barHeight / 2, Path.Direction.CW);
+        clipPath.addRoundRect(barRect, barHeight / 2, barHeight / 2, Path.Direction.CW);
         canvas.save();
         canvas.clipPath(clipPath);
 

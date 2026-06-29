@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/window_root"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content">
@@ -72,12 +73,12 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />
-        <include
+        <com.navi.link.TrafficLightView
+            android:id="@+id/ll_traffic_light_group"
             android:visibility="gone"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:layout_alignParentEnd="true"
-            layout="@layout/layout_floating_traffic_light_group"
             android:layout_width="wrap_content"
             android:layout_height="50dp"/>
 
@@ -231,19 +232,15 @@
                         android:gravity="center_vertical"
                         android:layout_marginBottom="4dp">
 
-                        <TextView
-                            android:id="@+id/tv_sapa_badge_1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="服务区"
-                            android:textSize="12sp"
-                            android:textColor="#E0E0E0"
-                            android:background="@drawable/bg_exit_shape"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="2dp"
-                            android:layout_marginEnd="8dp"/>
+                        <ImageView
+                            android:tint="@color/white"
+                            tools:ignore="UseAppTint"
+                            android:id="@+id/iv_sapa_badge_1"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:padding="3dp"
+                            android:scaleType="fitCenter"/>
 
                         <TextView
                             android:id="@+id/tv_sapa_name_1"
@@ -276,19 +273,15 @@
                         android:orientation="horizontal"
                         android:gravity="center_vertical">
 
-                        <TextView
-                            android:id="@+id/tv_sapa_badge_2"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="下个服务区"
-                            android:textSize="12sp"
-                            android:textColor="#E0E0E0"
-                            android:background="@drawable/bg_exit_shape"
-                            android:paddingLeft="5dp"
-                            android:paddingRight="5dp"
-                            android:paddingTop="2dp"
-                            android:paddingBottom="2dp"
-                            android:layout_marginEnd="8dp"/>
+                        <ImageView
+                            android:id="@+id/iv_sapa_badge_2"
+                            android:layout_width="24dp"
+                            android:layout_height="24dp"
+                            android:layout_marginEnd="8dp"
+                            android:padding="3dp"
+                            android:tint="@color/white"
+                            android:scaleType="fitCenter"
+                            tools:ignore="UseAppTint" />
 
                         <TextView
                             android:id="@+id/tv_sapa_name_2"

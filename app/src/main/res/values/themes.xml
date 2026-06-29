@@ -3,8 +3,6 @@
     <style name="Base.Theme.NaviLink" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <item name="android:windowBackground">#FF121212</item>
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
     </style>
 
     <style name="Theme.NaviLink" parent="Base.Theme.NaviLink" />

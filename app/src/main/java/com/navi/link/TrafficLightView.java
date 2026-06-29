@@ -1,0 +1,218 @@
+package com.navi.link;
+
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
+import android.content.Context;
+import android.content.SharedPreferences;
+import android.graphics.drawable.GradientDrawable;
+import android.util.AttributeSet;
+import android.util.TypedValue;
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+public class TrafficLightView extends LinearLayout {
+
+    private ImageView ivLightIcon;
+    private ImageView ivLightArrow;
+    private TextView tvLightTime;
+    private FrameLayout flIconContainer;
+
+    private boolean isCompact = false;
+    private ObjectAnimator blinkAnimator;
+    private SharedPreferences sp;
+
+    // 填充背景颜色常量（与图标资源颜色一致）
+    private static final int FILL_COLOR_RED = 0xFFFF3333;
+    private static final int FILL_COLOR_YELLOW = 0xFFCC9900;
+    private static final int FILL_COLOR_GREEN = 0xFF34C759;
+
+    public TrafficLightView(Context context) {
+        super(context);
+        init(context);
+    }
+
+    public TrafficLightView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init(context);
+    }
+
+    private void init(Context context) {
+        sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+
+        setOrientation(HORIZONTAL);
+        setGravity(Gravity.CENTER_VERTICAL);
+        setPadding(dpToPx(3), 0, dpToPx(10), 0);
+        setMinimumHeight(dpToPx(50)); // 默认胶囊高度50dp，与导航布局一致
+
+        LayoutInflater.from(context).inflate(R.layout.traffic_light_view, this, true);
+
+        flIconContainer = findViewById(R.id.fl_light_icon_container);
+        ivLightIcon = findViewById(R.id.iv_light_icon);
+        ivLightArrow = findViewById(R.id.iv_light_arrow);
+        tvLightTime = findViewById(R.id.tv_light_time);
+    }
+
+    /**
+     * 设置红绿灯数据
+     * @param status 灯状态码（导航: 4绿/1红/else黄  巡航: 1绿/0红/else黄）
+     * @param dir 方向
+     * @param countdown 倒计时秒数
+     * @param isNavi true=导航, false=巡航
+     */
+    public void setData(int status, int dir, int countdown, boolean isNavi) {
+        setVisibility(View.VISIBLE);
+
+        // 设置灯图标
+        ivLightIcon.setImageResource(isNavi ? getNaviLightIconRes(status) : getCruiseLightIconRes(status));
+        // 设置方向箭头
+        ivLightArrow.setImageResource(isNavi ? getNaviLightDirRes(dir) : getCruiseLightDirRes(dir));
+        // 设置倒计时
+        tvLightTime.setText(String.valueOf(countdown));
+
+        // 应用胶囊背景样式（填充/默认）
+        applyFillStyle(status, isNavi);
+
+        // 5秒以内闪烁
+        if (countdown <= 5) {
+            if (blinkAnimator == null) {
+                blinkAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0.3f);
+                blinkAnimator.setDuration(500);
+                blinkAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                blinkAnimator.setRepeatMode(ValueAnimator.REVERSE);
+                blinkAnimator.start();
+            }
+        } else {
+            cancelBlink();
+            setAlpha(1f);
+        }
+    }
+
+    /**
+     * 设置为紧凑模式（巡航超过3灯时缩小尺寸）
+     */
+    public void setCompact(boolean compact) {
+        if (isCompact == compact) return;
+        isCompact = compact;
+
+        if (compact) {
+            // 缩小图标容器 45dp -> 35dp
+            ViewGroup.LayoutParams iconLp = flIconContainer.getLayoutParams();
+            iconLp.width = dpToPx(35);
+            iconLp.height = dpToPx(35);
+            flIconContainer.setLayoutParams(iconLp);
+
+            // 缩小箭头 padding 4dp -> 3dp
+            ivLightArrow.setPadding(dpToPx(3), dpToPx(3), dpToPx(3), dpToPx(3));
+
+            // 缩小文字 30sp -> 25sp
+            tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+
+            // 缩小容器内边距
+            setPadding(dpToPx(2), 0, dpToPx(6), 0);
+            setMinimumHeight(dpToPx(40)); // 紧凑胶囊高度40dp
+        }
+    }
+
+    /**
+     * 重置隐藏，取消闪烁动画
+     */
+    public void clear() {
+        cancelBlink();
+        setVisibility(View.GONE);
+        setAlpha(1f);
+        tvLightTime.setText("");
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        cancelBlink();
+    }
+
+    private void cancelBlink() {
+        if (blinkAnimator != null) {
+            blinkAnimator.cancel();
+            blinkAnimator = null;
+        }
+    }
+
+    // ======================== 填充背景样式 ========================
+
+    private void applyFillStyle(int status, boolean isNavi) {
+        boolean fillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
+
+        if (fillEnabled) {
+            int fillColor = getFillColor(status, isNavi);
+            float density = getResources().getDisplayMetrics().density;
+
+            float currentScale = 1.0f;
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                currentScale = fwm.getScale();
+            }
+
+            GradientDrawable drawable = new GradientDrawable();
+            drawable.setShape(GradientDrawable.RECTANGLE);
+            drawable.setColor(fillColor);
+            drawable.setCornerRadius(30 * density * currentScale);
+            drawable.setStroke((int) (2 * density * currentScale + 0.5f), 0xFFFFFFFF);
+            setBackground(drawable);
+
+            ivLightIcon.setVisibility(View.GONE);
+        } else {
+            setBackgroundResource(R.drawable.bg_traffic_light_capsule);
+            ivLightIcon.setVisibility(View.VISIBLE);
+        }
+    }
+
+    private int getFillColor(int status, boolean isNavi) {
+        if (isNavi) {
+            if (status == 4) return FILL_COLOR_GREEN;
+            if (status == 1) return FILL_COLOR_RED;
+            return FILL_COLOR_YELLOW;
+        } else {
+            if (status == 1) return FILL_COLOR_GREEN;
+            if (status == 0) return FILL_COLOR_RED;
+            return FILL_COLOR_YELLOW;
+        }
+    }
+
+    // ======================== 资源映射 ========================
+
+    private int getNaviLightIconRes(int status) {
+        if (status == 4) return R.drawable.ic_traffic_light_green;
+        if (status == 1) return R.drawable.ic_traffic_light_red;
+        return R.drawable.ic_traffic_light_yellow;
+    }
+
+    private int getNaviLightDirRes(int dir) {
+        if (dir == 1) return R.mipmap.light_left;
+        if (dir == 2) return R.mipmap.light_right;
+        if (dir == 3) return R.mipmap.light_u_turn;
+        if (dir == 4) return R.mipmap.light_straight;
+        return R.mipmap.light_straight;
+    }
+
+    private int getCruiseLightIconRes(int status) {
+        if (status == 1) return R.drawable.ic_traffic_light_green;
+        if (status == 0) return R.drawable.ic_traffic_light_red;
+        return R.drawable.ic_traffic_light_yellow;
+    }
+
+    private int getCruiseLightDirRes(int dir) {
+        if (dir == 1) return R.mipmap.light_left;
+        if (dir == 2) return R.mipmap.light_straight;
+        if (dir == 3) return R.mipmap.light_right;
+        return R.mipmap.light_straight;
+    }
+
+    private int dpToPx(int dp) {
+        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
+    }
+}

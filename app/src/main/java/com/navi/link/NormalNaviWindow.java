@@ -32,6 +32,8 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     private TextView tvSapaDist1;
     private TextView tvSapaName2;
     private TextView tvSapaDist2;
+    private ImageView ivSapaBadge1;
+    private ImageView ivSapaBadge2;
 
     private String mOriginalRoadName = "";
     private String mExitName = "";
@@ -43,10 +45,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     private int mCameraType = 0;
     private int mTrafficLightCountdown = 0;
 
-    private View llTrafficLightGroup;
-    private ImageView ivLightIcon;
-    private ImageView ivLightArrow;
-    private TextView tvLightTime;
+    private TrafficLightView llTrafficLightGroup;
 
     public NormalNaviWindow(Context context, View floatingView) {
         super(context, floatingView);
@@ -75,13 +74,10 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         tvSapaDist1 = floatingView.findViewById(R.id.tv_sapa_dist_1);
         tvSapaName2 = floatingView.findViewById(R.id.tv_sapa_name_2);
         tvSapaDist2 = floatingView.findViewById(R.id.tv_sapa_dist_2);
+        ivSapaBadge1 = floatingView.findViewById(R.id.iv_sapa_badge_1);
+        ivSapaBadge2 = floatingView.findViewById(R.id.iv_sapa_badge_2);
 
         llTrafficLightGroup = floatingView.findViewById(R.id.ll_traffic_light_group);
-        if (llTrafficLightGroup != null) {
-            ivLightIcon = llTrafficLightGroup.findViewById(R.id.iv_light_icon);
-            ivLightArrow = llTrafficLightGroup.findViewById(R.id.iv_light_arrow);
-            tvLightTime = llTrafficLightGroup.findViewById(R.id.tv_light_time);
-        }
 
         if (tmcProgressBar != null) {
             boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
@@ -175,46 +171,13 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             return;
         }
         if (countdown <= 0) {
-            llTrafficLightGroup.setVisibility(View.GONE);
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroup.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroup.setTag(null);
-            }
-            llTrafficLightGroup.setAlpha(1f);
+            llTrafficLightGroup.clear();
             updateCameraDistVisibility();
             return;
         }
         llTrafficLightGroup.setVisibility(View.VISIBLE);
+        llTrafficLightGroup.setData(status, dir, countdown, true);
         updateCameraDistVisibility();
-        if (ivLightIcon != null) {
-            ivLightIcon.setImageResource(getNaviLightIconRes(status));
-        }
-        if (ivLightArrow != null) {
-            ivLightArrow.setImageResource(getNaviLightDirRes(dir));
-        }
-        if (tvLightTime != null) {
-            tvLightTime.setText(String.valueOf(countdown));
-        }
-
-        if (countdown <= 5) {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroup.getTag();
-            if (animator == null) {
-                ObjectAnimator newAnimator = ObjectAnimator.ofFloat(llTrafficLightGroup, "alpha", 1f, 0.3f);
-                newAnimator.setDuration(500);
-                newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                newAnimator.start();
-                llTrafficLightGroup.setTag(newAnimator);
-            }
-        } else {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroup.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroup.setTag(null);
-            }
-            llTrafficLightGroup.setAlpha(1f);
-        }
     }
 
     private void updateCameraDistVisibility() {
@@ -331,22 +294,6 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (tvSapaDist1 != null) tvSapaDist1.setTextColor(textPrimary);
         if (tvSapaName2 != null) tvSapaName2.setTextColor(textPrimary);
         if (tvSapaDist2 != null) tvSapaDist2.setTextColor(textPrimary);
-        TextView tvSapaBadge1 = floatingView.findViewById(R.id.tv_sapa_badge_1);
-        TextView tvSapaBadge2 = floatingView.findViewById(R.id.tv_sapa_badge_2);
-        if (tvSapaBadge1 != null) {
-            tvSapaBadge1.setTextColor(textSecondary);
-            Drawable bg = tvSapaBadge1.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
-            }
-        }
-        if (tvSapaBadge2 != null) {
-            tvSapaBadge2.setTextColor(textSecondary);
-            Drawable bg = tvSapaBadge2.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
-            }
-        }
         View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider);
         if (sapaDivider != null) {
             sapaDivider.setBackgroundColor(isNightMode ? 0x2AFFFFFF : 0x2A000000);
@@ -377,22 +324,6 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (tvSapaDist1 != null) tvSapaDist1.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaName2 != null) tvSapaName2.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaDist2 != null) tvSapaDist2.setTextColor(TEXT_PRIMARY_DARK);
-        TextView tvSapaBadge1 = floatingView.findViewById(R.id.tv_sapa_badge_1);
-        TextView tvSapaBadge2 = floatingView.findViewById(R.id.tv_sapa_badge_2);
-        if (tvSapaBadge1 != null) {
-            tvSapaBadge1.setTextColor(TEXT_SECONDARY_DARK);
-            Drawable bg = tvSapaBadge1.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(0x33FFFFFF);
-            }
-        }
-        if (tvSapaBadge2 != null) {
-            tvSapaBadge2.setTextColor(TEXT_SECONDARY_DARK);
-            Drawable bg = tvSapaBadge2.getBackground();
-            if (bg instanceof GradientDrawable) {
-                ((GradientDrawable) bg.mutate()).setColor(0x33FFFFFF);
-            }
-        }
         View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider);
         if (sapaDivider != null) {
             sapaDivider.setBackgroundColor(0x2AFFFFFF);
@@ -414,7 +345,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     }
 
     @Override
-    public void updateSapaInfo(String sapaName, String sapaDist, String nextSapaName, String nextSapaDist) {
+    public void updateSapaInfo(String sapaName, String sapaDist, int sapaType, String nextSapaName, String nextSapaDist, int nextSapaType) {
         boolean hasFirst = sapaName != null && !sapaName.trim().isEmpty();
         if (!hasFirst) {
             if (layoutSapaGroup != null) {
@@ -428,6 +359,10 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             layoutSapaGroup.setVisibility(View.VISIBLE);
         }
 
+        if (ivSapaBadge1 != null) {
+            ivSapaBadge1.setImageResource(sapaType == 0 ? R.drawable.spap_0 : R.drawable.spap_1);
+            ivSapaBadge1.setBackgroundResource(sapaType == 0 ? R.drawable.bg_sapa_0 : R.drawable.bg_sapa_1);
+        }
         if (tvSapaName1 != null) {
             tvSapaName1.setText(sapaName);
         }
@@ -441,6 +376,10 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             row2.setVisibility(hasSecond ? View.VISIBLE : View.GONE);
         }
         if (hasSecond) {
+            if (ivSapaBadge2 != null) {
+                ivSapaBadge2.setImageResource(nextSapaType == 0 ? R.drawable.spap_0 : R.drawable.spap_1);
+                ivSapaBadge2.setBackgroundResource(nextSapaType == 0 ? R.drawable.bg_sapa_0 : R.drawable.bg_sapa_1);
+            }
             if (tvSapaName2 != null) {
                 tvSapaName2.setText(nextSapaName);
             }
@@ -465,14 +404,6 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (llTrafficLightGroup != null) {
-            ObjectAnimator animator = (ObjectAnimator) llTrafficLightGroup.getTag();
-            if (animator != null) {
-                animator.cancel();
-                llTrafficLightGroup.setTag(null);
-            }
-            llTrafficLightGroup.setAlpha(1f);
-        }
         if (ivTurnIcon != null) {
             ObjectAnimator animator = (ObjectAnimator) ivTurnIcon.getTag();
             if (animator != null) {

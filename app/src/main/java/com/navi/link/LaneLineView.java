@@ -28,10 +28,10 @@ import java.util.Comparator;
 public class LaneLineView extends LinearLayout {
 
     private static final String TAG = "LaneLineView";
-    private static final int LANE_ICON_BASE_DP = 36;
-    private static final int LANE_MARGIN_DP = 2;
+    private static final int LANE_ICON_BASE_DP = 44;
+    private static final int LANE_MARGIN_DP = 1;
     private static final int DIVIDER_WIDTH_DP = 1;
-    private static final int DIVIDER_HEIGHT_DP = 28;
+    private static final int DIVIDER_HEIGHT_DP = 34;
 
     private String cachedDriveWayJson = null;
     private boolean isCompactMode = false; // true=wrap_content(≤3条), false=match_parent(>3条)
@@ -46,8 +46,8 @@ public class LaneLineView extends LinearLayout {
             setPadding(paddingH, paddingV, paddingH, paddingV);
         } else {
             setBackgroundResource(R.drawable.bg_lane_line);
-            int paddingH = dpToPx(8);
-            int paddingV = dpToPx(4);
+            int paddingH = dpToPx(0);
+            int paddingV = dpToPx(2);
             setPadding(paddingH, paddingV, paddingH, paddingV);
         }
     }
@@ -71,8 +71,8 @@ public class LaneLineView extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
         setBackgroundResource(R.drawable.bg_lane_line);
-        int paddingH = dpToPx(8);
-        int paddingV = dpToPx(4);
+        int paddingH = dpToPx(0);
+        int paddingV = dpToPx(2);
         setPadding(paddingH, paddingV, paddingH, paddingV);
     }
 
@@ -152,8 +152,8 @@ public class LaneLineView extends LinearLayout {
         if (isSimpleMode) {
             removeAllViews();
             float scale = FloatingWindowManager.getInstance().getScale();
-            int iconPx = Math.round(dpToPx(40) * scale);
-            int marginPx = Math.round(dpToPx(2) * scale);
+            int iconPx = Math.round(dpToPx(50) * scale);
+            int marginPx = Math.round(dpToPx(1) * scale);
             for (int i = 0; i < targetCount; i++) {
                 ImageView iv = new ImageView(getContext());
                 iv.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
