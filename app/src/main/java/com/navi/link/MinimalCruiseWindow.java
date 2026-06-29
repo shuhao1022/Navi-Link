@@ -87,9 +87,14 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
                 }
                 tvCruiseSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色
-                int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                tvCruiseSpeed.setTextColor(accentColor);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvCruiseSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色
+                    int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+                    tvCruiseSpeed.setTextColor(accentColor);
+                }
             }
             tvCruiseSpeed.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
@@ -228,7 +233,13 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
         if (tvCruiseSpeed != null && !isOverspeedBlinking) {
-            tvCruiseSpeed.setTextColor(accentColor);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvCruiseSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvCruiseSpeed.setTextColor(accentColor);
+            }
         }
 
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
@@ -241,6 +252,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textSecondary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         if (tvCruiseRoadName != null) {
             tvCruiseRoadName.setTextColor(textSecondary);

@@ -154,6 +154,10 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbMinimalDirectionEnabled;
     private TextView tvMinimalDirectionStatus;
 
+    private MaterialCardView cardMinimalTurnInfoToggle;
+    private SwitchCompat cbMinimalTurnInfoEnabled;
+    private TextView tvMinimalTurnInfoStatus;
+
     private MaterialCardView cardMinimalSpeedToggle;
     private SwitchCompat cbMinimalSpeedEnabled;
     private TextView tvMinimalSpeedStatus;
@@ -240,6 +244,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isMinimalCameraEnabled = false;
     private boolean isMinimalRoadNameEnabled = true;
     private boolean isMinimalDirectionEnabled = false;
+    private boolean isMinimalTurnInfoEnabled = true;
     private boolean isMinimalSpeedEnabled = true;
     private boolean isMinimalLightCountEnabled = false;
     private boolean isMinimalAccentNaviInfoEnabled = false;
@@ -466,6 +471,10 @@ public class MainActivity extends AppCompatActivity {
         cbMinimalDirectionEnabled = findViewById(R.id.cb_minimal_direction_enabled);
         tvMinimalDirectionStatus = findViewById(R.id.tv_minimal_direction_status);
 
+        cardMinimalTurnInfoToggle = findViewById(R.id.card_minimal_turn_info_toggle);
+        cbMinimalTurnInfoEnabled = findViewById(R.id.cb_minimal_turn_info_enabled);
+        tvMinimalTurnInfoStatus = findViewById(R.id.tv_minimal_turn_info_status);
+
         cardMinimalSpeedToggle = findViewById(R.id.card_minimal_speed_toggle);
         cbMinimalSpeedEnabled = findViewById(R.id.cb_minimal_speed_enabled);
         tvMinimalSpeedStatus = findViewById(R.id.tv_minimal_speed_status);
@@ -500,6 +509,7 @@ public class MainActivity extends AppCompatActivity {
         isMinimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
         isMinimalRoadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
         isMinimalDirectionEnabled = sp.getBoolean("minimal_direction_enabled", false);
+        isMinimalTurnInfoEnabled = sp.getBoolean("minimal_turn_info_enabled", true);
         isMinimalSpeedEnabled = sp.getBoolean("minimal_speed_enabled", true);
         isMinimalLightCountEnabled = sp.getBoolean("minimal_light_count_enabled", false);
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
@@ -560,6 +570,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvMinimalDirectionStatus != null) {
             tvMinimalDirectionStatus.setText(isMinimalDirectionEnabled ? "方向显示已启用" : "方向显示已禁用");
+        }
+        if (cbMinimalTurnInfoEnabled != null) {
+            cbMinimalTurnInfoEnabled.setChecked(isMinimalTurnInfoEnabled);
+        }
+        if (tvMinimalTurnInfoStatus != null) {
+            tvMinimalTurnInfoStatus.setText(isMinimalTurnInfoEnabled ? "转向信息已启用" : "转向信息已禁用");
         }
         if (cbMinimalSpeedEnabled != null) {
             cbMinimalSpeedEnabled.setChecked(isMinimalSpeedEnabled);
@@ -805,6 +821,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("minimal_camera_enabled", isMinimalCameraEnabled);
         editor.putBoolean("minimal_road_name_enabled", isMinimalRoadNameEnabled);
         editor.putBoolean("minimal_direction_enabled", isMinimalDirectionEnabled);
+        editor.putBoolean("minimal_turn_info_enabled", isMinimalTurnInfoEnabled);
         editor.putBoolean("minimal_speed_enabled", isMinimalSpeedEnabled);
         editor.putBoolean("minimal_light_count_enabled", isMinimalLightCountEnabled);
         editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
@@ -916,6 +933,7 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
         updateSwitchTheme(cbMinimalRoadNameEnabled, accentColor);
         updateSwitchTheme(cbMinimalDirectionEnabled, accentColor);
+        updateSwitchTheme(cbMinimalTurnInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalSpeedEnabled, accentColor);
         updateSwitchTheme(cbMinimalLightCountEnabled, accentColor);
         updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
@@ -1365,6 +1383,27 @@ public class MainActivity extends AppCompatActivity {
             cardMinimalDirectionToggle.setOnClickListener(v -> {
                 if (cbMinimalDirectionEnabled != null) {
                     cbMinimalDirectionEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbMinimalTurnInfoEnabled != null) {
+            cbMinimalTurnInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalTurnInfoEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalTurnInfoStatus != null) {
+                    tvMinimalTurnInfoStatus.setText(isChecked ? "转向信息已启用" : "转向信息已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalTurnInfoToggle != null) {
+            cardMinimalTurnInfoToggle.setOnClickListener(v -> {
+                if (cbMinimalTurnInfoEnabled != null) {
+                    cbMinimalTurnInfoEnabled.toggle();
                 }
             });
         }

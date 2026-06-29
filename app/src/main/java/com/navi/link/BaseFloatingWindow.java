@@ -24,6 +24,8 @@ public abstract class BaseFloatingWindow {
     protected static final int TEXT_SECONDARY_DARK = 0xBBFFFFFF;
     protected static final int TEXT_HINT_DARK = 0xFF888888;
 
+    protected boolean isNightMode = true;
+
     public BaseFloatingWindow(Context context, View floatingView) {
         this.context = context;
         this.floatingView = floatingView;

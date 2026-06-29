@@ -19,6 +19,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     private TextView tvMinDirection;
     private TextView tvMinLightCount;
     private View minDividerMin;
+    private View naviMinDivider;
 
     private TrafficLightView llTrafficLightGroupMin;
 
@@ -48,6 +49,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         tvMinDirection = floatingView.findViewById(R.id.tv_min_direction);
         tvMinLightCount = floatingView.findViewById(R.id.tv_min_light_count);
         minDividerMin = floatingView.findViewById(R.id.min_divider);
+        naviMinDivider = floatingView.findViewById(R.id.navi_min_divider);
 
         llTrafficLightGroupMin = floatingView.findViewById(R.id.ll_traffic_light_group);
 
@@ -96,6 +98,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             }
         }
         boolean speedEnabled = sp.getBoolean("minimal_speed_enabled", true);
+        boolean turnInfoEnabled = sp.getBoolean("minimal_turn_info_enabled", true);
         if (tvMinSpeed != null) {
             tvMinSpeed.setText(String.valueOf(curSpeed));
             // 超速警告：限速优先用cameraSpeed，为0则用limitedSpeed
@@ -122,9 +125,14 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
                 }
                 tvMinSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色
-                int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                tvMinSpeed.setTextColor(accentColor);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvMinSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色
+                    int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+                    tvMinSpeed.setTextColor(accentColor);
+                }
             }
             tvMinSpeed.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
@@ -132,7 +140,19 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             tvMinSpeedUnit.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
         }
         if (minDividerMin != null) {
-            minDividerMin.setVisibility(speedEnabled ? View.VISIBLE : View.GONE);
+            minDividerMin.setVisibility(speedEnabled && turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (ivActionIconMin != null) {
+            ivActionIconMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvDistanceNumMin != null) {
+            tvDistanceNumMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (tvDistanceUnitMin != null) {
+            tvDistanceUnitMin.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
+        }
+        if (naviMinDivider != null) {
+            naviMinDivider.setVisibility(turnInfoEnabled ? View.VISIBLE : View.GONE);
         }
         if (tvDistanceNumMin != null) {
             tvDistanceNumMin.setText(disNum);
@@ -222,7 +242,13 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
         if (tvMinSpeed != null && !isOverspeedBlinking) {
-            tvMinSpeed.setTextColor(accentColor);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvMinSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvMinSpeed.setTextColor(accentColor);
+            }
         }
         
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
@@ -239,6 +265,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 

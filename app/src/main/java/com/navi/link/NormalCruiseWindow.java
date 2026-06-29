@@ -74,9 +74,14 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
                 }
                 tvCnSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色
-                int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                tvCnSpeed.setTextColor(accentColor);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvCnSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色
+                    int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+                    tvCnSpeed.setTextColor(accentColor);
+                }
             }
         }
         if (tvCnRoadName != null && roadName != null) {
@@ -193,12 +198,19 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
         if (tvCnSpeed != null && !isOverspeedBlinking) {
-            tvCnSpeed.setTextColor(accentColor);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvCnSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvCnSpeed.setTextColor(accentColor);
+            }
         }
     }
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 

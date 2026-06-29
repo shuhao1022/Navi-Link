@@ -143,9 +143,14 @@ public class FullNaviWindow extends BaseFloatingWindow {
                 }
                 tvFullSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 恢复正常主题色（黑色主题用蓝色）
-                int fullCardAccent = isDarkThemeColor(themeColor) ? 0xFF0099FF : themeColor;
-                tvFullSpeed.setTextColor(fullCardAccent);
+                // 全透明 + 黑色主题：速度颜色跟随昼夜
+                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                    tvFullSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                } else {
+                    // 恢复正常主题色（黑色主题用蓝色）
+                    int fullCardAccent = isDarkThemeColor(themeColor) ? 0xFF0099FF : themeColor;
+                    tvFullSpeed.setTextColor(fullCardAccent);
+                }
             }
         }
 
@@ -269,7 +274,13 @@ public class FullNaviWindow extends BaseFloatingWindow {
         }
 
         if (tvFullSpeed != null && !isOverspeedBlinking) {
-            tvFullSpeed.setTextColor(fullCardAccent);
+            // 全透明 + 黑色主题：速度颜色跟随昼夜
+            if (themeColor == 0xFF1A1A1A && backgroundMode == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvFullSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvFullSpeed.setTextColor(fullCardAccent);
+            }
         }
         if (tvFullSpeedUnit != null) {
             tvFullSpeedUnit.setTextColor(fullCardAccent);
@@ -291,6 +302,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
 
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
+        this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
         int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 
