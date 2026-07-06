@@ -83,6 +83,13 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton rbMinimal;
     private RadioButton rbNormal;
     private RadioButton rbFull;
+    // 巡航窗口样式
+    private MaterialCardView cardCruiseNormal;
+    private MaterialCardView cardCruiseMinimal;
+    private MaterialCardView cardCruiseFull;
+    private RadioButton rbCruiseNormal;
+    private RadioButton rbCruiseMinimal;
+    private RadioButton rbCruiseFull;
     private RadioButton rbServiceOnly;
     private RadioButton rbNormalStart;
     private RadioButton rbBgDark;
@@ -143,6 +150,10 @@ public class MainActivity extends AppCompatActivity {
     private MaterialCardView cardNormalBottomInfoToggle;
     private SwitchCompat cbNormalBottomInfoEnabled;
     private TextView tvNormalBottomInfoStatus;
+
+    private MaterialCardView cardNormalCruiseInfoToggle;
+    private SwitchCompat cbNormalCruiseInfoEnabled;
+    private TextView tvNormalCruiseInfoStatus;
 
     private MaterialCardView cardMinimalLaneToggle;
     private SwitchCompat cbMinimalLaneEnabled;
@@ -225,6 +236,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean isMinimalStyle = false;
     private int styleMode = 0;
+    private int cruiseStyleMode = 0; // 0=常规巡航, 1=灵动岛巡航, 2=全数据巡航
     private boolean isServiceOnlyMode = false;
     private int startupMode = 0; // 0=正常, 1=纯服务, 2=启动高德地图
     private String targetAmapPackage = "";
@@ -233,6 +245,9 @@ public class MainActivity extends AppCompatActivity {
     private boolean normalLaneEnabled = false;
     private boolean avoidForegroundEnabled = false;
     private boolean overspeedWarningEnabled = true;
+    private int overspeedThreshold = 0;
+    private View[] overspeedThresholdChips;
+    private LinearLayout llOverspeedThresholdRow;
 
     private boolean clusterMirrorEnabled = false;
     private int clusterDisplayId = -1;
@@ -241,6 +256,7 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean normalTmcEnabled = true;
     private boolean normalBottomInfoEnabled = true;
+    private boolean normalCruiseInfoEnabled = true;
     private boolean minimalLaneEnabled = false;
 
     private boolean isMinimalCameraEnabled = false;
@@ -341,6 +357,12 @@ public class MainActivity extends AppCompatActivity {
         rbNormal = findViewById(R.id.rb_normal);
         rbMinimal = findViewById(R.id.rb_minimal);
         rbFull = findViewById(R.id.rb_full);
+        cardCruiseNormal = findViewById(R.id.card_cruise_normal);
+        cardCruiseMinimal = findViewById(R.id.card_cruise_minimal);
+        cardCruiseFull = findViewById(R.id.card_cruise_full);
+        rbCruiseNormal = findViewById(R.id.rb_cruise_normal);
+        rbCruiseMinimal = findViewById(R.id.rb_cruise_minimal);
+        rbCruiseFull = findViewById(R.id.rb_cruise_full);
         rbServiceOnly = findViewById(R.id.rb_service_only);
         rbNormalStart = findViewById(R.id.rb_normal_start);
         rbBgDark = findViewById(R.id.rb_bg_dark);
@@ -368,6 +390,14 @@ public class MainActivity extends AppCompatActivity {
         cbOverspeedWarningEnabled = findViewById(R.id.cb_overspeed_warning_enabled);
         tvOverspeedWarningStatus = findViewById(R.id.tv_overspeed_warning_status);
         cardOverspeedWarningToggle = findViewById(R.id.card_overspeed_warning_toggle);
+        llOverspeedThresholdRow = findViewById(R.id.ll_overspeed_threshold_row);
+        overspeedThresholdChips = new View[]{
+                findViewById(R.id.chip_overspeed_0),
+                findViewById(R.id.chip_overspeed_10),
+                findViewById(R.id.chip_overspeed_20),
+                findViewById(R.id.chip_overspeed_30),
+                findViewById(R.id.chip_overspeed_50)
+        };
         cbMinimalCameraEnabled = findViewById(R.id.cb_minimal_camera_enabled);
         tvMinimalCameraStatus = findViewById(R.id.tv_minimal_camera_status);
         cardMinimalCameraToggle = findViewById(R.id.card_minimal_camera_toggle);
@@ -461,6 +491,10 @@ public class MainActivity extends AppCompatActivity {
         cbNormalBottomInfoEnabled = findViewById(R.id.cb_normal_bottom_info_enabled);
         tvNormalBottomInfoStatus = findViewById(R.id.tv_normal_bottom_info_status);
 
+        cardNormalCruiseInfoToggle = findViewById(R.id.card_normal_cruise_info_toggle);
+        cbNormalCruiseInfoEnabled = findViewById(R.id.cb_normal_cruise_info_enabled);
+        tvNormalCruiseInfoStatus = findViewById(R.id.tv_normal_cruise_info_status);
+
         cardMinimalLaneToggle = findViewById(R.id.card_minimal_lane_toggle);
         cbMinimalLaneEnabled = findViewById(R.id.cb_minimal_lane_enabled);
         tvMinimalLaneStatus = findViewById(R.id.tv_minimal_lane_status);
@@ -494,6 +528,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences sp = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
         isMinimalStyle = sp.getBoolean(KEY_IS_MINIMAL, false);
         styleMode = sp.getInt(KEY_STYLE_MODE, isMinimalStyle ? 1 : 0);
+        cruiseStyleMode = sp.getInt("cruise_style_mode", 0);
         themeColor = sp.getInt(KEY_THEME_COLOR, 0xFF4FC3F7);
         isServiceOnlyMode = sp.getBoolean(KEY_IS_SERVICE_ONLY, false);
         startupMode = sp.getInt("startup_mode", isServiceOnlyMode ? 1 : 0);
@@ -508,6 +543,7 @@ public class MainActivity extends AppCompatActivity {
         normalLaneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
         avoidForegroundEnabled = sp.getBoolean("hide_on_amap_foreground", false);
         overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
+        overspeedThreshold = sp.getInt("overspeed_threshold", 0);
         isMinimalCameraEnabled = sp.getBoolean("minimal_camera_enabled", false);
         isMinimalRoadNameEnabled = sp.getBoolean("minimal_road_name_enabled", true);
         isMinimalDirectionEnabled = sp.getBoolean("minimal_direction_enabled", false);
@@ -522,6 +558,7 @@ public class MainActivity extends AppCompatActivity {
         autoStartEnabled = sp.getBoolean("auto_start", false);
         normalTmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
         normalBottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
+        normalCruiseInfoEnabled = sp.getBoolean("normal_cruise_info_enabled", true);
         minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
         isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
         crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
@@ -631,6 +668,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvNormalBottomInfoStatus != null) {
             tvNormalBottomInfoStatus.setText(normalBottomInfoEnabled ? "底栏到达信息已启用" : "底栏到达信息已禁用");
+        }
+        if (cbNormalCruiseInfoEnabled != null) {
+            cbNormalCruiseInfoEnabled.setChecked(normalCruiseInfoEnabled);
+        }
+        if (tvNormalCruiseInfoStatus != null) {
+            tvNormalCruiseInfoStatus.setText(normalCruiseInfoEnabled ? "第一排图文信息已启用" : "第一排图文信息已禁用");
         }
         if (cbMinimalLaneEnabled != null) {
             cbMinimalLaneEnabled.setChecked(minimalLaneEnabled);
@@ -754,11 +797,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void selectStyle(int mode) {
         if (styleMode == mode) return;
-        FloatingWindowManager manager = FloatingWindowManager.getInstance();
-        if (manager == null || !manager.isActive()) {
-            Toast.makeText(this, "悬浮窗未收到导航数据，无法切换样式", Toast.LENGTH_SHORT).show();
-            return;
-        }
         styleMode = mode;
         isMinimalStyle = (mode == 1);
         updateStyleSelection();
@@ -775,6 +813,25 @@ public class MainActivity extends AppCompatActivity {
         cardNormal.setStrokeColor(styleMode == 0 ? accentColor : Color.parseColor("#444444"));
         cardMinimal.setStrokeColor(styleMode == 1 ? accentColor : Color.parseColor("#444444"));
         cardFull.setStrokeColor(styleMode == 2 ? accentColor : Color.parseColor("#444444"));
+    }
+
+    private void selectCruiseStyle(int mode) {
+        if (cruiseStyleMode == mode) return;
+        cruiseStyleMode = mode;
+        updateCruiseStyleSelection();
+        updateSeekBarToCurrentScale();
+        savePreferences();
+        updateFloatingWindowStyle();
+    }
+
+    private void updateCruiseStyleSelection() {
+        rbCruiseNormal.setChecked(cruiseStyleMode == 0);
+        rbCruiseMinimal.setChecked(cruiseStyleMode == 1);
+        rbCruiseFull.setChecked(cruiseStyleMode == 2);
+        int accentColor = getAccentColor();
+        cardCruiseNormal.setStrokeColor(cruiseStyleMode == 0 ? accentColor : Color.parseColor("#444444"));
+        cardCruiseMinimal.setStrokeColor(cruiseStyleMode == 1 ? accentColor : Color.parseColor("#444444"));
+        cardCruiseFull.setStrokeColor(cruiseStyleMode == 2 ? accentColor : Color.parseColor("#444444"));
     }
 
     private void selectBackgroundMode(int mode) {
@@ -802,6 +859,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
         editor.putBoolean(KEY_IS_MINIMAL, isMinimalStyle)
                 .putInt(KEY_STYLE_MODE, styleMode)
+                .putInt("cruise_style_mode", cruiseStyleMode)
                 .putInt(KEY_THEME_COLOR, themeColor)
                 .putBoolean(KEY_IS_SERVICE_ONLY, startupMode == 1)
                 .putInt("startup_mode", startupMode)
@@ -812,6 +870,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
                 .putBoolean("hide_on_cross_map", crossMapHideEnabled)
                 .putBoolean("overspeed_warning_enabled", overspeedWarningEnabled)
+                .putInt("overspeed_threshold", overspeedThreshold)
                 .putBoolean("cluster_mirror_enabled", clusterMirrorEnabled)
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
@@ -819,6 +878,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
+                .putBoolean("normal_cruise_info_enabled", normalCruiseInfoEnabled)
                 .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled);
         editor.putBoolean("minimal_camera_enabled", isMinimalCameraEnabled);
         editor.putBoolean("minimal_road_name_enabled", isMinimalRoadNameEnabled);
@@ -903,6 +963,7 @@ public class MainActivity extends AppCompatActivity {
         // 更新选择项卡片的描边颜色
         updateStartupSelection();
         updateStyleSelection();
+        updateCruiseStyleSelection();
         updateBackgroundModeSelection();
 
         // 单选按钮（RadioButton）的着色
@@ -914,6 +975,9 @@ public class MainActivity extends AppCompatActivity {
         CompoundButtonCompat.setButtonTintList(rbNormal, accentColorStateList);
         CompoundButtonCompat.setButtonTintList(rbMinimal, accentColorStateList);
         CompoundButtonCompat.setButtonTintList(rbFull, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbCruiseNormal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbCruiseMinimal, accentColorStateList);
+        CompoundButtonCompat.setButtonTintList(rbCruiseFull, accentColorStateList);
         CompoundButtonCompat.setButtonTintList(rbServiceOnly, accentColorStateList);
         CompoundButtonCompat.setButtonTintList(rbNormalStart, accentColorStateList);
         CompoundButtonCompat.setButtonTintList(rbBgDark, accentColorStateList);
@@ -934,6 +998,7 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbTrafficLightFillEnabled, accentColor);
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
+        updateSwitchTheme(cbNormalCruiseInfoEnabled, accentColor);
         updateSwitchTheme(cbMinimalLaneEnabled, accentColor);
         updateSwitchTheme(cbMinimalRoadNameEnabled, accentColor);
         updateSwitchTheme(cbMinimalDirectionEnabled, accentColor);
@@ -1046,6 +1111,9 @@ public class MainActivity extends AppCompatActivity {
         cardNormal.setOnClickListener(v -> selectStyle(0));
         cardMinimal.setOnClickListener(v -> selectStyle(1));
         cardFull.setOnClickListener(v -> selectStyle(2));
+        cardCruiseNormal.setOnClickListener(v -> selectCruiseStyle(0));
+        cardCruiseMinimal.setOnClickListener(v -> selectCruiseStyle(1));
+        cardCruiseFull.setOnClickListener(v -> selectCruiseStyle(2));
         cardBgDark.setOnClickListener(v -> selectBackgroundMode(0));
         cardBgSemi.setOnClickListener(v -> selectBackgroundMode(1));
         cardBgTransparent.setOnClickListener(v -> selectBackgroundMode(2));
@@ -1142,11 +1210,18 @@ public class MainActivity extends AppCompatActivity {
         if (tvOverspeedWarningStatus != null) {
             tvOverspeedWarningStatus.setText(overspeedWarningEnabled ? "超速时车速红色报警并闪烁" : "已关闭超速红色提醒");
         }
+        updateThresholdChips();
+        if (llOverspeedThresholdRow != null) {
+            llOverspeedThresholdRow.setVisibility(overspeedWarningEnabled ? View.VISIBLE : View.GONE);
+        }
         CompoundButton.OnCheckedChangeListener overspeedWarningListener = (buttonView, isChecked) -> {
             overspeedWarningEnabled = isChecked;
             savePreferences();
             if (tvOverspeedWarningStatus != null) {
                 tvOverspeedWarningStatus.setText(isChecked ? "超速时车速红色报警并闪烁" : "已关闭超速红色提醒");
+            }
+            if (llOverspeedThresholdRow != null) {
+                llOverspeedThresholdRow.setVisibility(isChecked ? View.VISIBLE : View.GONE);
             }
             FloatingWindowManager fwm = FloatingWindowManager.getInstance();
             if (fwm != null) {
@@ -1156,6 +1231,22 @@ public class MainActivity extends AppCompatActivity {
         cbOverspeedWarningEnabled.setOnCheckedChangeListener(overspeedWarningListener);
         if (cardOverspeedWarningToggle != null) {
             cardOverspeedWarningToggle.setOnClickListener(v -> cbOverspeedWarningEnabled.toggle());
+        }
+
+        // 阈值 chip 点击监听
+        int[] thresholdValues = {0, 10, 20, 30, 50};
+        for (int i = 0; i < overspeedThresholdChips.length; i++) {
+            final int value = thresholdValues[i];
+            final View chip = overspeedThresholdChips[i];
+            chip.setOnClickListener(v -> {
+                overspeedThreshold = value;
+                savePreferences();
+                updateThresholdChips();
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
         }
 
         cbMinimalCameraEnabled.setChecked(isMinimalCameraEnabled);
@@ -1334,6 +1425,27 @@ public class MainActivity extends AppCompatActivity {
             cardNormalBottomInfoToggle.setOnClickListener(v -> {
                 if (cbNormalBottomInfoEnabled != null) {
                     cbNormalBottomInfoEnabled.toggle();
+                }
+            });
+        }
+
+        if (cbNormalCruiseInfoEnabled != null) {
+            cbNormalCruiseInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                normalCruiseInfoEnabled = isChecked;
+                savePreferences();
+                if (tvNormalCruiseInfoStatus != null) {
+                    tvNormalCruiseInfoStatus.setText(isChecked ? "第一排图文信息已启用" : "第一排图文信息已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardNormalCruiseInfoToggle != null) {
+            cardNormalCruiseInfoToggle.setOnClickListener(v -> {
+                if (cbNormalCruiseInfoEnabled != null) {
+                    cbNormalCruiseInfoEnabled.toggle();
                 }
             });
         }
@@ -1640,7 +1752,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingWindowManager manager = FloatingWindowManager.getInstance();
         int idx;
         if (manager != null && manager.isActive() && manager.getCurrentMode() == FloatingWindowManager.MODE_CRUISE) {
-            idx = (styleMode == 1) ? 1 : 0; // 灵动岛巡航用1，常规巡航/全数据用0
+            idx = (cruiseStyleMode == 1) ? 1 : (cruiseStyleMode == 2 ? 2 : 0); // 灵动岛巡航用1，全数据巡航用2，常规巡航用0
         } else {
             idx = Math.max(0, Math.min(styleMode, 2));
         }
@@ -1721,6 +1833,7 @@ public class MainActivity extends AppCompatActivity {
                 .setTitle("选择投屏屏幕")
                 .setSingleChoiceItems(items, selectedIndex, (dialog, which) -> {
                     DisplayChoice choice = choices.get(which);
+                    clusterDisplayId = choice.displayId;
                     getSharedPreferences(PREFS_NAME, MODE_PRIVATE)
                             .edit()
                             .putInt("cluster_display_id", choice.displayId)
@@ -1895,6 +2008,29 @@ public class MainActivity extends AppCompatActivity {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void updateThresholdChips() {
+        int[] values = {0, 10, 20, 30, 50};
+        boolean isDark = ((themeColor >> 16) & 0xFF) * 0.299
+                + ((themeColor >> 8) & 0xFF) * 0.587
+                + (themeColor & 0xFF) * 0.114 < 100;
+        int accentColor = isDark ? Color.WHITE : themeColor;
+        for (int i = 0; i < overspeedThresholdChips.length; i++) {
+            TextView chip = (TextView) overspeedThresholdChips[i];
+            boolean selected = overspeedThreshold == values[i];
+            GradientDrawable bg = new GradientDrawable();
+            bg.setShape(GradientDrawable.RECTANGLE);
+            bg.setCornerRadius(dpToPx(14));
+            if (selected) {
+                bg.setColor(accentColor);
+                chip.setTextColor(0xFFFFFFFF);
+            } else {
+                bg.setColor(0x33FFFFFF);
+                chip.setTextColor(0xFFAAAAAA);
+            }
+            chip.setBackground(bg);
         }
     }
 }

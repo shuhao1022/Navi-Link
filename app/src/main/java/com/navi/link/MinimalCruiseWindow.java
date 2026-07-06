@@ -241,6 +241,14 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
                 tvCruiseSpeed.setTextColor(accentColor);
             }
         }
+        if (tvCruiseUnit != null && !isOverspeedBlinking) {
+            if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
+                boolean isNight = sp.getBoolean("is_night_mode", true);
+                tvCruiseUnit.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            } else {
+                tvCruiseUnit.setTextColor(accentColor);
+            }
+        }
 
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
         if (accentNaviInfo) {
@@ -253,12 +261,16 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
-        int textSecondary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+        int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
         if (tvCruiseRoadName != null) {
-            tvCruiseRoadName.setTextColor(textSecondary);
+            tvCruiseRoadName.setTextColor(textPrimary);
         }
         if (tvCruiseDirection != null) {
-            tvCruiseDirection.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+            tvCruiseDirection.setTextColor(textPrimary);
+        }
+        if (tvCruiseUnit != null) {
+            tvCruiseUnit.setTextColor(textPrimary);
         }
 
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);
@@ -277,6 +289,9 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         }
         if (tvCruiseDirection != null) {
             tvCruiseDirection.setTextColor(TEXT_PRIMARY_DARK);
+        }
+        if (tvCruiseUnit != null) {
+            tvCruiseUnit.setTextColor(TEXT_PRIMARY_DARK);
         }
 
         boolean accentNaviInfo = sp.getBoolean("minimal_accent_navi_info_enabled", false);

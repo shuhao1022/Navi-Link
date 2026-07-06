@@ -8,6 +8,8 @@ public class FloatingWindowFactory {
         if (currentMode == FloatingWindowManager.MODE_CRUISE) {
             if (styleMode == 1) {
                 return new MinimalCruiseWindow(context, floatingView);
+            } else if (styleMode == 2) {
+                return new FullCruiseWindow(context, floatingView);
             } else {
                 return new NormalCruiseWindow(context, floatingView);
             }

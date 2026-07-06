@@ -28,8 +28,8 @@ import java.util.Comparator;
 public class LaneLineView extends LinearLayout {
 
     private static final String TAG = "LaneLineView";
-    private static final int LANE_ICON_BASE_DP = 44;
-    private static final int LANE_MARGIN_DP = 1;
+    private static final int LANE_ICON_BASE_DP = 50;
+    private static final int LANE_MARGIN_DP = 0;
     private static final int DIVIDER_WIDTH_DP = 1;
     private static final int DIVIDER_HEIGHT_DP = 34;
 
@@ -41,14 +41,10 @@ public class LaneLineView extends LinearLayout {
         this.isSimpleMode = simpleMode;
         if (simpleMode) {
             setBackgroundResource(R.drawable.bg_mini_capsule);
-            int paddingH = dpToPx(0);
-            int paddingV = dpToPx(0);
-            setPadding(paddingH, paddingV, paddingH, paddingV);
+            setPadding(0, 0, 0, 0);
         } else {
             setBackgroundResource(R.drawable.bg_lane_line);
-            int paddingH = dpToPx(0);
-            int paddingV = dpToPx(2);
-            setPadding(paddingH, paddingV, paddingH, paddingV);
+            setPadding(0, 0, 0, 0);
         }
     }
 
@@ -71,9 +67,7 @@ public class LaneLineView extends LinearLayout {
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
         setBackgroundResource(R.drawable.bg_lane_line);
-        int paddingH = dpToPx(0);
-        int paddingV = dpToPx(2);
-        setPadding(paddingH, paddingV, paddingH, paddingV);
+        setPadding(0, 0, 0, 0);
     }
 
     /**
@@ -166,6 +160,9 @@ public class LaneLineView extends LinearLayout {
             return;
         }
 
+        float scale = FloatingWindowManager.getInstance().getScale();
+        int baseIconPx = Math.round(dpToPx(LANE_ICON_BASE_DP) * scale);
+
         boolean compact = targetCount <= 3;
         int totalViews = targetCount + (targetCount - 1);
 
@@ -193,7 +190,7 @@ public class LaneLineView extends LinearLayout {
             if (i > 0) {
                 View divider = new View(getContext());
                 divider.setBackgroundColor(0x44FFFFFF);
-                LayoutParams divLp = new LayoutParams(dpToPx(DIVIDER_WIDTH_DP), dpToPx(DIVIDER_HEIGHT_DP));
+                LayoutParams divLp = new LayoutParams(dpToPx(DIVIDER_WIDTH_DP), Math.round(dpToPx(DIVIDER_HEIGHT_DP) * scale));
                 divLp.gravity = Gravity.CENTER_VERTICAL;
                 divLp.setMargins(marginPx, 0, marginPx, 0);
                 addView(divider, divLp);
@@ -205,12 +202,11 @@ public class LaneLineView extends LinearLayout {
             LayoutParams ivLp;
             if (compact) {
                 // ≤3条：固定图标尺寸，wrap_content 整体包裹
-                int iconPx = dpToPx(LANE_ICON_BASE_DP);
-                ivLp = new LayoutParams(iconPx, iconPx);
+                ivLp = new LayoutParams(baseIconPx, baseIconPx);
                 ivLp.setMargins(marginPx, 0, marginPx, 0);
             } else {
                 // >3条：weight 均分，match_parent 整体拉满
-                ivLp = new LayoutParams(0, dpToPx(LANE_ICON_BASE_DP), 1.0f);
+                ivLp = new LayoutParams(0, baseIconPx, 1.0f);
                 ivLp.setMargins(marginPx, 0, marginPx, 0);
             }
             ivLp.gravity = Gravity.CENTER_VERTICAL;

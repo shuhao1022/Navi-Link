@@ -88,6 +88,7 @@ public class CameraWarningView extends LinearLayout {
             case 2:
             case 15:
                 return R.drawable.camera_light;
+            case 3:
             case 21:
             case 1017:
                 return R.drawable.camera_park;

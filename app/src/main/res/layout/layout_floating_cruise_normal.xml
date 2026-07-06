@@ -20,6 +20,7 @@
 
             <!-- 第一行：速度 + 路名 + 限速 -->
             <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/ll_cruise_normal_first_row"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 

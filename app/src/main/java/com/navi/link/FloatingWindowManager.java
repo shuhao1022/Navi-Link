@@ -72,7 +72,8 @@ public class FloatingWindowManager {
 
     // 状态
     private int currentMode = MODE_CRUISE;
-    private int styleMode = 0; // 0=normal, 1=minimal, 2=full
+    private int styleMode = 0; // 0=normal, 1=minimal, 2=full (导航窗口)
+    private int cruiseStyleMode = 0; // 0=常规巡航, 1=灵动岛巡航, 2=全数据巡航
     // 各模式独立缩放: [0]=常规/常规巡航, [1]=灵动岛/灵动岛巡航, [2]=全数据
     private float[] scales = {1.0f, 1.0f, 1.0f};
     private int themeColor = 0xFF4FC3F7;
@@ -200,6 +201,7 @@ public class FloatingWindowManager {
     private void loadPreferences() {
         SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
         styleMode = sp.getInt("style_mode", sp.getBoolean("is_minimal_style", false) ? 1 : 0);
+        cruiseStyleMode = sp.getInt("cruise_style_mode", 0);
         scales[0] = sp.getFloat("scale_normal", 1.0f);
         scales[1] = sp.getFloat("scale_minimal", 1.0f);
         scales[2] = sp.getFloat("scale_full", 1.0f);
@@ -222,7 +224,11 @@ public class FloatingWindowManager {
 
     /** 当前模式对应的缩放索引: 常规/常规巡航=0, 灵动岛/灵动岛巡航=1, 全数据=2 */
     private int getScaleIndex() {
-        if (currentMode == MODE_CRUISE) return styleMode == 1 ? 1 : 0; // 灵动岛巡航用1，常规巡航用0
+        if (currentMode == MODE_CRUISE) {
+            if (cruiseStyleMode == 1) return 1; // 灵动岛巡航
+            if (cruiseStyleMode == 2) return 2; // 全数据巡航
+            return 0; // 常规巡航
+        }
         if (styleMode == 0) return 0; // 常规
         return styleMode; // 1=灵动岛, 2=全数据
     }
@@ -497,14 +503,17 @@ public class FloatingWindowManager {
             floatingView = null;
         }
 
+        int effectiveStyle = currentMode == MODE_CRUISE ? cruiseStyleMode : styleMode;
         int layoutRes;
         if (currentMode == MODE_NAVI) {
             if (styleMode == 2) layoutRes = R.layout.layout_floating_navi_full;
             else if (styleMode == 1) layoutRes = R.layout.layout_floating_navi_minimal;
             else layoutRes = R.layout.layout_floating_navi_normal;
         } else {
-            layoutRes = styleMode == 1
+            layoutRes = effectiveStyle == 1
                     ? R.layout.layout_floating_cruise_minimal
+                    : effectiveStyle == 2
+                    ? R.layout.layout_floating_cruise_full
                     : R.layout.layout_floating_cruise_normal;
         }
 
@@ -532,7 +541,7 @@ public class FloatingWindowManager {
         }
 
         // 创建超速红色边框覆盖层（圆角跟随窗口样式）
-        boolean isIslandStyle = styleMode == 1;
+        boolean isIslandStyle = effectiveStyle == 1;
         int cornerDp = isIslandStyle ? 40 : 12;
         int cornerPx = Math.round(dpToPx(cornerDp) * getScale());
         View borderView = new View(context);
@@ -555,7 +564,7 @@ public class FloatingWindowManager {
         if (activeWindow != null) {
             activeWindow.onDestroy();
         }
-        activeWindow = FloatingWindowFactory.createWindow(currentMode, styleMode, context, inflated);
+        activeWindow = FloatingWindowFactory.createWindow(currentMode, effectiveStyle, context, inflated);
 
         restoreCachedData();
         measureNaturalSize();
@@ -855,7 +864,8 @@ public class FloatingWindowManager {
 
         // 透明背景模式处理
         // 根据样式确定圆角: 灵动岛/灵动岛巡航=40dp, 常规/常规巡航/全数据=12dp
-        boolean isIslandStyle = styleMode == 1;
+        int effectiveStyle = currentMode == MODE_CRUISE ? cruiseStyleMode : styleMode;
+        boolean isIslandStyle = effectiveStyle == 1;
         int cornerDp = isIslandStyle ? 40 : 12;
         int cornerPx = Math.round(dpToPx(cornerDp) * getScale());
 
@@ -1188,11 +1198,17 @@ public class FloatingWindowManager {
     private void checkAndUpdateOverspeed() {
         SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
         boolean overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
+        if (!overspeedWarningEnabled) {
+            setOverspeedWarning(false);
+            return;
+        }
+        int threshold = sp.getInt("overspeed_threshold", 0);
+        double factor = 1.0 + threshold / 100.0;
         boolean isOverspeed;
         if (currentMode == MODE_NAVI) {
-            isOverspeed = overspeedWarningEnabled && cachedLimitedSpeed > 0 && cachedSpeed > cachedLimitedSpeed;
+            isOverspeed = cachedLimitedSpeed > 0 && cachedSpeed > Math.round(cachedLimitedSpeed * factor);
         } else {
-            isOverspeed = overspeedWarningEnabled && cachedCameraSpeed > 0 && cachedSpeed > cachedCameraSpeed;
+            isOverspeed = cachedCameraSpeed > 0 && cachedSpeed > Math.round(cachedCameraSpeed * factor);
         }
         setOverspeedWarning(isOverspeed);
     }
@@ -1414,14 +1430,17 @@ public class FloatingWindowManager {
                 return;
             }
 
+            int effectiveStyle = currentMode == MODE_CRUISE ? cruiseStyleMode : styleMode;
             int layoutRes;
             if (currentMode == MODE_NAVI) {
                 if (styleMode == 2) layoutRes = R.layout.layout_floating_navi_full;
                 else if (styleMode == 1) layoutRes = R.layout.layout_floating_navi_minimal;
                 else layoutRes = R.layout.layout_floating_navi_normal;
             } else {
-                layoutRes = styleMode == 1
+                layoutRes = effectiveStyle == 1
                         ? R.layout.layout_floating_cruise_minimal
+                        : effectiveStyle == 2
+                        ? R.layout.layout_floating_cruise_full
                         : R.layout.layout_floating_cruise_normal;
             }
 
@@ -1445,7 +1464,7 @@ public class FloatingWindowManager {
                 physicalScaleContent(inflated);
             }
 
-            clusterActiveWindow = FloatingWindowFactory.createWindow(currentMode, styleMode, clusterContext, inflated);
+            clusterActiveWindow = FloatingWindowFactory.createWindow(currentMode, effectiveStyle, clusterContext, inflated);
 
             restoreCachedDataForCluster();
             measureNaturalSizeForCluster(clusterFloatingView);

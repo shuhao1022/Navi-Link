@@ -11,30 +11,33 @@ import android.widget.TextView;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class NormalCruiseWindow extends BaseFloatingWindow {
+public class FullCruiseWindow extends BaseFloatingWindow {
 
-    private TextView tvCnSpeed;
-    private TextView tvCnRoadName;
-    private LinearLayout llCnTrafficLightsContainer;
-    private LaneLineView laneLineView;
-    private CameraWarningView llCnCameraDist;
-    private View llCruiseNormalFirstRow;
+    private TextView tvFullCruiseLabel;
+    private TextView tvFullCruiseSpeed;
+    private TextView tvFullCruiseUnit;
+    private TextView tvFullCruiseRoadName;
+    private LinearLayout llFullCruiseTrafficLights;
+    private LaneLineView laneLineViewFullCruise;
+    private CameraWarningView llFullCruiseCamera;
 
     private boolean isOverspeedBlinking = false;
     private int themeColor = Color.BLACK;
 
-    public NormalCruiseWindow(Context context, View floatingView) {
+    public FullCruiseWindow(Context context, View floatingView) {
         super(context, floatingView);
     }
 
     @Override
     protected void initViews() {
-        tvCnSpeed = floatingView.findViewById(R.id.tv_cn_speed);
-        tvCnRoadName = floatingView.findViewById(R.id.tv_cn_road_name);
-        llCnTrafficLightsContainer = floatingView.findViewById(R.id.ll_cn_traffic_lights_container);
-        laneLineView = floatingView.findViewById(R.id.lane_line_view);
-        llCnCameraDist = floatingView.findViewById(R.id.ll_cn_camera_dist);
-        llCruiseNormalFirstRow = floatingView.findViewById(R.id.ll_cruise_normal_first_row);
+        tvFullCruiseLabel = floatingView.findViewById(R.id.tv_full_cruise_label);
+        tvFullCruiseSpeed = floatingView.findViewById(R.id.tv_full_cruise_speed);
+        tvFullCruiseUnit = floatingView.findViewById(R.id.tv_full_cruise_unit);
+        tvFullCruiseRoadName = floatingView.findViewById(R.id.tv_full_cruise_road_name);
+        llFullCruiseTrafficLights = floatingView.findViewById(R.id.ll_full_cruise_traffic_lights);
+        laneLineViewFullCruise = floatingView.findViewById(R.id.lane_line_view_full_cruise);
+        llFullCruiseCamera = floatingView.findViewById(R.id.ll_full_cruise_camera);
+        themeColor = sp.getInt("theme_color", 0xFF4FC3F7);
     }
 
     @Override
@@ -46,73 +49,67 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
-        // 常规巡航窗口不处理导航数据
+        // 巡航不处理导航数据
     }
 
     @Override
     public void updateCruiseInfo(int speed, String roadName, int cameraType, int cameraSpeed, int cameraDist, int carDirection) {
-        // 控制第一排文字信息显示隐藏
-        boolean showInfo = sp.getBoolean("normal_cruise_info_enabled", true);
-        if (llCruiseNormalFirstRow != null) {
-            llCruiseNormalFirstRow.setVisibility(showInfo ? View.VISIBLE : View.GONE);
-        }
-        if (tvCnSpeed != null) {
-            tvCnSpeed.setText(String.valueOf(speed));
-            // 超速警告：限速>0 且 当前速度>限速 → 红色+闪烁 (受 overspeed_warning_enabled 开关控制)
+        if (tvFullCruiseSpeed != null) {
+            tvFullCruiseSpeed.setText(String.valueOf(speed));
+            // 超速警告
             int threshold = sp.getInt("overspeed_threshold", 0);
             double factor = 1.0 + threshold / 100.0;
             boolean isOverspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
             boolean overspeed = isOverspeedWarningEnabled && cameraSpeed > 0 && speed > Math.round(cameraSpeed * factor);
             if (overspeed) {
-                tvCnSpeed.setTextColor(Color.RED);
-                ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
+                tvFullCruiseSpeed.setTextColor(Color.RED);
+                ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
                 if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvCnSpeed, "alpha", 1f, 0.3f);
+                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvFullCruiseSpeed, "alpha", 1f, 0.3f);
                     newAnimator.setDuration(500);
                     newAnimator.setRepeatCount(ValueAnimator.INFINITE);
                     newAnimator.setRepeatMode(ValueAnimator.REVERSE);
                     newAnimator.start();
-                    tvCnSpeed.setTag(newAnimator);
+                    tvFullCruiseSpeed.setTag(newAnimator);
                     isOverspeedBlinking = true;
                 }
             } else {
-                ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
+                ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
                 if (animator != null) {
                     animator.cancel();
-                    tvCnSpeed.setTag(null);
+                    tvFullCruiseSpeed.setTag(null);
                 }
-                tvCnSpeed.setAlpha(1f);
+                tvFullCruiseSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
                 // 全透明 + 黑色主题：速度颜色跟随昼夜
                 if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
-                    tvCnSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                    tvFullCruiseSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
                 } else {
-                    // 恢复正常主题色
                     int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-                    tvCnSpeed.setTextColor(accentColor);
+                    tvFullCruiseSpeed.setTextColor(accentColor);
                 }
             }
         }
-        if (tvCnRoadName != null && roadName != null) {
-            tvCnRoadName.setText(roadName);
+        if (tvFullCruiseRoadName != null && roadName != null) {
+            tvFullCruiseRoadName.setText(roadName);
         }
-        updateCruiseCameraAndLimit(cameraType, cameraSpeed, cameraDist);
+        updateCameraInfo(cameraType, cameraSpeed, cameraDist);
     }
 
-    private void updateCruiseCameraAndLimit(int cameraType, int cameraSpeed, int cameraDist) {
-        if (llCnCameraDist != null) {
-            llCnCameraDist.updateCameraInfo(cameraType, cameraDist, cameraSpeed);
+    private void updateCameraInfo(int cameraType, int cameraSpeed, int cameraDist) {
+        if (llFullCruiseCamera != null) {
+            llFullCruiseCamera.updateCameraInfo(cameraType, cameraDist, cameraSpeed);
         }
     }
 
     @Override
     public void updateTrafficLight(int status, int dir, int countdown) {
-        // 巡航使用 updateCruiseTrafficLights 处理多灯倒计时
+        // 巡航使用 updateCruiseTrafficLights 处理多灯
     }
 
     @Override
     public void updateCruiseTrafficLights(JSONArray lightsArray) {
-        LinearLayout container = llCnTrafficLightsContainer;
+        LinearLayout container = llFullCruiseTrafficLights;
         if (container == null) return;
 
         int count = lightsArray != null ? lightsArray.length() : 0;
@@ -172,7 +169,6 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         }
         container.setVisibility(View.VISIBLE);
 
-        // 所有灯都倒计时为0时隐藏容器
         boolean allGone = true;
         for (int i = 0; i < container.getChildCount(); i++) {
             if (container.getChildAt(i).getVisibility() == View.VISIBLE) {
@@ -187,12 +183,12 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
 
     @Override
     public void updateLaneLines(String driveWayJson) {
-        if (laneLineView != null) {
+        if (laneLineViewFullCruise != null) {
             boolean laneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
             if (laneEnabled) {
-                laneLineView.updateLanes(driveWayJson);
+                laneLineViewFullCruise.updateLanes(driveWayJson);
             } else {
-                laneLineView.clear();
+                laneLineViewFullCruise.clear();
             }
         }
     }
@@ -206,13 +202,12 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     public void applyThemeColor(int themeColor) {
         this.themeColor = themeColor;
         int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
-        if (tvCnSpeed != null && !isOverspeedBlinking) {
-            // 全透明 + 黑色主题：速度颜色跟随昼夜
+        if (tvFullCruiseSpeed != null && !isOverspeedBlinking) {
             if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
                 boolean isNight = sp.getBoolean("is_night_mode", true);
-                tvCnSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
+                tvFullCruiseSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
             } else {
-                tvCnSpeed.setTextColor(accentColor);
+                tvFullCruiseSpeed.setTextColor(accentColor);
             }
         }
     }
@@ -221,29 +216,32 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
         int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
-        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
 
-        if (tvCnRoadName != null) tvCnRoadName.setTextColor(textPrimary);
+        if (tvFullCruiseRoadName != null) tvFullCruiseRoadName.setTextColor(textPrimary);
+        if (tvFullCruiseUnit != null) tvFullCruiseUnit.setTextColor(isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT);
+        if (tvFullCruiseLabel != null) tvFullCruiseLabel.setTextColor(isNightMode ? TEXT_HINT_DARK : TEXT_HINT_LIGHT);
     }
 
     @Override
     public void resetToDefaultTextColors() {
-        if (tvCnRoadName != null) tvCnRoadName.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvFullCruiseRoadName != null) tvFullCruiseRoadName.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvFullCruiseUnit != null) tvFullCruiseUnit.setTextColor(TEXT_SECONDARY_DARK);
+        if (tvFullCruiseLabel != null) tvFullCruiseLabel.setTextColor(TEXT_HINT_DARK);
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (llCnTrafficLightsContainer != null) {
-            llCnTrafficLightsContainer.removeAllViews();
+        if (llFullCruiseTrafficLights != null) {
+            llFullCruiseTrafficLights.removeAllViews();
         }
-        if (tvCnSpeed != null) {
-            ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
+        if (tvFullCruiseSpeed != null) {
+            ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
             if (animator != null) {
                 animator.cancel();
-                tvCnSpeed.setTag(null);
+                tvFullCruiseSpeed.setTag(null);
             }
-            tvCnSpeed.setAlpha(1f);
+            tvFullCruiseSpeed.setAlpha(1f);
         }
         isOverspeedBlinking = false;
     }
