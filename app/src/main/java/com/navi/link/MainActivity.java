@@ -62,13 +62,18 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int[] THEME_COLORS = {
             0xFF1A1A1A,  // 黑色
-            0xFF1199FF,  // 蓝
-            0xFF4FC3F7,  // 浅蓝
-            0xFFFF9100,  // 橙
+            0xFFE53935,  // 朱红
             0xFFFF4081,  // 粉红
-            0xFFAB47BC,  // 紫
             0xFFFF6D00,  // 深橙
+            0xFFFF9100,  // 橙
+            0xFFFFCA28,  // 琥珀
+            0xFF8D6E63,  // 棕色
             0xFF6DFF00,  // 青绿
+            0xFF00BFA5,  // 翡翠
+            0xFF4FC3F7,  // 浅蓝
+            0xFF1199FF,  // 蓝
+            0xFF5C6BC0,  // 靛蓝
+            0xFFAB47BC,  // 紫
     };
 
     private MaterialCardView cardMinimal;
@@ -193,27 +198,47 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTrafficLightFillStatus;
     private boolean isTrafficLightFillEnabled = false;
 
+    // 红绿灯图标样式
+    private MaterialCardView[] cardTrafficLightStyle = new MaterialCardView[7];
+    private int trafficLightStyle = 0;
+
+    // 默认胶囊透明
+    private MaterialCardView cardTrafficLightCapsuleToggle;
+    private SwitchCompat cbTrafficLightCapsuleEnabled;
+    private TextView tvTrafficLightCapsuleStatus;
+    private boolean isTrafficLightCapsuleEnabled = true;
+
+    // 胶囊灯图显示
+    private MaterialCardView cardTrafficLightIconToggle;
+    private SwitchCompat cbTrafficLightIconEnabled;
+    private TextView tvTrafficLightIconStatus;
+    private boolean isTrafficLightIconEnabled = true;
+
     // Menu elements
     private MaterialCardView menuSystemAppearance;
     private MaterialCardView menuFeaturesAvoidance;
     private MaterialCardView menuLayoutNormal;
     private MaterialCardView menuLayoutMinimal;
+    private MaterialCardView menuTrafficLight;
 
     private View indicatorSystemAppearance;
     private View indicatorFeaturesAvoidance;
     private View indicatorLayoutNormal;
     private View indicatorLayoutMinimal;
+    private View indicatorTrafficLight;
 
     private TextView tvMenuSystemAppearance;
     private TextView tvMenuFeaturesAvoidance;
     private TextView tvMenuLayoutNormal;
     private TextView tvMenuLayoutMinimal;
+    private TextView tvMenuTrafficLight;
 
     // Right side panels
     private ScrollView panelSystemAppearance;
     private ScrollView panelFeaturesAvoidance;
     private ScrollView panelLayoutNormal;
     private ScrollView panelLayoutMinimal;
+    private ScrollView panelTrafficLight;
     private ScrollView panelAboutUs;
 
     private MaterialCardView menuAboutUs;
@@ -418,6 +443,19 @@ public class MainActivity extends AppCompatActivity {
         cardTrafficLightFillToggle = findViewById(R.id.card_traffic_light_fill_toggle);
         cbTrafficLightFillEnabled = findViewById(R.id.cb_traffic_light_fill_enabled);
         tvTrafficLightFillStatus = findViewById(R.id.tv_traffic_light_fill_status);
+        cardTrafficLightCapsuleToggle = findViewById(R.id.card_traffic_light_capsule_toggle);
+        cbTrafficLightCapsuleEnabled = findViewById(R.id.cb_traffic_light_capsule_enabled);
+        tvTrafficLightCapsuleStatus = findViewById(R.id.tv_traffic_light_capsule_status);
+        cardTrafficLightIconToggle = findViewById(R.id.card_traffic_light_icon_toggle);
+        cbTrafficLightIconEnabled = findViewById(R.id.cb_traffic_light_icon_enabled);
+        tvTrafficLightIconStatus = findViewById(R.id.tv_traffic_light_icon_status);
+        cardTrafficLightStyle[0] = findViewById(R.id.card_traffic_light_style_0);
+        cardTrafficLightStyle[1] = findViewById(R.id.card_traffic_light_style_1);
+        cardTrafficLightStyle[2] = findViewById(R.id.card_traffic_light_style_2);
+        cardTrafficLightStyle[3] = findViewById(R.id.card_traffic_light_style_3);
+        cardTrafficLightStyle[4] = findViewById(R.id.card_traffic_light_style_4);
+        cardTrafficLightStyle[5] = findViewById(R.id.card_traffic_light_style_5);
+        cardTrafficLightStyle[6] = findViewById(R.id.card_traffic_light_style_6);
         llThemeColors = findViewById(R.id.ll_theme_colors);
         tvSys = findViewById(R.id.tv_sys);
         tvStyle = findViewById(R.id.tv_style);
@@ -447,22 +485,26 @@ public class MainActivity extends AppCompatActivity {
         menuFeaturesAvoidance = findViewById(R.id.menu_features_avoidance);
         menuLayoutNormal = findViewById(R.id.menu_layout_normal);
         menuLayoutMinimal = findViewById(R.id.menu_layout_minimal);
+        menuTrafficLight = findViewById(R.id.menu_traffic_light);
 
         indicatorSystemAppearance = findViewById(R.id.indicator_system_appearance);
         indicatorFeaturesAvoidance = findViewById(R.id.indicator_features_avoidance);
         indicatorLayoutNormal = findViewById(R.id.indicator_layout_normal);
         indicatorLayoutMinimal = findViewById(R.id.indicator_layout_minimal);
+        indicatorTrafficLight = findViewById(R.id.indicator_traffic_light);
 
         tvMenuSystemAppearance = findViewById(R.id.tv_menu_system_appearance);
         tvMenuFeaturesAvoidance = findViewById(R.id.tv_menu_features_avoidance);
         tvMenuLayoutNormal = findViewById(R.id.tv_menu_layout_normal);
         tvMenuLayoutMinimal = findViewById(R.id.tv_menu_layout_minimal);
+        tvMenuTrafficLight = findViewById(R.id.tv_menu_traffic_light);
 
         // Bind right side panel scroll views
         panelSystemAppearance = findViewById(R.id.panel_system_appearance);
         panelFeaturesAvoidance = findViewById(R.id.panel_features_avoidance);
         panelLayoutNormal = findViewById(R.id.panel_layout_normal);
         panelLayoutMinimal = findViewById(R.id.panel_layout_minimal);
+        panelTrafficLight = findViewById(R.id.panel_traffic_light);
         panelAboutUs = findViewById(R.id.panel_about_us);
 
         menuAboutUs = findViewById(R.id.menu_about_us);
@@ -561,6 +603,9 @@ public class MainActivity extends AppCompatActivity {
         normalCruiseInfoEnabled = sp.getBoolean("normal_cruise_info_enabled", true);
         minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
         isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
+        isTrafficLightCapsuleEnabled = sp.getBoolean("traffic_light_capsule_enabled", true);
+        isTrafficLightIconEnabled = sp.getBoolean("traffic_light_icon_enabled", true);
+        trafficLightStyle = sp.getInt("traffic_light_style", 0);
         crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
  
         updateSeekBarToCurrentScale();
@@ -651,6 +696,20 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvTrafficLightFillStatus != null) {
             tvTrafficLightFillStatus.setText(isTrafficLightFillEnabled ? "红绿灯胶囊背景已填充灯色" : "深蓝胶囊背景");
+        }
+
+        if (cbTrafficLightCapsuleEnabled != null) {
+            cbTrafficLightCapsuleEnabled.setChecked(isTrafficLightCapsuleEnabled);
+        }
+        if (tvTrafficLightCapsuleStatus != null) {
+            tvTrafficLightCapsuleStatus.setText(isTrafficLightCapsuleEnabled ? "显示胶囊深蓝色背景" : "隐藏胶囊背景");
+        }
+
+        if (cbTrafficLightIconEnabled != null) {
+            cbTrafficLightIconEnabled.setChecked(isTrafficLightIconEnabled);
+        }
+        if (tvTrafficLightIconStatus != null) {
+            tvTrafficLightIconStatus.setText(isTrafficLightIconEnabled ? "胶囊灯图图标已显示" : "胶囊灯图图标已隐藏");
         }
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
@@ -855,6 +914,26 @@ public class MainActivity extends AppCompatActivity {
         cardBgTransparent.setStrokeColor(backgroundMode == 2 ? accentColor : Color.parseColor("#444444"));
     }
 
+    private void selectTrafficLightStyle(int style) {
+        if (trafficLightStyle == style) return;
+        trafficLightStyle = style;
+        updateTrafficLightStyleSelection();
+        savePreferences();
+        FloatingWindowManager manager = FloatingWindowManager.getInstance();
+        if (manager != null) {
+            manager.refreshWindow();
+        }
+    }
+
+    private void updateTrafficLightStyleSelection() {
+        int accentColor = getAccentColor();
+        for (int i = 0; i < cardTrafficLightStyle.length; i++) {
+            if (cardTrafficLightStyle[i] != null) {
+                cardTrafficLightStyle[i].setStrokeColor(i == trafficLightStyle ? accentColor : Color.parseColor("#444444"));
+            }
+        }
+    }
+
     private void savePreferences() {
         SharedPreferences.Editor editor = getSharedPreferences(PREFS_NAME, MODE_PRIVATE).edit();
         editor.putBoolean(KEY_IS_MINIMAL, isMinimalStyle)
@@ -876,6 +955,9 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
                 .putBoolean("auto_start", autoStartEnabled)
                 .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
+                .putBoolean("traffic_light_capsule_enabled", isTrafficLightCapsuleEnabled)
+                .putBoolean("traffic_light_icon_enabled", isTrafficLightIconEnabled)
+                .putInt("traffic_light_style", trafficLightStyle)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
                 .putBoolean("normal_cruise_info_enabled", normalCruiseInfoEnabled)
@@ -965,6 +1047,7 @@ public class MainActivity extends AppCompatActivity {
         updateStyleSelection();
         updateCruiseStyleSelection();
         updateBackgroundModeSelection();
+        updateTrafficLightStyleSelection();
 
         // 单选按钮（RadioButton）的着色
         if (rbStartAmap != null) {
@@ -996,6 +1079,8 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbHideMainWhenClusterActive, accentColor);
         updateSwitchTheme(cbAutoStartEnabled, accentColor);
         updateSwitchTheme(cbTrafficLightFillEnabled, accentColor);
+        updateSwitchTheme(cbTrafficLightCapsuleEnabled, accentColor);
+        updateSwitchTheme(cbTrafficLightIconEnabled, accentColor);
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
         updateSwitchTheme(cbNormalCruiseInfoEnabled, accentColor);
@@ -1117,6 +1202,12 @@ public class MainActivity extends AppCompatActivity {
         cardBgDark.setOnClickListener(v -> selectBackgroundMode(0));
         cardBgSemi.setOnClickListener(v -> selectBackgroundMode(1));
         cardBgTransparent.setOnClickListener(v -> selectBackgroundMode(2));
+        for (int i = 0; i < cardTrafficLightStyle.length; i++) {
+            final int style = i;
+            if (cardTrafficLightStyle[i] != null) {
+                cardTrafficLightStyle[i].setOnClickListener(v -> selectTrafficLightStyle(style));
+            }
+        }
         MaterialCardView btnHomeApp = findViewById(R.id.btn_home_app);
         if (btnHomeApp != null) {
             btnHomeApp.setOnClickListener(v -> moveTaskToBack(true));
@@ -1346,6 +1437,50 @@ public class MainActivity extends AppCompatActivity {
             cardTrafficLightFillToggle.setOnClickListener(v -> {
                 if (cbTrafficLightFillEnabled != null) {
                     cbTrafficLightFillEnabled.toggle();
+                }
+            });
+        }
+
+        // 默认胶囊透明开关
+        if (cbTrafficLightCapsuleEnabled != null) {
+            cbTrafficLightCapsuleEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrafficLightCapsuleEnabled = isChecked;
+                savePreferences();
+                if (tvTrafficLightCapsuleStatus != null) {
+                    tvTrafficLightCapsuleStatus.setText(isChecked ? "显示胶囊深蓝色背景" : "隐藏胶囊背景");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardTrafficLightCapsuleToggle != null) {
+            cardTrafficLightCapsuleToggle.setOnClickListener(v -> {
+                if (cbTrafficLightCapsuleEnabled != null) {
+                    cbTrafficLightCapsuleEnabled.toggle();
+                }
+            });
+        }
+
+        // 胶囊灯图显示开关
+        if (cbTrafficLightIconEnabled != null) {
+            cbTrafficLightIconEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrafficLightIconEnabled = isChecked;
+                savePreferences();
+                if (tvTrafficLightIconStatus != null) {
+                    tvTrafficLightIconStatus.setText(isChecked ? "胶囊灯图图标已显示" : "胶囊灯图图标已隐藏");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardTrafficLightIconToggle != null) {
+            cardTrafficLightIconToggle.setOnClickListener(v -> {
+                if (cbTrafficLightIconEnabled != null) {
+                    cbTrafficLightIconEnabled.toggle();
                 }
             });
         }
@@ -1628,8 +1763,11 @@ public class MainActivity extends AppCompatActivity {
         if (menuLayoutMinimal != null) {
             menuLayoutMinimal.setOnClickListener(v -> switchMenu(3));
         }
+        if (menuTrafficLight != null) {
+            menuTrafficLight.setOnClickListener(v -> switchMenu(4));
+        }
         if (menuAboutUs != null) {
-            menuAboutUs.setOnClickListener(v -> switchMenu(4));
+            menuAboutUs.setOnClickListener(v -> switchMenu(5));
         }
 
         if (tvAboutQqGroup != null) {
@@ -1665,28 +1803,32 @@ public class MainActivity extends AppCompatActivity {
         if (panelFeaturesAvoidance != null) panelFeaturesAvoidance.setVisibility(index == 1 ? View.VISIBLE : View.GONE);
         if (panelLayoutNormal != null) panelLayoutNormal.setVisibility(index == 2 ? View.VISIBLE : View.GONE);
         if (panelLayoutMinimal != null) panelLayoutMinimal.setVisibility(index == 3 ? View.VISIBLE : View.GONE);
-        if (panelAboutUs != null) panelAboutUs.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
+        if (panelTrafficLight != null) panelTrafficLight.setVisibility(index == 4 ? View.VISIBLE : View.GONE);
+        if (panelAboutUs != null) panelAboutUs.setVisibility(index == 5 ? View.VISIBLE : View.GONE);
 
         // 2. Indicators visibility
         if (indicatorSystemAppearance != null) indicatorSystemAppearance.setVisibility(index == 0 ? View.VISIBLE : View.INVISIBLE);
         if (indicatorFeaturesAvoidance != null) indicatorFeaturesAvoidance.setVisibility(index == 1 ? View.VISIBLE : View.INVISIBLE);
         if (indicatorLayoutNormal != null) indicatorLayoutNormal.setVisibility(index == 2 ? View.VISIBLE : View.INVISIBLE);
         if (indicatorLayoutMinimal != null) indicatorLayoutMinimal.setVisibility(index == 3 ? View.VISIBLE : View.INVISIBLE);
-        if (indicatorAboutUs != null) indicatorAboutUs.setVisibility(index == 4 ? View.VISIBLE : View.INVISIBLE);
+        if (indicatorTrafficLight != null) indicatorTrafficLight.setVisibility(index == 4 ? View.VISIBLE : View.INVISIBLE);
+        if (indicatorAboutUs != null) indicatorAboutUs.setVisibility(index == 5 ? View.VISIBLE : View.INVISIBLE);
 
         // 3. Menu card background colors (selected gets #FF262626, others transparent)
         if (menuSystemAppearance != null) menuSystemAppearance.setCardBackgroundColor(ColorStateList.valueOf(index == 0 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
         if (menuFeaturesAvoidance != null) menuFeaturesAvoidance.setCardBackgroundColor(ColorStateList.valueOf(index == 1 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
         if (menuLayoutNormal != null) menuLayoutNormal.setCardBackgroundColor(ColorStateList.valueOf(index == 2 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
         if (menuLayoutMinimal != null) menuLayoutMinimal.setCardBackgroundColor(ColorStateList.valueOf(index == 3 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuAboutUs != null) menuAboutUs.setCardBackgroundColor(ColorStateList.valueOf(index == 4 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        if (menuTrafficLight != null) menuTrafficLight.setCardBackgroundColor(ColorStateList.valueOf(index == 4 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        if (menuAboutUs != null) menuAboutUs.setCardBackgroundColor(ColorStateList.valueOf(index == 5 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
 
         // 4. Menu text colors (selected gets #FFFFFFFF, others #FF888888)
         if (tvMenuSystemAppearance != null) tvMenuSystemAppearance.setTextColor(index == 0 ? Color.WHITE : Color.parseColor("#FF888888"));
         if (tvMenuFeaturesAvoidance != null) tvMenuFeaturesAvoidance.setTextColor(index == 1 ? Color.WHITE : Color.parseColor("#FF888888"));
         if (tvMenuLayoutNormal != null) tvMenuLayoutNormal.setTextColor(index == 2 ? Color.WHITE : Color.parseColor("#FF888888"));
         if (tvMenuLayoutMinimal != null) tvMenuLayoutMinimal.setTextColor(index == 3 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuAboutUs != null) tvMenuAboutUs.setTextColor(index == 4 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (tvMenuTrafficLight != null) tvMenuTrafficLight.setTextColor(index == 4 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (tvMenuAboutUs != null) tvMenuAboutUs.setTextColor(index == 5 ? Color.WHITE : Color.parseColor("#FF888888"));
     }
 
     private void checkPermissionAndStart() {

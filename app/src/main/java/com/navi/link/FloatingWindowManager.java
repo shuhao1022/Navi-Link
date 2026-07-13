@@ -222,6 +222,11 @@ public class FloatingWindowManager {
         remeasureWindow();
     }
 
+    /** 仅当启用且当前为灵动岛风格时居中 */
+    private boolean isAutoCenteringActive() {
+        return isAutoCenteringEnabled && getScaleIndex() == 1;
+    }
+
     /** 当前模式对应的缩放索引: 常规/常规巡航=0, 灵动岛/灵动岛巡航=1, 全数据=2 */
     private int getScaleIndex() {
         if (currentMode == MODE_CRUISE) {
@@ -591,7 +596,7 @@ public class FloatingWindowManager {
         int viewWidth = naturalWidth;
         int viewHeight = naturalHeight;
 
-        if (isAutoCenteringEnabled) {
+        if (isAutoCenteringActive()) {
             layoutParams.x = (screenWidth - viewWidth) / 2;
             layoutParams.y = (savedPosY >= 0) ? Math.max(0, Math.min(savedPosY, screenHeight - Math.max(viewHeight, 1))) : dpToPx(80);
         } else if (savedPosX >= 0 && savedPosY >= 0) {
@@ -1032,7 +1037,7 @@ public class FloatingWindowManager {
                         handler.removeCallbacks(longPressCheck);
                     }
                     if (isDragging && !isPositionLocked) {
-                        if (isAutoCenteringEnabled) {
+                        if (isAutoCenteringActive()) {
                             int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
                             layoutParams.x = (screenWidth - naturalWidth) / 2;
                         } else {
@@ -1139,7 +1144,7 @@ public class FloatingWindowManager {
             measureNaturalSize();
             int newWidth = naturalWidth;
             int newHeight = naturalHeight;
-            if (isAutoCenteringEnabled) {
+            if (isAutoCenteringActive()) {
                 int screenWidth = context.getResources().getDisplayMetrics().widthPixels;
                 layoutParams.x = (screenWidth - newWidth) / 2;
             }
@@ -1152,6 +1157,10 @@ public class FloatingWindowManager {
         }
         if (clusterFloatingView != null && clusterLayoutParams != null && clusterWindowManager != null) {
             measureNaturalSizeForCluster(clusterFloatingView);
+            if (isAutoCenteringActive() && clusterContext != null) {
+                int screenWidth = clusterContext.getResources().getDisplayMetrics().widthPixels;
+                clusterLayoutParams.x = (screenWidth - clusterNaturalWidth) / 2;
+            }
             clusterLayoutParams.width = clusterNaturalWidth;
             clusterLayoutParams.height = clusterNaturalHeight;
             try {
@@ -1360,7 +1369,7 @@ public class FloatingWindowManager {
         int correctedY = Math.max(0, Math.min(layoutParams.y, screenHeight - viewHeight));
         
         SharedPreferences.Editor editor = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE).edit();
-        if (!isAutoCenteringEnabled) {
+        if (!isAutoCenteringActive()) {
             editor.putInt("window_pos_x", correctedX);
         }
         editor.putInt("window_pos_y", correctedY).apply();
@@ -1489,7 +1498,10 @@ public class FloatingWindowManager {
             int viewWidth = clusterNaturalWidth;
             int viewHeight = clusterNaturalHeight;
 
-            if (clusterSavedPosX >= 0 && clusterSavedPosY >= 0) {
+            if (isAutoCenteringActive()) {
+                clusterLayoutParams.x = (screenWidth - viewWidth) / 2;
+                clusterLayoutParams.y = (clusterSavedPosY >= 0) ? Math.max(0, Math.min(clusterSavedPosY, screenHeight - Math.max(viewHeight, 1))) : dpToPx(80);
+            } else if (clusterSavedPosX >= 0 && clusterSavedPosY >= 0) {
                 clusterLayoutParams.x = Math.max(0, Math.min(clusterSavedPosX, screenWidth - Math.max(viewWidth, 1)));
                 clusterLayoutParams.y = Math.max(0, Math.min(clusterSavedPosY, screenHeight - Math.max(viewHeight, 1)));
             } else {
@@ -1585,7 +1597,12 @@ public class FloatingWindowManager {
                         clusterIsDragging = true;
                     }
                     if (clusterIsDragging && !isPositionLocked) {
-                        clusterLayoutParams.x = clusterInitialWindowX + (int) dx;
+                        if (isAutoCenteringActive() && clusterContext != null) {
+                            int screenWidth = clusterContext.getResources().getDisplayMetrics().widthPixels;
+                            clusterLayoutParams.x = (screenWidth - clusterNaturalWidth) / 2;
+                        } else {
+                            clusterLayoutParams.x = clusterInitialWindowX + (int) dx;
+                        }
                         clusterLayoutParams.y = clusterInitialWindowY + (int) dy;
                         try {
                             clusterWindowManager.updateViewLayout(clusterFloatingView, clusterLayoutParams);
@@ -1615,13 +1632,13 @@ public class FloatingWindowManager {
         int correctedX = Math.max(0, Math.min(clusterLayoutParams.x, screenWidth - viewWidth));
         int correctedY = Math.max(0, Math.min(clusterLayoutParams.y, screenHeight - viewHeight));
 
-        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
-                .edit()
-                .putInt("cluster_window_pos_x", correctedX)
-                .putInt("cluster_window_pos_y", correctedY)
-                .apply();
+        SharedPreferences.Editor editor = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE).edit();
+        if (!isAutoCenteringActive()) {
+            editor.putInt("cluster_window_pos_x", correctedX);
+            clusterSavedPosX = correctedX;
+        }
+        editor.putInt("cluster_window_pos_y", correctedY).apply();
 
-        clusterSavedPosX = correctedX;
         clusterSavedPosY = correctedY;
     }
 
@@ -1752,17 +1769,18 @@ public class FloatingWindowManager {
         if (viewWidth <= 0) viewWidth = dpToPx(160);
         if (viewHeight <= 0) viewHeight = dpToPx(120);
 
-        int correctedX = Math.max(0, Math.min(x, screenWidth - viewWidth));
+        int targetX = isAutoCenteringActive() ? (screenWidth - viewWidth) / 2 : x;
+        int correctedX = Math.max(0, Math.min(targetX, screenWidth - viewWidth));
         int correctedY = Math.max(0, Math.min(y, screenHeight - viewHeight));
 
-        clusterSavedPosX = correctedX;
         clusterSavedPosY = correctedY;
 
-        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
-                .edit()
-                .putInt("cluster_window_pos_x", correctedX)
-                .putInt("cluster_window_pos_y", correctedY)
-                .apply();
+        SharedPreferences.Editor editor = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE).edit();
+        if (!isAutoCenteringActive()) {
+            clusterSavedPosX = correctedX;
+            editor.putInt("cluster_window_pos_x", correctedX);
+        }
+        editor.putInt("cluster_window_pos_y", correctedY).apply();
 
         if (clusterLayoutParams != null && clusterFloatingView != null && clusterWindowManager != null) {
             clusterLayoutParams.x = correctedX;

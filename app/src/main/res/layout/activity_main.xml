@@ -268,7 +268,47 @@
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Menu 5: About Us -->
+                <!-- Menu 5: Traffic Light Config -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/menu_traffic_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp">
+
+                        <!-- Left active vertical stripe (hidden by default) -->
+                        <View
+                            android:id="@+id/indicator_traffic_light"
+                            android:background="#FF4FC3F7"
+                            android:visibility="invisible"
+                            android:layout_width="4dp"
+                            android:layout_height="match_parent" />
+
+                        <TextView
+                            android:id="@+id/tv_menu_traffic_light"
+                            android:text="红绿灯配置"
+                            android:textSize="14sp"
+                            android:textColor="#FF888888"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <!-- Menu 6: About Us -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/menu_about_us"
                     android:layout_width="match_parent"
@@ -979,64 +1019,7 @@
                                 android:layout_marginVertical="14dp"
                                 android:background="#1AFFFFFF" />
 
-                            <!-- 红绿灯填充背景样式开关 -->
-                            <com.google.android.material.card.MaterialCardView
-                                android:id="@+id/card_traffic_light_fill_toggle"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                app:cardBackgroundColor="@android:color/transparent"
-                                app:cardElevation="0dp"
-                                app:strokeWidth="0dp"
-                                android:clickable="true"
-                                android:focusable="true"
-                                android:foreground="?android:attr/selectableItemBackground">
-
-                                <LinearLayout
-                                    android:orientation="horizontal"
-                                    android:gravity="center_vertical"
-                                    android:paddingHorizontal="16dp"
-                                    android:paddingVertical="12dp"
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
-
-                                    <LinearLayout
-                                        android:orientation="vertical"
-                                        android:layout_width="0dp"
-                                        android:layout_height="wrap_content"
-                                        android:layout_weight="1">
-
-                                        <TextView
-                                            android:text="红绿灯填充背景"
-                                            android:textSize="15sp"
-                                            android:textColor="#FFFFFFFF"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content" />
-
-                                        <TextView
-                                            android:id="@+id/tv_traffic_light_fill_status"
-                                            android:text="胶囊背景跟随灯颜色"
-                                            android:textSize="12sp"
-                                            android:textColor="#FF888888"
-                                            android:layout_marginTop="2dp"
-                                            android:layout_width="match_parent"
-                                            android:layout_height="wrap_content" />
-                                    </LinearLayout>
-
-                                    <androidx.appcompat.widget.SwitchCompat
-                                        android:id="@+id/cb_traffic_light_fill_enabled"
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:clickable="false"
-                                        android:focusable="false" />
-                                </LinearLayout>
-                            </com.google.android.material.card.MaterialCardView>
-
-                            <View
-                                android:layout_width="match_parent"
-                                android:layout_height="1dp"
-                                android:layout_marginHorizontal="16dp"
-                                android:layout_marginVertical="14dp"
-                                android:background="#1AFFFFFF" />
+                            <!-- Scale control -->
 
                             <!-- Scale control -->
                             <LinearLayout
@@ -3138,6 +3121,507 @@
                                 </LinearLayout>
 
                             </LinearLayout>
+
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                </LinearLayout>
+            </ScrollView>
+
+            <!-- Panel 6: Traffic Light Config -->
+            <ScrollView
+                android:id="@+id/panel_traffic_light"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:paddingBottom="20dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Card: Traffic Light Settings -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="16dp"
+                        app:cardBackgroundColor="#FF1E1E1E"
+                        app:cardCornerRadius="16dp"
+                        app:strokeColor="#1AFFFFFF"
+                        app:strokeWidth="1dp"
+                        app:cardElevation="0dp">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:paddingBottom="16dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:text="红绿灯配置"
+                                android:textSize="14sp"
+                                android:textColor="#FF4FC3F7"
+                                android:textStyle="bold"
+                                android:paddingHorizontal="16dp"
+                                android:paddingTop="16dp"
+                                android:paddingBottom="12dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <!-- 红绿灯填充背景样式开关 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_traffic_light_fill_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="红绿灯填充背景"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_traffic_light_fill_status"
+                                            android:text="胶囊背景跟随灯颜色"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_traffic_light_fill_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_marginVertical="14dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- 红绿灯图标样式选择 -->
+                            <TextView
+                                android:text="红绿灯图标样式"
+                                android:textSize="12sp"
+                                android:textColor="#FFAAAAAA"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_marginBottom="8dp"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content" />
+
+                            <LinearLayout
+                                android:orientation="horizontal"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_0"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginEnd="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_01"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式1"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_1"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_02"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式2"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_2"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_03"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式3"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_3"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_04"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式4"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_4"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_05"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式5"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_5"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginHorizontal="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_06"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式6"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:id="@+id/card_traffic_light_style_6"
+                                    android:focusable="true"
+                                    android:clickable="true"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:layout_marginStart="3dp"
+                                    app:cardBackgroundColor="#FF262626"
+                                    app:cardCornerRadius="8dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeColor="#FF444444"
+                                    app:strokeWidth="1dp">
+
+                                    <LinearLayout
+                                        android:gravity="center"
+                                        android:orientation="vertical"
+                                        android:padding="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content">
+
+                                        <ImageView
+                                            android:layout_width="28dp"
+                                            android:layout_height="28dp"
+                                            android:src="@drawable/light_red_07"
+                                            android:scaleType="fitCenter" />
+
+                                        <TextView
+                                            android:text="样式7"
+                                            android:textSize="10sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="wrap_content"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+                                </com.google.android.material.card.MaterialCardView>
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_marginVertical="14dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- 默认胶囊透明开关 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_traffic_light_capsule_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="默认胶囊背景"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_traffic_light_capsule_status"
+                                            android:text="关闭时隐藏胶囊深蓝色背景"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+>
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_traffic_light_capsule_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:layout_marginVertical="14dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- 胶囊灯图显示开关 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_traffic_light_icon_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="显示灯图"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_traffic_light_icon_status"
+                                            android:text="关闭时隐藏胶囊灯图图标"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_traffic_light_icon_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
 
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>

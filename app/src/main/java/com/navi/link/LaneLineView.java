@@ -85,6 +85,9 @@ public class LaneLineView extends LinearLayout {
             JSONObject root = new JSONObject(driveWayJson);
             boolean enabled = root.optBoolean("drive_way_enabled", false);
             if (!enabled) {
+                if (getVisibility() == View.VISIBLE) {
+                    return; // 保持上一包状态，避免闪烁
+                }
                 clear();
                 return;
             }

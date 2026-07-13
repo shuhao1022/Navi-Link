@@ -12,6 +12,7 @@ public class CameraWarningView extends LinearLayout {
     private ImageView ivCameraIcon;
     private TextView tvCameraSpeed;
     private TextView tvCameraDist;
+    private boolean alwaysShow = false;
 
     public CameraWarningView(Context context) {
         this(context, null);
@@ -37,6 +38,26 @@ public class CameraWarningView extends LinearLayout {
     }
 
     /**
+     * 设置是否始终显示摄像头组件
+     */
+    public void setAlwaysShow(boolean alwaysShow) {
+        this.alwaysShow = alwaysShow;
+        if (alwaysShow) {
+            setVisibility(VISIBLE);
+            if (tvCameraDist != null) {
+                tvCameraDist.setText("--");
+            }
+            if (ivCameraIcon != null) {
+                ivCameraIcon.setVisibility(VISIBLE);
+                ivCameraIcon.setImageResource(R.drawable.camera_default);
+            }
+            if (tvCameraSpeed != null) {
+                tvCameraSpeed.setVisibility(GONE);
+            }
+        }
+    }
+
+    /**
      * 更新摄像头信息
      *
      * @param cameraType  摄像头类型
@@ -45,23 +66,43 @@ public class CameraWarningView extends LinearLayout {
      */
     public void updateCameraInfo(int cameraType, int cameraDist, int cameraSpeed) {
         if (cameraDist <= 0) {
-            setVisibility(GONE);
+            if (alwaysShow) {
+                setVisibility(VISIBLE);
+                if (tvCameraDist != null) {
+                    tvCameraDist.setText("--");
+                }
+                if (ivCameraIcon != null) {
+                    ivCameraIcon.setVisibility(VISIBLE);
+                    ivCameraIcon.setImageResource(R.drawable.camera_default);
+                }
+                if (tvCameraSpeed != null) {
+                    tvCameraSpeed.setVisibility(GONE);
+                }
+            } else {
+                setVisibility(GONE);
+            }
             return;
         }
 
         setVisibility(VISIBLE);
-        tvCameraDist.setText(cameraDist + "米");
+        if (tvCameraDist != null) {
+            tvCameraDist.setText(cameraDist + "米");
+        }
 
         if (cameraSpeed > 0) {
             // 有限速值，隐藏图标，显示红色圆圈限速
-            ivCameraIcon.setVisibility(GONE);
-            tvCameraSpeed.setVisibility(VISIBLE);
-            tvCameraSpeed.setText(String.valueOf(cameraSpeed));
+            if (ivCameraIcon != null) ivCameraIcon.setVisibility(GONE);
+            if (tvCameraSpeed != null) {
+                tvCameraSpeed.setVisibility(VISIBLE);
+                tvCameraSpeed.setText(String.valueOf(cameraSpeed));
+            }
         } else {
             // 无限速值，显示对应类型的图标
-            ivCameraIcon.setVisibility(VISIBLE);
-            tvCameraSpeed.setVisibility(GONE);
-            ivCameraIcon.setImageResource(getIconRes(cameraType));
+            if (ivCameraIcon != null) {
+                ivCameraIcon.setVisibility(VISIBLE);
+                ivCameraIcon.setImageResource(getIconRes(cameraType));
+            }
+            if (tvCameraSpeed != null) tvCameraSpeed.setVisibility(GONE);
         }
     }
 

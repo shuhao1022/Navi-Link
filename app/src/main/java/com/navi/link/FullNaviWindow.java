@@ -2,6 +2,8 @@ package com.navi.link;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.view.View;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -20,7 +22,6 @@ public class FullNaviWindow extends BaseFloatingWindow {
     private TextView tvRoadNameMinFull;
     private TextView tvSummaryFull;
     private TextView tvEtaFull;
-    private TextView tvFullEndPoiName;
     private CameraWarningView tvFullCameraDist;
     private TextView tvFullLightCount;
     private CardView cvFullMiddle;
@@ -28,11 +29,20 @@ public class FullNaviWindow extends BaseFloatingWindow {
     private TrafficLightView llTrafficLightGroupFull;
 
     private ImageView ivActionIconFull;
-    private TextView tvFullLabelCurrent;
-    private TextView tvFullLabelEnd;
     private TextView tvFullDirection;
     private TmcProgressBar tmcProgressBarFull;
     private LaneLineView laneLineViewFull;
+
+    // 底部容器与服务区
+    private View layoutBottomContainerFull;
+    private View layoutInfoBarFull;
+    private View layoutSapaGroupFull;
+    private TextView tvSapaName1Full;
+    private TextView tvSapaDist1Full;
+    private TextView tvSapaName2Full;
+    private TextView tvSapaDist2Full;
+    private ImageView ivSapaBadge1Full;
+    private ImageView ivSapaBadge2Full;
 
     private boolean isOverspeedBlinking = false;
     private int themeColor = 0xFF4FC3F7;
@@ -53,31 +63,40 @@ public class FullNaviWindow extends BaseFloatingWindow {
         tvRoadNameMinFull = floatingView.findViewById(R.id.tv_road_name_min);
         tvSummaryFull = floatingView.findViewById(R.id.tv_summary_full);
         tvEtaFull = floatingView.findViewById(R.id.tv_eta_full);
-        tvFullEndPoiName = floatingView.findViewById(R.id.tv_full_end_poi_name);
         tvFullCameraDist = floatingView.findViewById(R.id.tv_full_camera_dist);
+        if (tvFullCameraDist != null) {
+            tvFullCameraDist.setAlwaysShow(true);
+        }
         tvFullLightCount = floatingView.findViewById(R.id.tv_full_light_count);
         cvFullMiddle = floatingView.findViewById(R.id.cv_full_middle);
 
         llTrafficLightGroupFull = floatingView.findViewById(R.id.ll_traffic_light_group);
 
         ivActionIconFull = floatingView.findViewById(R.id.iv_action_icon_full);
-        tvFullLabelCurrent = floatingView.findViewById(R.id.tv_full_label_current);
-        tvFullLabelEnd = floatingView.findViewById(R.id.tv_full_label_end);
         tvFullDirection = floatingView.findViewById(R.id.tv_full_direction);
         tmcProgressBarFull = floatingView.findViewById(R.id.tmc_progress_bar_full);
         laneLineViewFull = floatingView.findViewById(R.id.lane_line_view_full);
+
+        // 底部容器与服务区
+        layoutBottomContainerFull = floatingView.findViewById(R.id.layout_bottom_container_full);
+        layoutInfoBarFull = floatingView.findViewById(R.id.layout_info_bar_full);
+        layoutSapaGroupFull = floatingView.findViewById(R.id.layout_sapa_group_full);
+        tvSapaName1Full = floatingView.findViewById(R.id.tv_sapa_name_1_full);
+        tvSapaDist1Full = floatingView.findViewById(R.id.tv_sapa_dist_1_full);
+        tvSapaName2Full = floatingView.findViewById(R.id.tv_sapa_name_2_full);
+        tvSapaDist2Full = floatingView.findViewById(R.id.tv_sapa_dist_2_full);
+        ivSapaBadge1Full = floatingView.findViewById(R.id.iv_sapa_badge_1_full);
+        ivSapaBadge2Full = floatingView.findViewById(R.id.iv_sapa_badge_2_full);
 
         if (tmcProgressBarFull != null) {
             boolean tmcEnabled = sp.getBoolean("normal_navi_tmc_enabled", true);
             tmcProgressBarFull.setVisibility(tmcEnabled ? View.VISIBLE : View.GONE);
         }
         boolean bottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
-        if (tvSummaryFull != null) {
-            tvSummaryFull.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
+        if (layoutInfoBarFull != null) {
+            layoutInfoBarFull.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
         }
-        if (tvEtaFull != null) {
-            tvEtaFull.setVisibility(bottomInfoEnabled ? View.VISIBLE : View.GONE);
-        }
+        updateBottomContainerVisibility();
     }
 
     @Override
@@ -184,11 +203,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         }
 
         if (tvEtaFull != null) {
-            tvEtaFull.setText(eta);
-        }
-
-        if (tvFullEndPoiName != null) {
-            tvFullEndPoiName.setText(endPoiName != null ? endPoiName : "");
+            tvEtaFull.setText(formatEta(eta));
         }
 
         if (tvFullCameraDist != null) {
@@ -205,7 +220,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
 
         if (tvFullDirection != null) {
             if (carDirection >= 0) {
-                tvFullDirection.setText("朝向 " + getDirectionText(carDirection));
+                tvFullDirection.setText("车头 " + getDirectionText(carDirection));
             } else {
                 tvFullDirection.setText("");
             }
@@ -226,6 +241,63 @@ public class FullNaviWindow extends BaseFloatingWindow {
         }
         llTrafficLightGroupFull.setVisibility(View.VISIBLE);
         llTrafficLightGroupFull.setData(status, dir, countdown, true);
+    }
+
+    @Override
+    public void updateSapaInfo(String sapaName, String sapaDist, int sapaType, String nextSapaName, String nextSapaDist, int nextSapaType) {
+        boolean hasFirst = sapaName != null && !sapaName.trim().isEmpty();
+        if (!hasFirst) {
+            if (layoutSapaGroupFull != null) {
+                layoutSapaGroupFull.setVisibility(View.GONE);
+            }
+            updateBottomContainerVisibility();
+            return;
+        }
+
+        if (layoutSapaGroupFull != null) {
+            layoutSapaGroupFull.setVisibility(View.VISIBLE);
+        }
+
+        if (ivSapaBadge1Full != null) {
+            ivSapaBadge1Full.setImageResource(sapaType == 0 ? R.drawable.spap_0 : R.drawable.spap_1);
+            ivSapaBadge1Full.setBackgroundResource(sapaType == 0 ? R.drawable.bg_sapa_0 : R.drawable.bg_sapa_1);
+        }
+        if (tvSapaName1Full != null) {
+            tvSapaName1Full.setText(sapaName);
+        }
+        if (tvSapaDist1Full != null) {
+            tvSapaDist1Full.setText(sapaDist != null ? sapaDist : "");
+        }
+
+        boolean hasSecond = nextSapaName != null && !nextSapaName.trim().isEmpty();
+        View row2Full = floatingView.findViewById(R.id.layout_sapa_row_2_full);
+        if (row2Full != null) {
+            row2Full.setVisibility(hasSecond ? View.VISIBLE : View.GONE);
+        }
+        if (hasSecond) {
+            if (ivSapaBadge2Full != null) {
+                ivSapaBadge2Full.setImageResource(nextSapaType == 0 ? R.drawable.spap_0 : R.drawable.spap_1);
+                ivSapaBadge2Full.setBackgroundResource(nextSapaType == 0 ? R.drawable.bg_sapa_0 : R.drawable.bg_sapa_1);
+            }
+            if (tvSapaName2Full != null) {
+                tvSapaName2Full.setText(nextSapaName);
+            }
+            if (tvSapaDist2Full != null) {
+                tvSapaDist2Full.setText(nextSapaDist != null ? nextSapaDist : "");
+            }
+        }
+        updateBottomContainerVisibility();
+    }
+
+    private void updateBottomContainerVisibility() {
+        if (layoutBottomContainerFull == null) return;
+        boolean bottomInfoVisible = layoutInfoBarFull != null && layoutInfoBarFull.getVisibility() == View.VISIBLE;
+        boolean sapaVisible = layoutSapaGroupFull != null && layoutSapaGroupFull.getVisibility() == View.VISIBLE;
+        if (bottomInfoVisible || sapaVisible) {
+            layoutBottomContainerFull.setVisibility(View.VISIBLE);
+        } else {
+            layoutBottomContainerFull.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -285,12 +357,6 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (tvFullSpeedUnit != null) {
             tvFullSpeedUnit.setTextColor(fullCardAccent);
         }
-        if (tvFullLabelCurrent != null) {
-            tvFullLabelCurrent.setTextColor(labelColor);
-        }
-        if (tvFullLabelEnd != null) {
-            tvFullLabelEnd.setTextColor(labelColor);
-        }
         if (tvFullDirection != null) {
             tvFullDirection.setTextColor(fullCardAccent);
         }
@@ -313,10 +379,17 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (ivActionIconFull != null) ivActionIconFull.setColorFilter(textPrimary);
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(textSecondary);
         if (tvEtaFull != null) tvEtaFull.setTextColor(textSecondary);
-        if (tvFullEndPoiName != null) tvFullEndPoiName.setTextColor(textPrimary);
         // tvFullCameraDist text color is handled by CameraWarningView natively (or ignore for FullNaviWindow since it has custom logic)
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(textPrimary);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(textPrimary);
+        if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(textPrimary);
+        if (tvSapaDist1Full != null) tvSapaDist1Full.setTextColor(textPrimary);
+        if (tvSapaName2Full != null) tvSapaName2Full.setTextColor(textPrimary);
+        if (tvSapaDist2Full != null) tvSapaDist2Full.setTextColor(textPrimary);
+        View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider_full);
+        if (sapaDivider != null) {
+            sapaDivider.setBackgroundColor(isNightMode ? 0x2AFFFFFF : 0x2A000000);
+        }
     }
 
     @Override
@@ -328,10 +401,17 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (ivActionIconFull != null) ivActionIconFull.clearColorFilter();
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(TEXT_SECONDARY_DARK);
         if (tvEtaFull != null) tvEtaFull.setTextColor(TEXT_SECONDARY_DARK);
-        if (tvFullEndPoiName != null) tvFullEndPoiName.setTextColor(TEXT_PRIMARY_DARK);
         // tvFullCameraDist text color is handled by CameraWarningView natively
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(TEXT_PRIMARY_DARK);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaDist1Full != null) tvSapaDist1Full.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaName2Full != null) tvSapaName2Full.setTextColor(TEXT_PRIMARY_DARK);
+        if (tvSapaDist2Full != null) tvSapaDist2Full.setTextColor(TEXT_PRIMARY_DARK);
+        View sapaDivider = floatingView.findViewById(R.id.v_sapa_top_divider_full);
+        if (sapaDivider != null) {
+            sapaDivider.setBackgroundColor(0x2AFFFFFF);
+        }
     }
 
     @Override

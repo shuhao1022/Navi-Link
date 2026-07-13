@@ -32,6 +32,31 @@ public class TrafficLightView extends LinearLayout {
     private static final int FILL_COLOR_YELLOW = 0xFFCC9900;
     private static final int FILL_COLOR_GREEN = 0xFF34C759;
 
+    // 倒计时文字颜色（来自shape）
+    private static final int COUNTDOWN_COLOR_RED = 0xFFFF3333;
+    private static final int COUNTDOWN_COLOR_YELLOW = 0xFFCC9900;
+    private static final int COUNTDOWN_COLOR_GREEN = 0xFF34C759;
+
+    // 七组红绿灯图标样式资源
+    private static final int[] LIGHT_RED_STYLES = {
+        R.drawable.light_red_01, R.drawable.light_red_02,
+        R.drawable.light_red_03, R.drawable.light_red_04,
+        R.drawable.light_red_05, R.drawable.light_red_06,
+        R.drawable.light_red_07
+    };
+    private static final int[] LIGHT_GREE_STYLES = {
+        R.drawable.light_gree_01, R.drawable.light_gree_02,
+        R.drawable.light_gree_03, R.drawable.light_gree_04,
+        R.drawable.light_gree_05, R.drawable.light_gree_06,
+        R.drawable.light_gree_07
+    };
+    private static final int[] LIGHT_YELLOW_STYLES = {
+        R.drawable.light_yellow_01, R.drawable.light_yellow_02,
+        R.drawable.light_yellow_03, R.drawable.light_yellow_04,
+        R.drawable.light_yellow_05, R.drawable.light_yellow_06,
+        R.drawable.light_yellow_07
+    };
+
     public TrafficLightView(Context context) {
         super(context);
         init(context);
@@ -47,7 +72,7 @@ public class TrafficLightView extends LinearLayout {
 
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
-        setPadding(dpToPx(3), 0, dpToPx(10), 0);
+        setPadding(dpToPx(1), 0, dpToPx(10), 0);
         setMinimumHeight(dpToPx(50)); // 默认胶囊高度50dp，与导航布局一致
 
         LayoutInflater.from(context).inflate(R.layout.traffic_light_view, this, true);
@@ -68,15 +93,33 @@ public class TrafficLightView extends LinearLayout {
     public void setData(int status, int dir, int countdown, boolean isNavi) {
         setVisibility(View.VISIBLE);
 
-        // 设置灯图标
-        ivLightIcon.setImageResource(isNavi ? getNaviLightIconRes(status) : getCruiseLightIconRes(status));
+        int styleIndex = sp.getInt("traffic_light_style", 0);
+        if (styleIndex < 0 || styleIndex > 6) styleIndex = 0;
+
+        // 设置灯图标（使用样式图片）
+        ivLightIcon.setImageResource(getStyleLightRes(status, isNavi, styleIndex));
         // 设置方向箭头
         ivLightArrow.setImageResource(isNavi ? getNaviLightDirRes(dir) : getCruiseLightDirRes(dir));
         // 设置倒计时
         tvLightTime.setText(String.valueOf(countdown));
 
-        // 应用胶囊背景样式（填充/默认）
+        // 应用胶囊背景样式（填充/默认），内部会读写fillEnabled
         applyFillStyle(status, isNavi);
+
+        // 非填充背景模式：倒计时颜色跟随灯状态，箭头根据灯图显隐变化
+        boolean fillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
+        if (!fillEnabled) {
+            tvLightTime.setTextColor(getCountdownColor(status, isNavi));
+            boolean iconEnabled = sp.getBoolean("traffic_light_icon_enabled", true);
+            if (iconEnabled) {
+                ivLightArrow.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN);
+            } else {
+                ivLightArrow.setColorFilter(getCountdownColor(status, isNavi));
+            }
+        } else {
+            tvLightTime.setTextColor(0xFFFFFFFF);
+            ivLightArrow.setColorFilter(0xFFFFFFFF, android.graphics.PorterDuff.Mode.SRC_IN);
+        }
 
         // 5秒以内闪烁
         if (countdown <= 5) {
@@ -108,7 +151,7 @@ public class TrafficLightView extends LinearLayout {
             flIconContainer.setLayoutParams(iconLp);
 
             // 缩小箭头 padding 4dp -> 3dp
-            ivLightArrow.setPadding(dpToPx(3), dpToPx(3), dpToPx(3), dpToPx(3));
+            ivLightArrow.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
 
             // 缩小文字 30sp -> 25sp
             tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
@@ -166,8 +209,14 @@ public class TrafficLightView extends LinearLayout {
 
             ivLightIcon.setVisibility(View.GONE);
         } else {
-            setBackgroundResource(R.drawable.bg_traffic_light_capsule);
-            ivLightIcon.setVisibility(View.VISIBLE);
+            boolean capsuleEnabled = sp.getBoolean("traffic_light_capsule_enabled", true);
+            if (capsuleEnabled) {
+                setBackgroundResource(R.drawable.bg_traffic_light_capsule);
+            } else {
+                setBackground(null);
+            }
+            boolean iconEnabled = sp.getBoolean("traffic_light_icon_enabled", true);
+            ivLightIcon.setVisibility(iconEnabled ? View.VISIBLE : View.GONE);
         }
     }
 
@@ -185,10 +234,34 @@ public class TrafficLightView extends LinearLayout {
 
     // ======================== 资源映射 ========================
 
-    private int getNaviLightIconRes(int status) {
-        if (status == 4) return R.drawable.ic_traffic_light_green;
-        if (status == 1) return R.drawable.ic_traffic_light_red;
-        return R.drawable.ic_traffic_light_yellow;
+    private int getStyleLightRes(int status, boolean isNavi, int styleIndex) {
+        int colorState;
+        if (isNavi) {
+            if (status == 4) colorState = 0; // green
+            else if (status == 1) colorState = 1; // red
+            else colorState = 2; // yellow
+        } else {
+            if (status == 1) colorState = 0; // green
+            else if (status == 0) colorState = 1; // red
+            else colorState = 2; // yellow
+        }
+        switch (colorState) {
+            case 0: return LIGHT_GREE_STYLES[styleIndex];
+            case 1: return LIGHT_RED_STYLES[styleIndex];
+            default: return LIGHT_YELLOW_STYLES[styleIndex];
+        }
+    }
+
+    private int getCountdownColor(int status, boolean isNavi) {
+        if (isNavi) {
+            if (status == 4) return COUNTDOWN_COLOR_GREEN;
+            if (status == 1) return COUNTDOWN_COLOR_RED;
+            return COUNTDOWN_COLOR_YELLOW;
+        } else {
+            if (status == 1) return COUNTDOWN_COLOR_GREEN;
+            if (status == 0) return COUNTDOWN_COLOR_RED;
+            return COUNTDOWN_COLOR_YELLOW;
+        }
     }
 
     private int getNaviLightDirRes(int dir) {
@@ -197,12 +270,6 @@ public class TrafficLightView extends LinearLayout {
         if (dir == 3) return R.mipmap.light_u_turn;
         if (dir == 4) return R.mipmap.light_straight;
         return R.mipmap.light_straight;
-    }
-
-    private int getCruiseLightIconRes(int status) {
-        if (status == 1) return R.drawable.ic_traffic_light_green;
-        if (status == 0) return R.drawable.ic_traffic_light_red;
-        return R.drawable.ic_traffic_light_yellow;
     }
 
     private int getCruiseLightDirRes(int dir) {
