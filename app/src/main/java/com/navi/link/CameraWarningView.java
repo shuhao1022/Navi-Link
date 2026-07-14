@@ -86,7 +86,7 @@ public class CameraWarningView extends LinearLayout {
 
         setVisibility(VISIBLE);
         if (tvCameraDist != null) {
-            tvCameraDist.setText(cameraDist + "米");
+            tvCameraDist.setText(String.valueOf(cameraDist));
         }
 
         if (cameraSpeed > 0) {
@@ -129,7 +129,6 @@ public class CameraWarningView extends LinearLayout {
             case 2:
             case 15:
                 return R.drawable.camera_light;
-            case 3:
             case 21:
             case 1017:
                 return R.drawable.camera_park;

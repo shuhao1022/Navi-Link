@@ -19,10 +19,12 @@
             android:padding="10dp">
 
             <!-- 第一行：速度 + 路名 + 限速 -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:id="@+id/ll_cruise_normal_first_row"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:id="@+id/tv_cn_speed"
@@ -32,46 +34,20 @@
                     android:text="0"
                     android:textColor="#FF0099FF"
                     android:textSize="40sp"
-                    android:textStyle="bold"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-<com.navi.link.CameraWarningView
-    android:visibility="visible"
-    android:id="@+id/ll_cn_camera_dist"
-    android:background="@drawable/bg_traffic_light_capsule"
-    android:paddingEnd="5dp"
-    android:paddingStart="4dp"
-    app:layout_constraintBottom_toBottomOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintTop_toTopOf="parent"
-    android:layout_width="wrap_content"
-    android:layout_height="45dp" />
-
+                    android:textStyle="bold" />
 
                 <View
                     android:id="@+id/cn_divider"
                     android:layout_width="1dp"
                     android:layout_height="24dp"
                     android:layout_marginStart="8dp"
-                    android:background="#33FFFFFF"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@id/tv_cn_speed"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <androidx.constraintlayout.widget.Barrier
-                    android:id="@+id/barrier_cn_right"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    app:barrierDirection="start"
-                    app:constraint_referenced_ids="ll_cn_camera_dist" />
+                    android:background="#33FFFFFF" />
 
                 <TextView
                     android:id="@+id/tv_cn_road_name"
                     android:layout_width="0dp"
-                    android:textStyle="bold"
-                    android:gravity="center_horizontal"
                     android:layout_height="wrap_content"
+                    android:layout_weight="1"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="6dp"
                     android:ellipsize="end"
@@ -79,13 +55,18 @@
                     android:text="无名道路"
                     android:textColor="#FFFFFF"
                     android:textSize="22sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@id/barrier_cn_right"
-                    app:layout_constraintStart_toEndOf="@id/cn_divider"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:textStyle="bold" />
 
+                <com.navi.link.CameraWarningView
+                    android:id="@+id/ll_cn_camera_dist"
+                    android:layout_width="wrap_content"
+                    android:layout_height="45dp"
+                    android:background="@drawable/bg_traffic_light_capsule"
+                    android:paddingStart="4dp"
+                    android:paddingEnd="5dp"
+                    android:visibility="visible" />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
 
             <!-- 第二行：红绿灯组 -->
             <LinearLayout

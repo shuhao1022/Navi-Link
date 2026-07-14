@@ -220,8 +220,15 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
-        int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
-        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        int textPrimary;
+
+        if (sp.getInt("background_mode", 0) == 2 && themeColor != 0xFF1A1A1A) {
+            // 全透明 + 非默认黑色主题：文字颜色跟随主题
+            textPrimary = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+        } else {
+            // 跟随高德昼夜
+            textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+        }
 
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(textPrimary);
     }

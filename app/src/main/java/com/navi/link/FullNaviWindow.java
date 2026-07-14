@@ -379,7 +379,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (ivActionIconFull != null) ivActionIconFull.setColorFilter(textPrimary);
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(textSecondary);
         if (tvEtaFull != null) tvEtaFull.setTextColor(textSecondary);
-        // tvFullCameraDist text color is handled by CameraWarningView natively (or ignore for FullNaviWindow since it has custom logic)
+        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(textPrimary);
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(textPrimary);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(textPrimary);
         if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(textPrimary);
@@ -401,7 +401,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (ivActionIconFull != null) ivActionIconFull.clearColorFilter();
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(TEXT_SECONDARY_DARK);
         if (tvEtaFull != null) tvEtaFull.setTextColor(TEXT_SECONDARY_DARK);
-        // tvFullCameraDist text color is handled by CameraWarningView natively
+        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(Color.WHITE);
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(TEXT_PRIMARY_DARK);
         if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(TEXT_PRIMARY_DARK);

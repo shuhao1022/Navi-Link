@@ -1,6 +1,10 @@
 package com.navi.link;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,6 +40,16 @@ public class LaneLineView extends LinearLayout {
     private String cachedDriveWayJson = null;
     private boolean isCompactMode = false; // true=wrap_content(≤3条), false=match_parent(>3条)
     private boolean isSimpleMode = false;
+
+    private final Handler clearHandler = new Handler(Looper.getMainLooper());
+    private boolean isClearPending = false;
+    private final Runnable delayClearRunnable = new Runnable() {
+        @Override
+        public void run() {
+            Log.d(TAG, "Delay clear triggered: clearing lane lines");
+            clear();
+        }
+    };
 
     public void setSimpleMode(boolean simpleMode) {
         this.isSimpleMode = simpleMode;
@@ -86,6 +100,11 @@ public class LaneLineView extends LinearLayout {
             boolean enabled = root.optBoolean("drive_way_enabled", false);
             if (!enabled) {
                 if (getVisibility() == View.VISIBLE) {
+                    if (!isClearPending) {
+                        isClearPending = true;
+                        clearHandler.postDelayed(delayClearRunnable, 3000);
+                        Log.d(TAG, "Received disabled packet, scheduling clear in 3s");
+                    }
                     return; // 保持上一包状态，避免闪烁
                 }
                 clear();
@@ -95,10 +114,21 @@ public class LaneLineView extends LinearLayout {
             JSONArray infoArray = root.optJSONArray("drive_way_info");
             if (size <= 0 || infoArray == null || infoArray.length() == 0) {
                 if (getVisibility() == View.VISIBLE) {
+                    if (!isClearPending) {
+                        isClearPending = true;
+                        clearHandler.postDelayed(delayClearRunnable, 3000);
+                        Log.d(TAG, "Received empty packet, scheduling clear in 3s");
+                    }
                     return; // 忽略此空包，保持上一包状态，避免闪烁
                 }
                 clear();
                 return;
+            }
+
+            // 收到有效包，取消延时清空
+            if (isClearPending) {
+                clearHandler.removeCallbacks(delayClearRunnable);
+                isClearPending = false;
             }
 
             // 收集并按 drive_way_number 排序
@@ -140,8 +170,27 @@ public class LaneLineView extends LinearLayout {
      * 清空并隐藏
      */
     public void clear() {
+        clearHandler.removeCallbacks(delayClearRunnable);
+        isClearPending = false;
         removeAllViews();
         setVisibility(View.GONE);
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        clear();
+    }
+
+    @Override
+    public void removeAllViews() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof ImageView) {
+                cancelBlink((ImageView) child);
+            }
+        }
+        super.removeAllViews();
     }
 
     private void rebuildLanes(ArrayList<JSONObject> lanes) {
@@ -225,14 +274,47 @@ public class LaneLineView extends LinearLayout {
             View child = getChildAt(i);
             if (child instanceof ImageView) {
                 if (iconIndex < lanes.size()) {
-                    String iconStr = lanes.get(iconIndex).optString("drive_way_lane_Back_icon", "");
+                    JSONObject laneObj = lanes.get(iconIndex);
+                    String iconStr = laneObj.optString("drive_way_lane_Back_icon", "");
                     int resId = getLaneDrawableRes(iconStr);
-                    ((ImageView) child).setImageResource(resId);
-                    child.setVisibility(View.VISIBLE);
+                    ImageView iv = (ImageView) child;
+                    iv.setImageResource(resId);
+                    iv.setVisibility(View.VISIBLE);
+
+                    boolean advised = laneObj.optBoolean("trafficLaneAdvised", false)
+                            || "true".equalsIgnoreCase(laneObj.optString("trafficLaneAdvised"))
+                            || "1".equals(laneObj.optString("trafficLaneAdvised"));
+                    if (advised) {
+                        startBlink(iv);
+                    } else {
+                        cancelBlink(iv);
+                    }
                 }
                 iconIndex++;
             }
         }
+    }
+
+    private void startBlink(ImageView iv) {
+        Object animatorObj = iv.getTag();
+        if (animatorObj instanceof ObjectAnimator) {
+            return;
+        }
+        ObjectAnimator blinkAnimator = ObjectAnimator.ofFloat(iv, "alpha", 1f, 0.3f);
+        blinkAnimator.setDuration(500);
+        blinkAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        blinkAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        blinkAnimator.start();
+        iv.setTag(blinkAnimator);
+    }
+
+    private void cancelBlink(ImageView iv) {
+        Object animatorObj = iv.getTag();
+        if (animatorObj instanceof ObjectAnimator) {
+            ((ObjectAnimator) animatorObj).cancel();
+            iv.setTag(null);
+        }
+        iv.setAlpha(1.0f);
     }
 
     private int getLaneDrawableRes(String iconNumber) {
