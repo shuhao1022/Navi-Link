@@ -10,7 +10,7 @@ import org.json.JSONArray;
 public class AmapNaviReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AmapNavi";
-    private boolean isLog = true;
+    private boolean isLog = false;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!"AUTONAVI_STANDARD_BROADCAST_SEND".equals(intent.getAction())) return;

@@ -10,7 +10,7 @@
     <!-- 红色内圆 -->
     <item android:bottom="3dp" android:left="3dp" android:right="3dp" android:top="3dp">
         <shape android:shape="oval">
-            <solid android:color="#242424" />
+            <solid android:color="#ffffff" />
         </shape>
     </item>
 </layer-list>

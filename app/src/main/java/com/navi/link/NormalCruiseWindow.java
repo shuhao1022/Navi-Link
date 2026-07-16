@@ -126,7 +126,7 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
 
         if (count != childCount) {
             container.removeAllViews();
-            float scale = FloatingWindowManager.getInstance().getScale();
+            float scale = getWindowScale();
             for (int i = 0; i < count; i++) {
                 try {
                     JSONObject lightObj = lightsArray.getJSONObject(i);
@@ -220,15 +220,33 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
-        int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
-        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        int textPrimary;
+        int textSecondary;
+
+        if (sp.getInt("background_mode", 0) == 2 && themeColor != 0xFF1A1A1A) {
+            // 全透明 + 非默认黑色主题：文字颜色跟随主题
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (accentColor == Color.WHITE) {
+                textPrimary = TEXT_PRIMARY_DARK;
+                textSecondary = TEXT_SECONDARY_DARK;
+            } else {
+                textPrimary = accentColor;
+                textSecondary = accentColor;
+            }
+        } else {
+            // 跟随高德昼夜
+            textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+            textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        }
 
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(textPrimary);
+        if (llCnCameraDist != null) llCnCameraDist.setTextColor(textPrimary);
     }
 
     @Override
     public void resetToDefaultTextColors() {
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(TEXT_PRIMARY_DARK);
+        if (llCnCameraDist != null) llCnCameraDist.setTextColor(TEXT_PRIMARY_DARK);
     }
 
     @Override

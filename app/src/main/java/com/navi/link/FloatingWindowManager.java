@@ -79,6 +79,7 @@ public class FloatingWindowManager {
     private int themeColor = 0xFF4FC3F7;
     private boolean isShowing = false;
     private boolean hasActiveData = false; // 是否收到过实际导航/巡航广播数据
+    private float clusterScale = 1.0f;
 
     // 昼夜模式 + 透明背景
     private boolean isNightMode = true; // 默认夜间（深色文字）
@@ -215,6 +216,7 @@ public class FloatingWindowManager {
         clusterSavedPosX = sp.getInt("cluster_window_pos_x", -1);
         clusterSavedPosY = sp.getInt("cluster_window_pos_y", -1);
         isAutoCenteringEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
+        clusterScale = sp.getFloat("scale_cluster", 1.0f);
     }
 
     public void setAutoCenteringEnabled(boolean enabled) {
@@ -247,7 +249,20 @@ public class FloatingWindowManager {
                 .putFloat("scale_normal", scales[0])
                 .putFloat("scale_minimal", scales[1])
                 .putFloat("scale_full", scales[2])
+                .putFloat("scale_cluster", clusterScale)
                 .apply();
+    }
+
+    public float getClusterScale() {
+        return clusterScale;
+    }
+
+    public void setClusterScale(float scale) {
+        this.clusterScale = scale;
+        saveScalePreferences();
+        if (isShowing && isClusterMirrorEnabled) {
+            onClusterMirrorConfigChanged();
+        }
     }
 
     // ======================== 窗口显示与隐藏 ========================
@@ -394,6 +409,9 @@ public class FloatingWindowManager {
         if (floatingView != null) {
             floatingView.setVisibility(View.GONE);
         }
+        if (activeWindow != null) {
+            activeWindow.updateLaneLines(null);
+        }
     }
 
     public void onCruiseEnded() {
@@ -417,6 +435,9 @@ public class FloatingWindowManager {
         // 2. 立即隐藏视图
         if (floatingView != null) {
             floatingView.setVisibility(View.GONE);
+        }
+        if (activeWindow != null) {
+            activeWindow.updateLaneLines(null);
         }
     }
 
@@ -542,7 +563,7 @@ public class FloatingWindowManager {
         // 物理缩放内容：缩小或放大时直接调整文字尺寸/padding/margin，窗口用 WRAP_CONTENT 自然撑开
         float scale = getScale();
         if (scale != 1.0f) {
-            physicalScaleContent(inflated);
+            physicalScaleContent(inflated, scale);
         }
 
         // 创建超速红色边框覆盖层（圆角跟随窗口样式）
@@ -743,11 +764,17 @@ public class FloatingWindowManager {
     }
 
     /** 物理缩放：递归调整文字大小、padding、margin、固定宽高 */
-    private void physicalScaleContent(View root) {
-        scaleViewRecursive(root, getScale());
+    private void physicalScaleContent(View root, float factor) {
+        scaleViewRecursive(root, factor);
     }
 
     private void scaleViewRecursive(View view, float factor) {
+        if (view instanceof LaneLineView) {
+            ((LaneLineView) view).setScaleFactor(factor);
+        }
+        if (view instanceof TrafficLightView) {
+            ((TrafficLightView) view).setScaleFactor(factor);
+        }
         if (view instanceof TextView) {
             TextView tv = (TextView) view;
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() * factor);
@@ -1468,12 +1495,15 @@ public class FloatingWindowManager {
                 clusterScaleTarget = null;
             }
 
-            float scale = getScale();
+            float scale = getClusterScale();
             if (scale != 1.0f) {
-                physicalScaleContent(inflated);
+                physicalScaleContent(inflated, scale);
             }
 
             clusterActiveWindow = FloatingWindowFactory.createWindow(currentMode, effectiveStyle, clusterContext, inflated);
+            if (clusterActiveWindow != null) {
+                clusterActiveWindow.setClusterWindow(true);
+            }
 
             restoreCachedDataForCluster();
             measureNaturalSizeForCluster(clusterFloatingView);

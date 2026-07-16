@@ -104,8 +104,10 @@ public class MainActivity extends AppCompatActivity {
     private RadioButton rbStartAmap;
     private TextView tvStartAmapDesc;
     private SeekBar sbScale;
+    private SeekBar sbClusterScale;
     private View[] themeChips;
     private TextView tvScaleValue;
+    private TextView tvClusterScaleValue;
     private TextView tvStatus;
     private SwitchCompat cbCruiseEnabled;
     private TextView tvCruiseStatus;
@@ -113,6 +115,10 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbNormalLaneEnabled;
     private TextView tvNormalLaneStatus;
     private MaterialCardView cardNormalLaneToggle;
+
+    private SwitchCompat cbHideTurnIconBg;
+    private TextView tvHideTurnIconBgStatus;
+    private MaterialCardView cardHideTurnIconBgToggle;
     private SwitchCompat cbAvoidForegroundEnabled;
     private TextView tvAvoidForegroundStatus;
     private MaterialCardView cardAvoidForegroundToggle;
@@ -121,6 +127,11 @@ public class MainActivity extends AppCompatActivity {
     private SwitchCompat cbCrossMapHideEnabled;
     private TextView tvCrossMapHideStatus;
     private MaterialCardView cardCrossMapHideToggle;
+
+    private boolean hideLaneLineBg = false;
+    private SwitchCompat cbHideLaneLineBgEnabled;
+    private TextView tvHideLaneLineBgStatus;
+    private MaterialCardView cardHideLaneLineBgToggle;
     private TextView tvSys;
     private TextView tvStyle;
     private TextView tvOperation;
@@ -187,6 +198,10 @@ public class MainActivity extends AppCompatActivity {
     private MaterialCardView cardMinimalAccentNaviInfoToggle;
     private SwitchCompat cbMinimalAccentNaviInfoEnabled;
     private TextView tvMinimalAccentNaviInfoStatus;
+
+    private MaterialCardView cardMinimalSpeedLimitToggle;
+    private SwitchCompat cbMinimalSpeedLimitEnabled;
+    private TextView tvMinimalSpeedLimitStatus;
 
     private MaterialCardView cardAutoStartToggle;
     private SwitchCompat cbAutoStartEnabled;
@@ -268,6 +283,7 @@ public class MainActivity extends AppCompatActivity {
     private int backgroundMode = 0; // 0=深色, 1=半透明, 2=全透明
     private boolean cruiseEnabled = true;
     private boolean normalLaneEnabled = false;
+    private boolean hideTurnIconBg = false;
     private boolean avoidForegroundEnabled = false;
     private boolean overspeedWarningEnabled = true;
     private int overspeedThreshold = 0;
@@ -292,6 +308,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isMinimalLightCountEnabled = false;
     private boolean isMinimalAccentNaviInfoEnabled = false;
     private boolean isMinimalAutocenterEnabled = false;
+    private boolean isMinimalSpeedLimitEnabled = false;
 
     private int themeColor = 0xFF4FC3F7;
 
@@ -397,7 +414,9 @@ public class MainActivity extends AppCompatActivity {
         rbStartAmap = findViewById(R.id.rb_start_amap);
         tvStartAmapDesc = findViewById(R.id.tv_start_amap_desc);
         sbScale = findViewById(R.id.sb_scale);
+        sbClusterScale = findViewById(R.id.sb_cluster_scale);
         tvScaleValue = findViewById(R.id.tv_scale_value);
+        tvClusterScaleValue = findViewById(R.id.tv_cluster_scale_value);
         tvStatus = findViewById(R.id.tv_status);
         cbCruiseEnabled = findViewById(R.id.cb_cruise_enabled);
         tvCruiseStatus = findViewById(R.id.tv_cruise_status);
@@ -405,6 +424,10 @@ public class MainActivity extends AppCompatActivity {
         cbNormalLaneEnabled = findViewById(R.id.cb_normal_lane_enabled);
         tvNormalLaneStatus = findViewById(R.id.tv_normal_lane_status);
         cardNormalLaneToggle = findViewById(R.id.card_normal_lane_toggle);
+
+        cbHideTurnIconBg = findViewById(R.id.cb_hide_turn_icon_bg);
+        tvHideTurnIconBgStatus = findViewById(R.id.tv_hide_turn_icon_bg_status);
+        cardHideTurnIconBgToggle = findViewById(R.id.card_hide_turn_icon_bg_toggle);
         cbAvoidForegroundEnabled = findViewById(R.id.cb_avoid_foreground_enabled);
         tvAvoidForegroundStatus = findViewById(R.id.tv_avoid_foreground_status);
         cardAvoidForegroundToggle = findViewById(R.id.card_avoid_foreground_toggle);
@@ -412,6 +435,10 @@ public class MainActivity extends AppCompatActivity {
         cbCrossMapHideEnabled = findViewById(R.id.cb_cross_map_hide_enabled);
         tvCrossMapHideStatus = findViewById(R.id.tv_cross_map_hide_status);
         cardCrossMapHideToggle = findViewById(R.id.card_cross_map_hide_toggle);
+
+        cbHideLaneLineBgEnabled = findViewById(R.id.cb_hide_lane_line_bg_enabled);
+        tvHideLaneLineBgStatus = findViewById(R.id.tv_hide_lane_line_bg_status);
+        cardHideLaneLineBgToggle = findViewById(R.id.card_hide_lane_line_bg_toggle);
         cbOverspeedWarningEnabled = findViewById(R.id.cb_overspeed_warning_enabled);
         tvOverspeedWarningStatus = findViewById(R.id.tv_overspeed_warning_status);
         cardOverspeedWarningToggle = findViewById(R.id.card_overspeed_warning_toggle);
@@ -564,6 +591,10 @@ public class MainActivity extends AppCompatActivity {
         cardMinimalAccentNaviInfoToggle = findViewById(R.id.card_minimal_accent_navi_info_toggle);
         cbMinimalAccentNaviInfoEnabled = findViewById(R.id.cb_minimal_accent_navi_info_enabled);
         tvMinimalAccentNaviInfoStatus = findViewById(R.id.tv_minimal_accent_navi_info_status);
+
+        cardMinimalSpeedLimitToggle = findViewById(R.id.card_minimal_speed_limit_toggle);
+        cbMinimalSpeedLimitEnabled = findViewById(R.id.cb_minimal_speed_limit_enabled);
+        tvMinimalSpeedLimitStatus = findViewById(R.id.tv_minimal_speed_limit_status);
     }
 
     private void loadPreferences() {
@@ -583,6 +614,7 @@ public class MainActivity extends AppCompatActivity {
         backgroundMode = sp.getInt("background_mode", 0);
         cruiseEnabled = sp.getBoolean("cruise_enabled", true);
         normalLaneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
+        hideTurnIconBg = sp.getBoolean("hide_turn_icon_bg", false);
         avoidForegroundEnabled = sp.getBoolean("hide_on_amap_foreground", false);
         overspeedWarningEnabled = sp.getBoolean("overspeed_warning_enabled", true);
         overspeedThreshold = sp.getInt("overspeed_threshold", 0);
@@ -594,6 +626,7 @@ public class MainActivity extends AppCompatActivity {
         isMinimalLightCountEnabled = sp.getBoolean("minimal_light_count_enabled", false);
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
         isMinimalAutocenterEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
+        isMinimalSpeedLimitEnabled = sp.getBoolean("minimal_speed_limit_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
@@ -607,6 +640,7 @@ public class MainActivity extends AppCompatActivity {
         isTrafficLightIconEnabled = sp.getBoolean("traffic_light_icon_enabled", true);
         trafficLightStyle = sp.getInt("traffic_light_style", 0);
         crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
+        hideLaneLineBg = sp.getBoolean("hide_lane_line_bg", false);
  
         updateSeekBarToCurrentScale();
         
@@ -615,6 +649,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvNormalLaneStatus != null) {
             tvNormalLaneStatus.setText(normalLaneEnabled ? "车道线已启用" : "车道线已禁用");
+        }
+        if (cbHideTurnIconBg != null) {
+            cbHideTurnIconBg.setChecked(hideTurnIconBg);
+        }
+        if (tvHideTurnIconBgStatus != null) {
+            tvHideTurnIconBgStatus.setText(hideTurnIconBg ? "背景已隐藏" : "背景已显示");
         }
         if (cbAvoidForegroundEnabled != null) {
             cbAvoidForegroundEnabled.setChecked(avoidForegroundEnabled);
@@ -627,6 +667,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvCrossMapHideStatus != null) {
             tvCrossMapHideStatus.setText(crossMapHideEnabled ? "路口放大图时隐藏悬浮窗" : "路口放大图时正常显示浮窗");
+        }
+        if (cbHideLaneLineBgEnabled != null) {
+            cbHideLaneLineBgEnabled.setChecked(hideLaneLineBg);
+        }
+        if (tvHideLaneLineBgStatus != null) {
+            tvHideLaneLineBgStatus.setText(hideLaneLineBg ? "背景已隐藏" : "背景已显示");
         }
         if (cbOverspeedWarningEnabled != null) {
             cbOverspeedWarningEnabled.setChecked(overspeedWarningEnabled);
@@ -678,6 +724,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvMinimalAccentNaviInfoStatus != null) {
             tvMinimalAccentNaviInfoStatus.setText(isMinimalAccentNaviInfoEnabled ? "已启用" : "已禁用");
+        }
+        if (cbMinimalSpeedLimitEnabled != null) {
+            cbMinimalSpeedLimitEnabled.setChecked(isMinimalSpeedLimitEnabled);
+        }
+        if (tvMinimalSpeedLimitStatus != null) {
+            tvMinimalSpeedLimitStatus.setText(isMinimalSpeedLimitEnabled ? "限速显示已启用" : "限速显示已禁用");
         }
         if (cbClusterMirrorEnabled != null) {
             cbClusterMirrorEnabled.setChecked(clusterMirrorEnabled);
@@ -946,6 +998,8 @@ public class MainActivity extends AppCompatActivity {
                 .putInt("background_mode", backgroundMode)
                 .putBoolean("cruise_enabled", cruiseEnabled)
                 .putBoolean("normal_navi_lane_enabled", normalLaneEnabled)
+                .putBoolean("hide_turn_icon_bg", hideTurnIconBg)
+                .putBoolean("hide_lane_line_bg", hideLaneLineBg)
                 .putBoolean("hide_on_amap_foreground", avoidForegroundEnabled)
                 .putBoolean("hide_on_cross_map", crossMapHideEnabled)
                 .putBoolean("overspeed_warning_enabled", overspeedWarningEnabled)
@@ -970,6 +1024,7 @@ public class MainActivity extends AppCompatActivity {
         editor.putBoolean("minimal_light_count_enabled", isMinimalLightCountEnabled);
         editor.putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled);
         editor.putBoolean("minimal_autocenter_enabled", isMinimalAutocenterEnabled);
+        editor.putBoolean("minimal_speed_limit_enabled", isMinimalSpeedLimitEnabled);
         editor.apply();
     }
 
@@ -1070,6 +1125,8 @@ public class MainActivity extends AppCompatActivity {
         // 更新开关（SwitchCompat）的主题颜色
         updateSwitchTheme(cbCruiseEnabled, accentColor);
         updateSwitchTheme(cbNormalLaneEnabled, accentColor);
+        updateSwitchTheme(cbHideTurnIconBg, accentColor);
+        updateSwitchTheme(cbHideLaneLineBgEnabled, accentColor);
         updateSwitchTheme(cbAvoidForegroundEnabled, accentColor);
         updateSwitchTheme(cbCrossMapHideEnabled, accentColor);
         updateSwitchTheme(cbOverspeedWarningEnabled, accentColor);
@@ -1091,6 +1148,7 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbMinimalSpeedEnabled, accentColor);
         updateSwitchTheme(cbMinimalLightCountEnabled, accentColor);
         updateSwitchTheme(cbMinimalAccentNaviInfoEnabled, accentColor);
+        updateSwitchTheme(cbMinimalSpeedLimitEnabled, accentColor);
  
         // 更新 SeekBar 与文本颜色
         if (sbScale.getProgressDrawable() != null) {
@@ -1106,6 +1164,24 @@ public class MainActivity extends AppCompatActivity {
             sbScale.setThumb(thumbDrawable);
         }
         tvScaleValue.setTextColor(accentColor);
+
+        if (sbClusterScale != null) {
+            if (sbClusterScale.getProgressDrawable() != null) {
+                android.graphics.drawable.Drawable progressDrawable =
+                        DrawableCompat.wrap(sbClusterScale.getProgressDrawable().mutate());
+                DrawableCompat.setTint(progressDrawable, accentColor);
+                sbClusterScale.setProgressDrawable(progressDrawable);
+            }
+            if (sbClusterScale.getThumb() != null) {
+                android.graphics.drawable.Drawable thumbDrawable =
+                        DrawableCompat.wrap(sbClusterScale.getThumb().mutate());
+                DrawableCompat.setTintList(thumbDrawable, accentColorStateList);
+                sbClusterScale.setThumb(thumbDrawable);
+            }
+        }
+        if (tvClusterScaleValue != null) {
+            tvClusterScaleValue.setTextColor(accentColor);
+        }
 
         tvStyle.setTextColor(accentColor);
         tvSys.setTextColor(accentColor);
@@ -1255,6 +1331,27 @@ public class MainActivity extends AppCompatActivity {
             cardNormalLaneToggle.setOnClickListener(v -> cbNormalLaneEnabled.toggle());
         }
 
+        cbHideTurnIconBg.setChecked(hideTurnIconBg);
+        if (tvHideTurnIconBgStatus != null) {
+            tvHideTurnIconBgStatus.setText(hideTurnIconBg ? "背景已隐藏" : "背景已显示");
+        }
+        CompoundButton.OnCheckedChangeListener hideTurnIconBgListener = (buttonView, isChecked) -> {
+            hideTurnIconBg = isChecked;
+            savePreferences();
+            if (tvHideTurnIconBgStatus != null) {
+                tvHideTurnIconBgStatus.setText(isChecked ? "背景已隐藏" : "背景已显示");
+            }
+            // 立即刷新悬浮窗
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.refreshWindow();
+            }
+        };
+        cbHideTurnIconBg.setOnCheckedChangeListener(hideTurnIconBgListener);
+        if (cardHideTurnIconBgToggle != null) {
+            cardHideTurnIconBgToggle.setOnClickListener(v -> cbHideTurnIconBg.toggle());
+        }
+
         cbAvoidForegroundEnabled.setChecked(avoidForegroundEnabled);
         if (tvAvoidForegroundStatus != null) {
             tvAvoidForegroundStatus.setText(avoidForegroundEnabled ? "高德前台时隐藏悬浮窗" : "前台正常显示浮窗");
@@ -1295,6 +1392,27 @@ public class MainActivity extends AppCompatActivity {
         cbCrossMapHideEnabled.setOnCheckedChangeListener(crossMapHideListener);
         if (cardCrossMapHideToggle != null) {
             cardCrossMapHideToggle.setOnClickListener(v -> cbCrossMapHideEnabled.toggle());
+        }
+
+        cbHideLaneLineBgEnabled.setChecked(hideLaneLineBg);
+        if (tvHideLaneLineBgStatus != null) {
+            tvHideLaneLineBgStatus.setText(hideLaneLineBg ? "背景已隐藏" : "背景已显示");
+        }
+        CompoundButton.OnCheckedChangeListener hideLaneLineBgListener = (buttonView, isChecked) -> {
+            hideLaneLineBg = isChecked;
+            savePreferences();
+            if (tvHideLaneLineBgStatus != null) {
+                tvHideLaneLineBgStatus.setText(isChecked ? "背景已隐藏" : "背景已显示");
+            }
+            // 立即刷新悬浮窗
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.refreshWindow();
+            }
+        };
+        cbHideLaneLineBgEnabled.setOnCheckedChangeListener(hideLaneLineBgListener);
+        if (cardHideLaneLineBgToggle != null) {
+            cardHideLaneLineBgToggle.setOnClickListener(v -> cbHideLaneLineBgEnabled.toggle());
         }
 
         cbOverspeedWarningEnabled.setChecked(overspeedWarningEnabled);
@@ -1522,6 +1640,31 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        if (sbClusterScale != null) {
+            sbClusterScale.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+                @Override
+                public void onStartTrackingTouch(SeekBar seekBar) {
+                }
+
+                @Override
+                public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                    float currentScale = (progress / 15.0f) * 1.5f + 0.5f;
+                    if (tvClusterScaleValue != null) {
+                        tvClusterScaleValue.setText(String.format("%.1fx", currentScale));
+                    }
+                }
+
+                @Override
+                public void onStopTrackingTouch(SeekBar seekBar) {
+                    float newScale = (seekBar.getProgress() / 15.0f) * 1.5f + 0.5f;
+                    FloatingWindowManager manager = FloatingWindowManager.getInstance();
+                    if (manager != null) {
+                        manager.setClusterScale(newScale);
+                    }
+                }
+            });
+        }
+
         if (cbNormalTmcEnabled != null) {
             cbNormalTmcEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 normalTmcEnabled = isChecked;
@@ -1732,6 +1875,27 @@ public class MainActivity extends AppCompatActivity {
             });
         }
 
+        if (cbMinimalSpeedLimitEnabled != null) {
+            cbMinimalSpeedLimitEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isMinimalSpeedLimitEnabled = isChecked;
+                savePreferences();
+                if (tvMinimalSpeedLimitStatus != null) {
+                    tvMinimalSpeedLimitStatus.setText(isChecked ? "限速显示已启用" : "限速显示已禁用");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalSpeedLimitToggle != null) {
+            cardMinimalSpeedLimitToggle.setOnClickListener(v -> {
+                if (cbMinimalSpeedLimitEnabled != null) {
+                    cbMinimalSpeedLimitEnabled.toggle();
+                }
+            });
+        }
+
         if (cbMinimalAutocenterEnabled != null) {
             cbMinimalAutocenterEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
                 isMinimalAutocenterEnabled = isChecked;
@@ -1902,6 +2066,15 @@ public class MainActivity extends AppCompatActivity {
 
         sbScale.setProgress((int) (((s - 0.5f) / 1.5f) * 15));
         tvScaleValue.setText(String.format("%.1fx", s));
+
+        // 更新副屏缩放 Seekbar
+        float cs = sp.getFloat("scale_cluster", 1.0f);
+        if (sbClusterScale != null) {
+            sbClusterScale.setProgress((int) (((cs - 0.5f) / 1.5f) * 15));
+        }
+        if (tvClusterScaleValue != null) {
+            tvClusterScaleValue.setText(String.format("%.1fx", cs));
+        }
     }
 
     private void updateStatusText() {

@@ -22,6 +22,7 @@ public abstract class BaseFloatingWindow {
     protected static final int TEXT_HINT_DARK = 0xFF888888;
 
     protected boolean isNightMode = true;
+    protected boolean isClusterWindow = false;
 
     public BaseFloatingWindow(Context context, View floatingView) {
         this.context = context;
@@ -208,5 +209,19 @@ public abstract class BaseFloatingWindow {
                 scaleViewRecursive(vg.getChildAt(i), factor);
             }
         }
+    }
+
+    public void setClusterWindow(boolean clusterWindow) {
+        this.isClusterWindow = clusterWindow;
+        onScaleChanged();
+    }
+
+    protected void onScaleChanged() {
+    }
+
+    public float getWindowScale() {
+        FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+        if (fwm == null) return 1.0f;
+        return isClusterWindow ? fwm.getClusterScale() : fwm.getScale();
     }
 }

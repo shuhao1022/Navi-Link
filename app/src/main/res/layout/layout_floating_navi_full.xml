@@ -21,19 +21,19 @@
     <RelativeLayout
         android:layout_marginTop="5dp"
         android:layout_width="match_parent"
-        android:layout_height="70dp">
+        android:layout_height="60dp">
         <RelativeLayout
             android:layout_centerVertical="true"
             android:background="@drawable/ic_speed"
-            android:layout_width="70dp"
-            android:layout_height="70dp">
+            android:layout_width="60dp"
+            android:layout_height="60dp">
             <TextView
-                android:textColor="#FFFFFF"
+                android:textColor="#FF0099FF"
                 android:layout_centerInParent="true"
                 android:id="@+id/tv_full_speed"
-                android:text="0"
+                android:text="120"
                 android:textStyle="bold"
-                android:textSize="30sp"
+                android:textSize="28sp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
 
@@ -45,7 +45,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginBottom="3dp"
                 android:text="km/h"
-                android:textColor="#BBFFFFFF"
+                android:textColor="#FF0099FF"
                 android:textSize="10sp"/>
         </RelativeLayout>
         <com.navi.link.TrafficLightView
@@ -59,13 +59,13 @@
             android:background="@drawable/camera_shape"
             android:layout_centerVertical="true"
             android:id="@+id/tv_full_speed_limit"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:textStyle="bold"
             android:gravity="center"
-            android:text="0"
+            android:text="120"
             android:textColor="#1a1a1a"
-            android:textSize="30sp" />
+            android:textSize="28sp" />
     </RelativeLayout>
             <!-- 车道线组件 -->
             <com.navi.link.LaneLineView
@@ -329,7 +329,7 @@
                     android:background="#E0E0E0"/>
             </LinearLayout>
              <ImageView
-                 android:padding="10dp"
+                 android:padding="5dp"
                  android:background="@drawable/camera_shape"
                  android:src="@mipmap/light"
                  android:layout_width="40dp"

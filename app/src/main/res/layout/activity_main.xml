@@ -1548,6 +1548,64 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- Option 4.5: Lane Line Background Hide Switch Row -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_hide_lane_line_bg_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="车道线背景隐藏"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_hide_lane_line_bg_status"
+                                            android:text="背景默认显示"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_hide_lane_line_bg_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1758,6 +1816,77 @@
                                 </LinearLayout>
                             </com.google.android.material.card.MaterialCardView>
 
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- Option 7.6: 副屏投屏缩放设置 -->
+                            <LinearLayout
+                                android:orientation="vertical"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:paddingBottom="12dp">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginTop="12dp">
+
+                                    <TextView
+                                        android:text="副屏悬浮窗缩放"
+                                        android:textSize="15sp"
+                                        android:textColor="#FFFFFFFF"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1" />
+
+                                    <TextView
+                                        android:id="@+id/tv_cluster_scale_value"
+                                        android:text="1.0x"
+                                        android:textSize="15sp"
+                                        android:textColor="#FF4FC3F7"
+                                        android:textStyle="bold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
+
+                                <SeekBar
+                                    android:id="@+id/sb_cluster_scale"
+                                    android:max="15"
+                                    android:progress="5"
+                                    android:layout_marginTop="10dp"
+                                    android:layout_marginHorizontal="8dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content" />
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:paddingHorizontal="16dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+                                    <TextView
+                                        android:text="0.5x"
+                                        android:textSize="11sp"
+                                        android:textColor="#FF666666"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1" />
+                                    <TextView
+                                        android:text="2.0x"
+                                        android:textSize="11sp"
+                                        android:textColor="#FF666666"
+                                        android:gravity="end"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1" />
+                                </LinearLayout>
+                            </LinearLayout>
+
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -1852,6 +1981,64 @@
 
                                     <androidx.appcompat.widget.SwitchCompat
                                         android:id="@+id/cb_normal_lane_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- Option 2.0.x: 转向图标背景隐藏开关 -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_hide_turn_icon_bg_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="隐藏常规导航转向图标背景"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_hide_turn_icon_bg_status"
+                                            android:text="背景默认显示"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_hide_turn_icon_bg"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:clickable="false"
@@ -2586,6 +2773,64 @@
 
                                     <androidx.appcompat.widget.SwitchCompat
                                         android:id="@+id/cb_minimal_accent_navi_info_enabled"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:clickable="false"
+                                        android:focusable="false" />
+                                </LinearLayout>
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginHorizontal="16dp"
+                                android:background="#1AFFFFFF" />
+
+                            <!-- Option 5.5: Minimal Speed Limit Switch Row -->
+                            <com.google.android.material.card.MaterialCardView
+                                android:id="@+id/card_minimal_speed_limit_toggle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:cardBackgroundColor="@android:color/transparent"
+                                app:cardElevation="0dp"
+                                app:strokeWidth="0dp"
+                                android:clickable="true"
+                                android:focusable="true"
+                                android:foreground="?android:attr/selectableItemBackground">
+
+                                <LinearLayout
+                                    android:orientation="horizontal"
+                                    android:gravity="center_vertical"
+                                    android:paddingHorizontal="16dp"
+                                    android:paddingVertical="12dp"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content">
+
+                                    <LinearLayout
+                                        android:orientation="vertical"
+                                        android:layout_width="0dp"
+                                        android:layout_height="wrap_content"
+                                        android:layout_weight="1">
+
+                                        <TextView
+                                            android:text="灵动岛限速"
+                                            android:textSize="15sp"
+                                            android:textColor="#FFFFFFFF"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+
+                                        <TextView
+                                            android:id="@+id/tv_minimal_speed_limit_status"
+                                            android:text="限速显示已禁用"
+                                            android:textSize="12sp"
+                                            android:textColor="#FF888888"
+                                            android:layout_marginTop="2dp"
+                                            android:layout_width="match_parent"
+                                            android:layout_height="wrap_content" />
+                                    </LinearLayout>
+
+                                    <androidx.appcompat.widget.SwitchCompat
+                                        android:id="@+id/cb_minimal_speed_limit_enabled"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:clickable="false"

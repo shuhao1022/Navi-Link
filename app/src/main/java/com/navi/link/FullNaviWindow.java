@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import androidx.core.graphics.drawable.DrawableCompat;
 import android.view.View;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
@@ -162,14 +164,9 @@ public class FullNaviWindow extends BaseFloatingWindow {
                 }
                 tvFullSpeed.setAlpha(1f);
                 isOverspeedBlinking = false;
-                // 全透明 + 黑色主题：速度颜色跟随昼夜
-                if (themeColor == 0xFF1A1A1A && sp.getInt("background_mode", 0) == 2) {
-                    tvFullSpeed.setTextColor(isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
-                } else {
-                    // 恢复正常主题色（黑色主题用蓝色）
-                    int fullCardAccent = isDarkThemeColor(themeColor) ? 0xFF0099FF : themeColor;
-                    tvFullSpeed.setTextColor(fullCardAccent);
-                }
+                // 恢复正常主题色，默认主题下为蓝色，不跟随昼夜
+                int fullCardAccent = isDarkThemeColor(themeColor) ? 0xFF0099FF : themeColor;
+                tvFullSpeed.setTextColor(fullCardAccent);
             }
         }
 
@@ -345,14 +342,23 @@ public class FullNaviWindow extends BaseFloatingWindow {
             labelColor = isNight ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
         }
 
-        if (tvFullSpeed != null && !isOverspeedBlinking) {
-            // 全透明 + 黑色主题：速度颜色跟随昼夜
-            if (themeColor == 0xFF1A1A1A && backgroundMode == 2) {
-                boolean isNight = sp.getBoolean("is_night_mode", true);
-                tvFullSpeed.setTextColor(isNight ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT);
-            } else {
-                tvFullSpeed.setTextColor(fullCardAccent);
+        // 动态染色车速圆圈的外边框
+        if (tvFullSpeed != null) {
+            View parent = (View) tvFullSpeed.getParent();
+            if (parent != null) {
+                Drawable bg = parent.getBackground();
+                if (bg instanceof LayerDrawable) {
+                    LayerDrawable ld = (LayerDrawable) bg.mutate();
+                    Drawable border = ld.getDrawable(0);
+                    if (border != null) {
+                        DrawableCompat.setTint(border.mutate(), fullCardAccent);
+                    }
+                }
             }
+        }
+
+        if (tvFullSpeed != null && !isOverspeedBlinking) {
+            tvFullSpeed.setTextColor(fullCardAccent);
         }
         if (tvFullSpeedUnit != null) {
             tvFullSpeedUnit.setTextColor(fullCardAccent);
@@ -369,19 +375,48 @@ public class FullNaviWindow extends BaseFloatingWindow {
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
-        int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
-        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        int textPrimary;
+        int textSecondary;
+
+        if (sp.getInt("background_mode", 0) == 2 && themeColor != 0xFF1A1A1A) {
+            // 全透明 + 非默认黑色主题：文字颜色跟随主题
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (accentColor == Color.WHITE) {
+                textPrimary = TEXT_PRIMARY_DARK;
+                textSecondary = TEXT_SECONDARY_DARK;
+            } else {
+                textPrimary = accentColor;
+                textSecondary = accentColor;
+            }
+        } else {
+            // 跟随高德昼夜
+            textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+            textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        }
 
         if (tvFullCurRoadName != null) tvFullCurRoadName.setTextColor(textPrimary);
-        if (tvDistanceNumFull != null) tvDistanceNumFull.setTextColor(textPrimary);
-        if (tvDistanceUnitFull != null) tvDistanceUnitFull.setTextColor(textSecondary);
-        if (tvRoadNameMinFull != null) tvRoadNameMinFull.setTextColor(textSecondary);
-        if (ivActionIconFull != null) ivActionIconFull.setColorFilter(textPrimary);
+
+        // 计算中间卡片（cvFullMiddle）的文字与图标颜色，使其与卡片背景色形成对比
+        int cardBgColor = isDarkThemeColor(themeColor) ? 0xFF0099FF : themeColor;
+        boolean isCardBgDark = isDarkThemeColor(cardBgColor);
+        int middleTextPrimary = isCardBgDark ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+        int middleTextSecondary = isCardBgDark ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+
+        if (tvDistanceNumFull != null) tvDistanceNumFull.setTextColor(middleTextPrimary);
+        if (tvDistanceUnitFull != null) tvDistanceUnitFull.setTextColor(middleTextSecondary);
+        if (tvRoadNameMinFull != null) tvRoadNameMinFull.setTextColor(middleTextSecondary);
+        if (ivActionIconFull != null) {
+            if (isCardBgDark) {
+                ivActionIconFull.clearColorFilter();
+            } else {
+                ivActionIconFull.setColorFilter(middleTextPrimary);
+            }
+        }
+
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(textSecondary);
         if (tvEtaFull != null) tvEtaFull.setTextColor(textSecondary);
-        // tvFullCameraDist text color is handled by CameraWarningView natively (or ignore for FullNaviWindow since it has custom logic)
+        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(textPrimary);
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(textPrimary);
-        if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(textPrimary);
         if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(textPrimary);
         if (tvSapaDist1Full != null) tvSapaDist1Full.setTextColor(textPrimary);
         if (tvSapaName2Full != null) tvSapaName2Full.setTextColor(textPrimary);
@@ -401,9 +436,8 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (ivActionIconFull != null) ivActionIconFull.clearColorFilter();
         if (tvSummaryFull != null) tvSummaryFull.setTextColor(TEXT_SECONDARY_DARK);
         if (tvEtaFull != null) tvEtaFull.setTextColor(TEXT_SECONDARY_DARK);
-        // tvFullCameraDist text color is handled by CameraWarningView natively
+        if (tvFullCameraDist != null) tvFullCameraDist.setTextColor(TEXT_PRIMARY_DARK);
         if (tvFullLightCount != null) tvFullLightCount.setTextColor(TEXT_PRIMARY_DARK);
-        if (tvFullSpeedUnit != null) tvFullSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaName1Full != null) tvSapaName1Full.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaDist1Full != null) tvSapaDist1Full.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaName2Full != null) tvSapaName2Full.setTextColor(TEXT_PRIMARY_DARK);

@@ -26,6 +26,17 @@ public class TrafficLightView extends LinearLayout {
     private boolean isCompact = false;
     private ObjectAnimator blinkAnimator;
     private SharedPreferences sp;
+    private float scaleFactor = -1f;
+
+    public void setScaleFactor(float factor) {
+        this.scaleFactor = factor;
+    }
+
+    private float getScale() {
+        if (scaleFactor > 0) return scaleFactor;
+        FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+        return fwm != null ? fwm.getScale() : 1.0f;
+    }
 
     // 填充背景颜色常量（与图标资源颜色一致）
     private static final int FILL_COLOR_RED = 0xFFFF3333;
@@ -194,11 +205,7 @@ public class TrafficLightView extends LinearLayout {
             int fillColor = getFillColor(status, isNavi);
             float density = getResources().getDisplayMetrics().density;
 
-            float currentScale = 1.0f;
-            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
-            if (fwm != null) {
-                currentScale = fwm.getScale();
-            }
+            float currentScale = getScale();
 
             GradientDrawable drawable = new GradientDrawable();
             drawable.setShape(GradientDrawable.RECTANGLE);

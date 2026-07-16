@@ -22,6 +22,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     private CameraWarningView llMinCruiseCameraGroup;
     private LaneLineView laneLineViewMin;
     private View cruiseDividerMin;
+    private TextView tvMinSpeedLimit;
 
     private int themeColor = 0xFF4FC3F7;
     private boolean isOverspeedBlinking = false;
@@ -40,6 +41,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         llMinCruiseCameraGroup = floatingView.findViewById(R.id.ll_min_cruise_camera_group);
         laneLineViewMin = floatingView.findViewById(R.id.lane_line_view_min);
         cruiseDividerMin = floatingView.findViewById(R.id.cruise_divider);
+        tvMinSpeedLimit = floatingView.findViewById(R.id.tv_min_speed_limit);
         if (laneLineViewMin != null) {
             laneLineViewMin.setSimpleMode(true);
         }
@@ -131,6 +133,19 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
                 llMinCruiseCameraGroup.setVisibility(View.GONE);
             }
         }
+        if (tvMinSpeedLimit != null) {
+            boolean speedLimitEnabled = sp.getBoolean("minimal_speed_limit_enabled", false);
+            if (speedLimitEnabled) {
+                if (cameraSpeed > 0) {
+                    tvMinSpeedLimit.setText(String.valueOf(cameraSpeed));
+                    tvMinSpeedLimit.setVisibility(View.VISIBLE);
+                } else {
+                    tvMinSpeedLimit.setVisibility(View.GONE);
+                }
+            } else {
+                tvMinSpeedLimit.setVisibility(View.GONE);
+            }
+        }
     }
 
     @Override
@@ -154,7 +169,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
 
         if (count != childCount) {
             container.removeAllViews();
-            float scale = FloatingWindowManager.getInstance().getScale();
+            float scale = getWindowScale();
             for (int i = 0; i < count; i++) {
                 try {
                     JSONObject lightObj = lightsArray.getJSONObject(i);
@@ -263,8 +278,25 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
     @Override
     public void applyDayNightTextColors(boolean isNightMode) {
         this.isNightMode = isNightMode;
-        int textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
-        int textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        int textPrimary;
+        int textSecondary;
+
+        if (sp.getInt("background_mode", 0) == 2 && themeColor != 0xFF1A1A1A) {
+            // 全透明 + 非默认黑色主题：文字颜色跟随主题
+            int accentColor = isDarkThemeColor(themeColor) ? Color.WHITE : themeColor;
+            if (accentColor == Color.WHITE) {
+                textPrimary = TEXT_PRIMARY_DARK;
+                textSecondary = TEXT_SECONDARY_DARK;
+            } else {
+                textPrimary = accentColor;
+                textSecondary = accentColor;
+            }
+        } else {
+            // 跟随高德昼夜
+            textPrimary = isNightMode ? TEXT_PRIMARY_DARK : TEXT_PRIMARY_LIGHT;
+            textSecondary = isNightMode ? TEXT_SECONDARY_DARK : TEXT_SECONDARY_LIGHT;
+        }
+
         if (tvCruiseRoadName != null) {
             tvCruiseRoadName.setTextColor(textPrimary);
         }

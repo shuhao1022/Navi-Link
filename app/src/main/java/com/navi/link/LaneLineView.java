@@ -1,6 +1,9 @@
 package com.navi.link;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.Gravity;
@@ -36,16 +39,39 @@ public class LaneLineView extends LinearLayout {
     private String cachedDriveWayJson = null;
     private boolean isCompactMode = false; // true=wrap_content(≤3条), false=match_parent(>3条)
     private boolean isSimpleMode = false;
+    private float scaleFactor = -1f;
+    private SharedPreferences sp;
+
+    public void setScaleFactor(float factor) {
+        this.scaleFactor = factor;
+    }
+
+    private float getScale() {
+        if (scaleFactor > 0) return scaleFactor;
+        FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+        return fwm != null ? fwm.getScale() : 1.0f;
+    }
+
+    public void updateBackground() {
+        if (sp == null) {
+            sp = getContext().getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        }
+        boolean hideBg = sp.getBoolean("hide_lane_line_bg", false);
+        if (hideBg) {
+            setBackground(null);
+        } else {
+            if (isSimpleMode) {
+                setBackgroundResource(R.drawable.bg_mini_capsule);
+            } else {
+                setBackgroundResource(R.drawable.bg_lane_line);
+            }
+        }
+    }
 
     public void setSimpleMode(boolean simpleMode) {
         this.isSimpleMode = simpleMode;
-        if (simpleMode) {
-            setBackgroundResource(R.drawable.bg_mini_capsule);
-            setPadding(0, 0, 0, 0);
-        } else {
-            setBackgroundResource(R.drawable.bg_lane_line);
-            setPadding(0, 0, 0, 0);
-        }
+        updateBackground();
+        setPadding(0, 0, 0, 0);
     }
 
     public LaneLineView(Context context) {
@@ -64,9 +90,10 @@ public class LaneLineView extends LinearLayout {
     }
 
     private void init() {
+        sp = getContext().getSharedPreferences("floating_config", Context.MODE_PRIVATE);
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER);
-        setBackgroundResource(R.drawable.bg_lane_line);
+        updateBackground();
         setPadding(0, 0, 0, 0);
     }
 
@@ -85,18 +112,12 @@ public class LaneLineView extends LinearLayout {
             JSONObject root = new JSONObject(driveWayJson);
             boolean enabled = root.optBoolean("drive_way_enabled", false);
             if (!enabled) {
-                if (getVisibility() == View.VISIBLE) {
-                    return; // 保持上一包状态，避免闪烁
-                }
                 clear();
                 return;
             }
             int size = root.optInt("drive_way_size", 0);
             JSONArray infoArray = root.optJSONArray("drive_way_info");
             if (size <= 0 || infoArray == null || infoArray.length() == 0) {
-                if (getVisibility() == View.VISIBLE) {
-                    return; // 忽略此空包，保持上一包状态，避免闪烁
-                }
                 clear();
                 return;
             }
@@ -144,12 +165,23 @@ public class LaneLineView extends LinearLayout {
         setVisibility(View.GONE);
     }
 
+    @Override
+    public void removeAllViews() {
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof ImageView) {
+                cancelBlink((ImageView) child);
+            }
+        }
+        super.removeAllViews();
+    }
+
     private void rebuildLanes(ArrayList<JSONObject> lanes) {
         int targetCount = lanes.size();
         if (isSimpleMode) {
-            removeAllViews();
-            float scale = FloatingWindowManager.getInstance().getScale();
-            int iconPx = Math.round(dpToPx(50) * scale);
+             removeAllViews();
+             float scale = getScale();
+             int iconPx = Math.round(dpToPx(50) * scale);
             int marginPx = Math.round(dpToPx(1) * scale);
             for (int i = 0; i < targetCount; i++) {
                 ImageView iv = new ImageView(getContext());
@@ -163,8 +195,8 @@ public class LaneLineView extends LinearLayout {
             return;
         }
 
-        float scale = FloatingWindowManager.getInstance().getScale();
-        int baseIconPx = Math.round(dpToPx(LANE_ICON_BASE_DP) * scale);
+         float scale = getScale();
+         int baseIconPx = Math.round(dpToPx(LANE_ICON_BASE_DP) * scale);
 
         boolean compact = targetCount <= 3;
         int totalViews = targetCount + (targetCount - 1);
@@ -225,14 +257,47 @@ public class LaneLineView extends LinearLayout {
             View child = getChildAt(i);
             if (child instanceof ImageView) {
                 if (iconIndex < lanes.size()) {
-                    String iconStr = lanes.get(iconIndex).optString("drive_way_lane_Back_icon", "");
+                    JSONObject laneObj = lanes.get(iconIndex);
+                    String iconStr = laneObj.optString("drive_way_lane_Back_icon", "");
                     int resId = getLaneDrawableRes(iconStr);
-                    ((ImageView) child).setImageResource(resId);
+                    ImageView iv = (ImageView) child;
+                    iv.setImageResource(resId);
                     child.setVisibility(View.VISIBLE);
+
+                    boolean advised = laneObj.optBoolean("trafficLaneAdvised", false)
+                            || "true".equalsIgnoreCase(laneObj.optString("trafficLaneAdvised"))
+                            || "1".equals(laneObj.optString("trafficLaneAdvised"));
+                    if (advised) {
+                        startBlink(iv);
+                    } else {
+                        cancelBlink(iv);
+                    }
                 }
                 iconIndex++;
             }
         }
+    }
+
+    private void startBlink(ImageView iv) {
+        Object animatorObj = iv.getTag();
+        if (animatorObj instanceof ObjectAnimator) {
+            return;
+        }
+        ObjectAnimator blinkAnimator = ObjectAnimator.ofFloat(iv, "alpha", 1f, 0.3f);
+        blinkAnimator.setDuration(500);
+        blinkAnimator.setRepeatCount(ValueAnimator.INFINITE);
+        blinkAnimator.setRepeatMode(ValueAnimator.REVERSE);
+        blinkAnimator.start();
+        iv.setTag(blinkAnimator);
+    }
+
+    private void cancelBlink(ImageView iv) {
+        Object animatorObj = iv.getTag();
+        if (animatorObj instanceof ObjectAnimator) {
+            ((ObjectAnimator) animatorObj).cancel();
+            iv.setTag(null);
+        }
+        iv.setAlpha(1.0f);
     }
 
     private int getLaneDrawableRes(String iconNumber) {
