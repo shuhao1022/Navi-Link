@@ -229,6 +229,12 @@ public class MainActivity extends AppCompatActivity {
     private TextView tvTrafficLightIconStatus;
     private boolean isTrafficLightIconEnabled = true;
 
+    // 红绿灯倒计时 LED 字体
+    private MaterialCardView cardTrafficLightLedFontToggle;
+    private SwitchCompat cbTrafficLightLedFontEnabled;
+    private TextView tvTrafficLightLedFontStatus;
+    private boolean isTrafficLightLedFontEnabled = false;
+
     // Menu elements
     private MaterialCardView menuSystemAppearance;
     private MaterialCardView menuFeaturesAvoidance;
@@ -476,6 +482,9 @@ public class MainActivity extends AppCompatActivity {
         cardTrafficLightIconToggle = findViewById(R.id.card_traffic_light_icon_toggle);
         cbTrafficLightIconEnabled = findViewById(R.id.cb_traffic_light_icon_enabled);
         tvTrafficLightIconStatus = findViewById(R.id.tv_traffic_light_icon_status);
+        cardTrafficLightLedFontToggle = findViewById(R.id.card_traffic_light_led_font_toggle);
+        cbTrafficLightLedFontEnabled = findViewById(R.id.cb_traffic_light_led_font_enabled);
+        tvTrafficLightLedFontStatus = findViewById(R.id.tv_traffic_light_led_font_status);
         cardTrafficLightStyle[0] = findViewById(R.id.card_traffic_light_style_0);
         cardTrafficLightStyle[1] = findViewById(R.id.card_traffic_light_style_1);
         cardTrafficLightStyle[2] = findViewById(R.id.card_traffic_light_style_2);
@@ -638,6 +647,7 @@ public class MainActivity extends AppCompatActivity {
         isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
         isTrafficLightCapsuleEnabled = sp.getBoolean("traffic_light_capsule_enabled", true);
         isTrafficLightIconEnabled = sp.getBoolean("traffic_light_icon_enabled", true);
+        isTrafficLightLedFontEnabled = sp.getBoolean("traffic_light_led_font_enabled", false);
         trafficLightStyle = sp.getInt("traffic_light_style", 0);
         crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
         hideLaneLineBg = sp.getBoolean("hide_lane_line_bg", false);
@@ -762,6 +772,12 @@ public class MainActivity extends AppCompatActivity {
         }
         if (tvTrafficLightIconStatus != null) {
             tvTrafficLightIconStatus.setText(isTrafficLightIconEnabled ? "胶囊灯图图标已显示" : "胶囊灯图图标已隐藏");
+        }
+        if (cbTrafficLightLedFontEnabled != null) {
+            cbTrafficLightLedFontEnabled.setChecked(isTrafficLightLedFontEnabled);
+        }
+        if (tvTrafficLightLedFontStatus != null) {
+            tvTrafficLightLedFontStatus.setText(isTrafficLightLedFontEnabled ? "已启用 LED 字体风格" : "已使用系统默认字体");
         }
         if (btnAdjustClusterPos != null) {
             btnAdjustClusterPos.setVisibility(clusterMirrorEnabled ? View.VISIBLE : View.GONE);
@@ -1011,6 +1027,7 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
                 .putBoolean("traffic_light_capsule_enabled", isTrafficLightCapsuleEnabled)
                 .putBoolean("traffic_light_icon_enabled", isTrafficLightIconEnabled)
+                .putBoolean("traffic_light_led_font_enabled", isTrafficLightLedFontEnabled)
                 .putInt("traffic_light_style", trafficLightStyle)
                 .putBoolean("normal_navi_tmc_enabled", normalTmcEnabled)
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
@@ -1138,6 +1155,7 @@ public class MainActivity extends AppCompatActivity {
         updateSwitchTheme(cbTrafficLightFillEnabled, accentColor);
         updateSwitchTheme(cbTrafficLightCapsuleEnabled, accentColor);
         updateSwitchTheme(cbTrafficLightIconEnabled, accentColor);
+        updateSwitchTheme(cbTrafficLightLedFontEnabled, accentColor);
         updateSwitchTheme(cbNormalTmcEnabled, accentColor);
         updateSwitchTheme(cbNormalBottomInfoEnabled, accentColor);
         updateSwitchTheme(cbNormalCruiseInfoEnabled, accentColor);
@@ -1599,6 +1617,28 @@ public class MainActivity extends AppCompatActivity {
             cardTrafficLightIconToggle.setOnClickListener(v -> {
                 if (cbTrafficLightIconEnabled != null) {
                     cbTrafficLightIconEnabled.toggle();
+                }
+            });
+        }
+
+        // 红绿灯倒计时 LED 字体开关
+        if (cbTrafficLightLedFontEnabled != null) {
+            cbTrafficLightLedFontEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                isTrafficLightLedFontEnabled = isChecked;
+                savePreferences();
+                if (tvTrafficLightLedFontStatus != null) {
+                    tvTrafficLightLedFontStatus.setText(isChecked ? "已启用 LED 字体风格" : "已使用系统默认字体");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardTrafficLightLedFontToggle != null) {
+            cardTrafficLightLedFontToggle.setOnClickListener(v -> {
+                if (cbTrafficLightLedFontEnabled != null) {
+                    cbTrafficLightLedFontEnabled.toggle();
                 }
             });
         }

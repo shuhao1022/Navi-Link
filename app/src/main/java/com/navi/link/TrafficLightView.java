@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.util.TypedValue;
@@ -113,6 +114,20 @@ public class TrafficLightView extends LinearLayout {
         ivLightArrow.setImageResource(isNavi ? getNaviLightDirRes(dir) : getCruiseLightDirRes(dir));
         // 设置倒计时
         tvLightTime.setText(String.valueOf(countdown));
+        updateTextSize();
+
+        boolean ledFontEnabled = sp.getBoolean("traffic_light_led_font_enabled", false);
+        if (ledFontEnabled) {
+            try {
+                android.graphics.Typeface ledTypeface = android.graphics.Typeface.createFromAsset(
+                        getContext().getAssets(), "fonts/led_font.ttf");
+                tvLightTime.setTypeface(ledTypeface, Typeface.NORMAL);
+            } catch (Exception e) {
+                tvLightTime.setTypeface(null, android.graphics.Typeface.BOLD);
+            }
+        } else {
+            tvLightTime.setTypeface(null, android.graphics.Typeface.BOLD);
+        }
 
         // 应用胶囊背景样式（填充/默认），内部会读写fillEnabled
         applyFillStyle(status, isNavi);
@@ -147,6 +162,16 @@ public class TrafficLightView extends LinearLayout {
         }
     }
 
+    private void updateTextSize() {
+        if (tvLightTime == null) return;
+        boolean ledFontEnabled = sp.getBoolean("traffic_light_led_font_enabled", false);
+        int baseSize = isCompact ? 25 : 30;
+        int size = ledFontEnabled ? (baseSize + 5) : baseSize;
+        float scale = getScale();
+        tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_PX, TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_SP, size, getResources().getDisplayMetrics()) * scale);
+    }
+
     /**
      * 设置为紧凑模式（巡航超过3灯时缩小尺寸）
      */
@@ -164,12 +189,28 @@ public class TrafficLightView extends LinearLayout {
             // 缩小箭头 padding 4dp -> 3dp
             ivLightArrow.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
 
-            // 缩小文字 30sp -> 25sp
-            tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
+            // 动态调节文字大小
+            updateTextSize();
 
             // 缩小容器内边距
             setPadding(dpToPx(2), 0, dpToPx(6), 0);
             setMinimumHeight(dpToPx(40)); // 紧凑胶囊高度40dp
+        } else {
+            // 恢复图标容器 48dp
+            ViewGroup.LayoutParams iconLp = flIconContainer.getLayoutParams();
+            iconLp.width = dpToPx(48);
+            iconLp.height = dpToPx(48);
+            flIconContainer.setLayoutParams(iconLp);
+
+            // 恢复箭头 padding 4dp
+            ivLightArrow.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
+
+            // 动态调节文字大小
+            updateTextSize();
+
+            // 恢复容器内边距
+            setPadding(dpToPx(1), 0, dpToPx(10), 0);
+            setMinimumHeight(dpToPx(50));
         }
     }
 
@@ -287,6 +328,6 @@ public class TrafficLightView extends LinearLayout {
     }
 
     private int dpToPx(int dp) {
-        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
+        return (int) (dp * getResources().getDisplayMetrics().density * getScale() + 0.5f);
     }
 }
