@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -57,10 +57,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -73,7 +73,7 @@
                             <RadioButton
                                 android:id="@+id/rb_service_only"
                                 android:textSize="14sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -82,7 +82,7 @@
 
                             <TextView
                                 android:textSize="11sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
@@ -99,10 +99,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -115,7 +115,7 @@
                             <RadioButton
                                 android:id="@+id/rb_normal_start"
                                 android:textSize="14sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -124,7 +124,7 @@
 
                             <TextView
                                 android:textSize="11sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
@@ -140,10 +140,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="12dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -156,7 +156,7 @@
                             <RadioButton
                                 android:id="@+id/rb_start_amap"
                                 android:textSize="14sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -166,7 +166,7 @@
                             <TextView
                                 android:id="@+id/tv_start_amap_desc"
                                 android:textSize="11sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="4dp"
@@ -184,9 +184,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -212,7 +212,7 @@
                 <TextView
                     android:text="导航窗口样式"
                     android:textSize="12sp"
-                    android:textColor="#FFAAAAAA"
+                    android:textColor="?attr/panelTextColorSecondary"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginBottom="6dp"
                     android:layout_width="wrap_content"
@@ -232,10 +232,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -248,7 +248,7 @@
                             <RadioButton
                                 android:id="@+id/rb_normal"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -257,7 +257,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -274,10 +274,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -290,7 +290,7 @@
                             <RadioButton
                                 android:id="@+id/rb_minimal"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -299,7 +299,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -315,10 +315,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -331,7 +331,7 @@
                             <RadioButton
                                 android:id="@+id/rb_full"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -340,7 +340,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -355,13 +355,13 @@
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginVertical="14dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Cruise Style choices -->
                 <TextView
                     android:text="巡航窗口样式"
                     android:textSize="12sp"
-                    android:textColor="#FFAAAAAA"
+                    android:textColor="?attr/panelTextColorSecondary"
                     android:layout_marginHorizontal="16dp"
                     android:layout_marginBottom="6dp"
                     android:layout_width="wrap_content"
@@ -381,10 +381,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -397,7 +397,7 @@
                             <RadioButton
                                 android:id="@+id/rb_cruise_normal"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -406,7 +406,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -423,10 +423,10 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:layout_marginEnd="6dp"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -439,7 +439,7 @@
                             <RadioButton
                                 android:id="@+id/rb_cruise_minimal"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -448,7 +448,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -464,10 +464,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        app:cardBackgroundColor="#FF262626"
+                        app:cardBackgroundColor="?attr/panelCardBgColor"
                         app:cardCornerRadius="10dp"
                         app:cardElevation="0dp"
-                        app:strokeColor="#FF444444"
+                        app:strokeColor="?attr/panelCardStrokeColor"
                         app:strokeWidth="1dp">
 
                         <LinearLayout
@@ -480,7 +480,7 @@
                             <RadioButton
                                 android:id="@+id/rb_cruise_full"
                                 android:textSize="13sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -489,7 +489,7 @@
 
                             <TextView
                                 android:textSize="10sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
@@ -511,7 +511,7 @@
                     <TextView
                         android:text="悬浮窗缩放"
                         android:textSize="14sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />

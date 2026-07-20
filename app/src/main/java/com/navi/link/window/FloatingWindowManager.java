@@ -162,6 +162,12 @@ public class FloatingWindowManager {
     private String cachedNextSapaDist = "";
     private int cachedNextSapaType = 0;
 
+    private int cachedIntervalStartDist = -1;
+    private String cachedIntervalStartDistText = "";
+    private int cachedIntervalAvgSpeed = 0;
+    private String cachedIntervalEndDistText = "";
+    private int cachedIntervalLimitSpeed = 0;
+
     private int cachedCrossMap = 0;
 
     // 超速警告红色边框
@@ -941,6 +947,15 @@ public class FloatingWindowManager {
         }
     }
 
+    public interface OnDayNightChangeListener {
+        void onDayNightChanged(boolean isNight);
+    }
+    private OnDayNightChangeListener dayNightChangeListener;
+
+    public void setOnDayNightChangeListener(OnDayNightChangeListener listener) {
+        this.dayNightChangeListener = listener;
+    }
+
     /**
      * 高德昼夜模式变化回调
      */
@@ -949,6 +964,9 @@ public class FloatingWindowManager {
         this.isNightMode = isNight;
         saveDayNightState();
         applyThemeColor(); // 重新应用颜色
+        if (dayNightChangeListener != null) {
+            dayNightChangeListener.onDayNightChanged(isNight);
+        }
     }
 
     /**
@@ -1222,7 +1240,13 @@ public class FloatingWindowManager {
         int threshold = sp.getInt("overspeed_threshold", 0);
         double factor = 1.0 + threshold / 100.0;
         boolean isOverspeed;
-        if (currentMode == MODE_NAVI) {
+
+        boolean isInsideInterval = cachedIntervalLimitSpeed > 0 && 
+            ((cachedIntervalEndDistText != null && !cachedIntervalEndDistText.trim().isEmpty()) || cachedIntervalAvgSpeed > 0);
+
+        if (isInsideInterval) {
+            isOverspeed = cachedIntervalAvgSpeed > Math.round(cachedIntervalLimitSpeed * factor);
+        } else if (currentMode == MODE_NAVI) {
             isOverspeed = cachedLimitedSpeed > 0 && cachedSpeed > Math.round(cachedLimitedSpeed * factor);
         } else {
             isOverspeed = cachedCameraSpeed > 0 && cachedSpeed > Math.round(cachedCameraSpeed * factor);
@@ -1314,9 +1338,16 @@ public class FloatingWindowManager {
      * 更新路口放大图状态（高德 10019 广播 EXTRA_CROSS_MAP）
      */
     public void updateIntervalSpeed(int startDist, String startDistText, int avgSpeed, String endDistText, int limitSpeed) {
+        cachedIntervalStartDist = startDist;
+        cachedIntervalStartDistText = startDistText;
+        cachedIntervalAvgSpeed = avgSpeed;
+        cachedIntervalEndDistText = endDistText;
+        cachedIntervalLimitSpeed = limitSpeed;
+
         if (activeWindow != null) {
             activeWindow.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
         }
+        checkAndUpdateOverspeed();
     }
     public void updateCrossMapStatus(int hasCrossMap) {
         if (cachedCrossMap == hasCrossMap) return;

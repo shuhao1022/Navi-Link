@@ -344,10 +344,17 @@
                  android:textSize="25sp"/>
          </LinearLayout>
 
-         <com.navi.link.view.TmcProgressBar
-             android:id="@+id/tmc_progress_bar_full"
-             android:layout_width="match_parent"
-             android:layout_height="wrap_content" />
+          <com.navi.link.view.TmcProgressBar
+              android:id="@+id/tmc_progress_bar_full"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content" />
+
+          <com.navi.link.view.IntervalSpeedView
+              android:id="@+id/interval_speed_view"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:layout_marginTop="4dp"
+              android:layout_marginBottom="4dp" />
         </LinearLayout>
 </FrameLayout>
 </FrameLayout>

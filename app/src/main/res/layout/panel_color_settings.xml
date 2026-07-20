@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -32,14 +32,14 @@
                     android:text="色调设置"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
                 <TextView
                     android:text="支持对悬浮窗的背景与字体颜色进行白天与夜间的精细自定义调节。所有的自定义颜色均将原样应用，不做额外的明暗度黑化处理。"
                     android:textSize="12sp"
-                    android:textColor="#FFAAAAAA"
+                    android:textColor="?attr/panelTextColorSecondary"
                     android:layout_marginTop="6dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
@@ -52,7 +52,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -67,7 +67,7 @@
                     android:text="窗口背景色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -87,7 +87,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -111,7 +111,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -133,7 +133,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -148,7 +148,7 @@
                     android:text="主要文字颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -168,7 +168,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -192,7 +192,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -214,7 +214,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -229,7 +229,7 @@
                     android:text="次要文字颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -249,7 +249,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -273,7 +273,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -295,7 +295,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -310,7 +310,7 @@
                     android:text="提示文字颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -330,7 +330,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -354,7 +354,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -376,7 +376,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -391,7 +391,7 @@
                     android:text="常规导航转向图标颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -411,7 +411,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -435,7 +435,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -457,7 +457,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -472,7 +472,7 @@
                     android:text="常规导航转向背景颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -492,7 +492,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -516,7 +516,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -538,7 +538,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"
-            app:cardBackgroundColor="#FF262626"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="12dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp">
@@ -553,7 +553,7 @@
                     android:text="全数据转向卡片背景颜色"
                     android:textSize="14sp"
                     android:textStyle="bold"
-                    android:textColor="#FFFFFFFF"
+                    android:textColor="?attr/panelTextColorPrimary"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -573,7 +573,7 @@
                         <TextView
                             android:text="白天模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />
@@ -597,7 +597,7 @@
                         <TextView
                             android:text="夜间模式"
                             android:textSize="13sp"
-                            android:textColor="#FFDDDDDD"
+                            android:textColor="?attr/panelTextColorSecondary"
                             android:layout_weight="1"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content" />

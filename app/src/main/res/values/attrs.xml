@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 配置页昼夜主题属性 -->
+    <attr name="panelBgColor" format="color" />
+    <attr name="panelCardBgColor" format="color" />
+    <attr name="panelCardStrokeColor" format="color" />
+    <attr name="panelTextColorPrimary" format="color" />
+    <attr name="panelTextColorSecondary" format="color" />
+    <attr name="panelDividerColor" format="color" />
+    <attr name="panelNavHeaderBgColor" format="color" />
+</resources>

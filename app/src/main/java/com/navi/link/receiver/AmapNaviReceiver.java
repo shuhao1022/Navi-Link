@@ -42,11 +42,15 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             Log.d(TAG, "==========================================================");
         }
         if (keyType == 12110) {
-            int startDist = intent.getIntExtra("START_DISTANCE", -1);
+            manager.resetWatchdog();
+            if (manager.getCurrentMode() == FloatingWindowManager.MODE_NAVI) {
+                manager.resetNaviTimeout();
+            }
+            int startDist = getIntSafe(intent, "START_DISTANCE", -1);
             String startDistText = intent.getStringExtra("START_DISTANCE_TEXT");
-            int avgSpeed = intent.getIntExtra("AVERAGE_SPEED", 0);
+            int avgSpeed = getIntSafe(intent, "AVERAGE_SPEED", 0);
             String endDistText = intent.getStringExtra("END_DISTANCE_TEXT");
-            int limitSpeed = intent.getIntExtra("LIMITED_SPEED", 0);
+            int limitSpeed = getIntSafe(intent, "LIMITED_SPEED", 0);
             manager.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
             return;
         }
@@ -82,7 +86,7 @@ public class AmapNaviReceiver extends BroadcastReceiver {
 
         // 昼夜模式切换及前后台、结束状态广播
         if (keyType == 10019) {
-            int extraState = intent.getIntExtra("EXTRA_STATE", -1);
+            int extraState = getIntSafe(intent, "EXTRA_STATE", -1);
             if (extraState == 37 || extraState == 38) {
                 boolean isNight = (extraState == 38);
                 manager.onDayNightChanged(isNight);
@@ -93,11 +97,15 @@ public class AmapNaviReceiver extends BroadcastReceiver {
                 manager.onNavigationEnded();
             } else if (extraState == 25) {
                 manager.onCruiseEnded();
+            } else if (extraState == 40) {
+                if (manager.isActive() && !manager.isNavigationJustEnded() && !manager.isCruiseJustEnded()) {
+                    manager.resetWatchdog();
+                }
             }
 
             // 路口放大图状态（EXTRA_CROSS_MAP = 1 表示有路口放大图）
             if (intent.hasExtra("EXTRA_CROSS_MAP")) {
-                int crossMap = intent.getIntExtra("EXTRA_CROSS_MAP", 0);
+                int crossMap = getIntSafe(intent, "EXTRA_CROSS_MAP", 0);
                 manager.updateCrossMapStatus(crossMap);
             }
 
@@ -111,9 +119,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             }
             manager.resetWatchdog();
 
-            int icon = intent.getIntExtra("NEW_ICON", 0);
+            int icon = getIntSafe(intent, "NEW_ICON", 0);
             if (icon == 0) {
-                icon = intent.getIntExtra("ICON", 0);
+                icon = getIntSafe(intent, "ICON", 0);
             }
 
             if (icon != 0) {
@@ -135,9 +143,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
 
     private void handleTrafficLight(Intent intent, FloatingWindowManager manager) {
         if (manager.getCurrentMode() == FloatingWindowManager.MODE_NAVI) {
-            int status = intent.getIntExtra("trafficLightStatus", 0);
-            int dir = intent.getIntExtra("dir", 4);
-            int countdown = intent.getIntExtra("redLightCountDownSeconds", 0);
+            int status = getIntSafe(intent, "trafficLightStatus", 0);
+            int dir = getIntSafe(intent, "dir", 4);
+            int countdown = getIntSafe(intent, "redLightCountDownSeconds", 0);
             manager.updateTrafficLight(status, dir, countdown);
             return;
         }
@@ -160,9 +168,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         String nextRoadName = intent.getStringExtra("NEXT_ROAD_NAME");
         String curRoadName = intent.getStringExtra("CUR_ROAD_NAME");
 
-        int icon = intent.getIntExtra("NEW_ICON", 0);
+        int icon = getIntSafe(intent, "NEW_ICON", 0);
         if (icon == 0) {
-            icon = intent.getIntExtra("ICON", 0);
+            icon = getIntSafe(intent, "ICON", 0);
         }
 
         // 安全兜底防空指针
@@ -190,21 +198,21 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         String summaryStr = routeRemainDis + " · " + routeRemainTime;
 
         // 进度条计算
-        int routeRemainDisInt = intent.getIntExtra("ROUTE_REMAIN_DIS", 0);
-        int routeAllDis = intent.getIntExtra("ROUTE_ALL_DIS", 1);
+        int routeRemainDisInt = getIntSafe(intent, "ROUTE_REMAIN_DIS", 0);
+        int routeAllDis = getIntSafe(intent, "ROUTE_ALL_DIS", 1);
         int progressPercentage = routeAllDis > 0
                 ? (int) ((1.0f - (float) routeRemainDisInt / routeAllDis) * 100)
                 : 0;
 
-        int curSpeed = intent.getIntExtra("CUR_SPEED", 0);
-        int limitedSpeed = intent.getIntExtra("LIMITED_SPEED", 0);
-        int cameraDist = intent.getIntExtra("CAMERA_DIST", 0);
-        int cameraSpeed = intent.getIntExtra("CAMERA_SPEED", 0);
-        int cameraType = intent.getIntExtra("CAMERA_TYPE", 0);
+        int curSpeed = getIntSafe(intent, "CUR_SPEED", 0);
+        int limitedSpeed = getIntSafe(intent, "LIMITED_SPEED", 0);
+        int cameraDist = getIntSafe(intent, "CAMERA_DIST", 0);
+        int cameraSpeed = getIntSafe(intent, "CAMERA_SPEED", 0);
+        int cameraType = getIntSafe(intent, "CAMERA_TYPE", 0);
         String endPoiName = intent.getStringExtra("endPOIName");
-        int totalLightNum = intent.getIntExtra("TRAFFIC_LIGHT_NUM", 0);
-        int remainLightNum = intent.getIntExtra("routeRemainTrafficLightNum", 0);
-        int carDirection = intent.getIntExtra("CAR_DIRECTION", -1);
+        int totalLightNum = getIntSafe(intent, "TRAFFIC_LIGHT_NUM", 0);
+        int remainLightNum = getIntSafe(intent, "routeRemainTrafficLightNum", 0);
+        int carDirection = getIntSafe(intent, "CAR_DIRECTION", -1);
 
         manager.updateNaviInfo(icon, disNum, disUnit, "进入", roadName,
                 summaryStr, eta, progressPercentage, curSpeed,
@@ -219,21 +227,37 @@ public class AmapNaviReceiver extends BroadcastReceiver {
         // 服务区信息
         String sapaName = intent.getStringExtra("SAPA_NAME");
         String sapaDist = intent.getStringExtra("SAPA_DIST_AUTO");
-        int sapaType = intent.getIntExtra("SAPA_TYPE", 0);
+        int sapaType = getIntSafe(intent, "SAPA_TYPE", 0);
         String nextSapaName = intent.getStringExtra("NEXT_SAPA_NAME");
         String nextSapaDist = intent.getStringExtra("NEXT_SAPA_DIST_AUTO");
-        int nextSapaType = intent.getIntExtra("NEXT_SAPA_TYPE", 0);
+        int nextSapaType = getIntSafe(intent, "NEXT_SAPA_TYPE", 0);
         manager.updateSapaInfo(sapaName, sapaDist, sapaType, nextSapaName, nextSapaDist, nextSapaType);
     }
 
     private void handleCruiseInfo(Intent intent, FloatingWindowManager manager) {
-        int curSpeed = intent.getIntExtra("CUR_SPEED", 0);
+        int curSpeed = getIntSafe(intent, "CUR_SPEED", 0);
         String curRoadName = intent.getStringExtra("CUR_ROAD_NAME");
-        int cameraSpeed = intent.getIntExtra("CAMERA_SPEED", 0);
-        int cameraDist = intent.getIntExtra("CAMERA_DIST", 0);
-        int cameraType = intent.getIntExtra("CAMERA_TYPE", 0);
-        int carDirection = intent.getIntExtra("CAR_DIRECTION", -1);
+        int cameraSpeed = getIntSafe(intent, "CAMERA_SPEED", 0);
+        int cameraDist = getIntSafe(intent, "CAMERA_DIST", 0);
+        int cameraType = getIntSafe(intent, "CAMERA_TYPE", 0);
+        int carDirection = getIntSafe(intent, "CAR_DIRECTION", -1);
         if (curRoadName == null) curRoadName = "未知道路";
         manager.updateCruiseInfo(curSpeed, curRoadName, cameraType, cameraSpeed, cameraDist, carDirection);
+    }
+
+    private int getIntSafe(Intent intent, String key, int defaultValue) {
+        if (intent == null) return defaultValue;
+        Bundle extras = intent.getExtras();
+        if (extras == null || !extras.containsKey(key)) return defaultValue;
+        Object val = extras.get(key);
+        if (val instanceof Number) {
+            return ((Number) val).intValue();
+        }
+        if (val instanceof String) {
+            try {
+                return (int) Float.parseFloat((String) val);
+            } catch (Exception ignored) {}
+        }
+        return defaultValue;
     }
 }

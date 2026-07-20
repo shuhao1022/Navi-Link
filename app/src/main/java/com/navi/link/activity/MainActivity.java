@@ -13,6 +13,7 @@ import com.navi.link.utils.*;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
+import android.util.TypedValue;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
 import android.net.Uri;
@@ -383,7 +384,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        boolean isNight = getSharedPreferences("floating_config", MODE_PRIVATE).getBoolean("is_night_mode", true);
+        int targetMode = isNight ? androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES : androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+        if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != targetMode) {
+            androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(targetMode);
+        }
+
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_NaviLink);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         initViews();
@@ -391,10 +399,31 @@ public class MainActivity extends AppCompatActivity {
         setupListeners();
         updateStatusText();
         setupUpdateEntry();
+        setupDayNightListener();
         if (savedInstanceState == null) {
             checkPermissionAndStart();
             // 启动时静默检查更新（仅在有新版本时弹窗）
             UpdateChecker.checkForUpdate(BuildConfig.VERSION_NAME, false, updateCallback(false));
+        }
+    }
+
+    private void setupDayNightListener() {
+        FloatingWindowManager fwm = FloatingWindowManager.getInstance(this);
+        if (fwm != null) {
+            fwm.setOnDayNightChangeListener(new FloatingWindowManager.OnDayNightChangeListener() {
+                @Override
+                public void onDayNightChanged(final boolean isNight) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            int targetMode = isNight ? androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_YES : androidx.appcompat.app.AppCompatDelegate.MODE_NIGHT_NO;
+                            if (androidx.appcompat.app.AppCompatDelegate.getDefaultNightMode() != targetMode) {
+                                androidx.appcompat.app.AppCompatDelegate.setDefaultNightMode(targetMode);
+                            }
+                        }
+                    });
+                }
+            });
         }
     }
 
@@ -1150,9 +1179,9 @@ public class MainActivity extends AppCompatActivity {
         rbServiceOnly.setChecked(startupMode == 1);
         if (rbStartAmap != null) rbStartAmap.setChecked(startupMode == 2);
         int accentColor = getAccentColor();
-        cardNormalStart.setStrokeColor(startupMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardServiceOnly.setStrokeColor(startupMode == 1 ? accentColor : Color.parseColor("#444444"));
-        if (cardStartAmap != null) cardStartAmap.setStrokeColor(startupMode == 2 ? accentColor : Color.parseColor("#444444"));
+        cardNormalStart.setStrokeColor(startupMode == 0 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        cardServiceOnly.setStrokeColor(startupMode == 1 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardStartAmap != null) cardStartAmap.setStrokeColor(startupMode == 2 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
     }
 
     public void selectStyle(int mode) {
@@ -1170,9 +1199,9 @@ public class MainActivity extends AppCompatActivity {
         rbMinimal.setChecked(styleMode == 1);
         rbFull.setChecked(styleMode == 2);
         int accentColor = getAccentColor();
-        cardNormal.setStrokeColor(styleMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardMinimal.setStrokeColor(styleMode == 1 ? accentColor : Color.parseColor("#444444"));
-        cardFull.setStrokeColor(styleMode == 2 ? accentColor : Color.parseColor("#444444"));
+        cardNormal.setStrokeColor(styleMode == 0 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        cardMinimal.setStrokeColor(styleMode == 1 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        cardFull.setStrokeColor(styleMode == 2 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
     }
 
     public void selectCruiseStyle(int mode) {
@@ -1189,9 +1218,9 @@ public class MainActivity extends AppCompatActivity {
         rbCruiseMinimal.setChecked(cruiseStyleMode == 1);
         rbCruiseFull.setChecked(cruiseStyleMode == 2);
         int accentColor = getAccentColor();
-        cardCruiseNormal.setStrokeColor(cruiseStyleMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardCruiseMinimal.setStrokeColor(cruiseStyleMode == 1 ? accentColor : Color.parseColor("#444444"));
-        cardCruiseFull.setStrokeColor(cruiseStyleMode == 2 ? accentColor : Color.parseColor("#444444"));
+        cardCruiseNormal.setStrokeColor(cruiseStyleMode == 0 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        cardCruiseMinimal.setStrokeColor(cruiseStyleMode == 1 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        cardCruiseFull.setStrokeColor(cruiseStyleMode == 2 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
     }
 
     public void selectBackgroundMode(int mode) {
@@ -1210,9 +1239,9 @@ public class MainActivity extends AppCompatActivity {
         if (rbBgSemi != null) rbBgSemi.setChecked(backgroundMode == 1);
         if (rbBgTransparent != null) rbBgTransparent.setChecked(backgroundMode == 2);
         int accentColor = getAccentColor();
-        if (cardBgDark != null) cardBgDark.setStrokeColor(backgroundMode == 0 ? accentColor : Color.parseColor("#444444"));
-        if (cardBgSemi != null) cardBgSemi.setStrokeColor(backgroundMode == 1 ? accentColor : Color.parseColor("#444444"));
-        if (cardBgTransparent != null) cardBgTransparent.setStrokeColor(backgroundMode == 2 ? accentColor : Color.parseColor("#444444"));
+        if (cardBgDark != null) cardBgDark.setStrokeColor(backgroundMode == 0 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardBgSemi != null) cardBgSemi.setStrokeColor(backgroundMode == 1 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardBgTransparent != null) cardBgTransparent.setStrokeColor(backgroundMode == 2 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
     }
 
     public void selectCountdownFont(int index) {
@@ -1233,10 +1262,10 @@ public class MainActivity extends AppCompatActivity {
         if (rbFontThree != null) rbFontThree.setChecked(countdownFontIndex == 3);
 
         int accentColor = getAccentColor();
-        if (cardFontDefault != null) cardFontDefault.setStrokeColor(countdownFontIndex == 0 ? accentColor : Color.parseColor("#444444"));
-        if (cardFontOne != null) cardFontOne.setStrokeColor(countdownFontIndex == 1 ? accentColor : Color.parseColor("#444444"));
-        if (cardFontTwo != null) cardFontTwo.setStrokeColor(countdownFontIndex == 2 ? accentColor : Color.parseColor("#444444"));
-        if (cardFontThree != null) cardFontThree.setStrokeColor(countdownFontIndex == 3 ? accentColor : Color.parseColor("#444444"));
+        if (cardFontDefault != null) cardFontDefault.setStrokeColor(countdownFontIndex == 0 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardFontOne != null) cardFontOne.setStrokeColor(countdownFontIndex == 1 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardFontTwo != null) cardFontTwo.setStrokeColor(countdownFontIndex == 2 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
+        if (cardFontThree != null) cardFontThree.setStrokeColor(countdownFontIndex == 3 ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
     }
 
 
@@ -1256,7 +1285,7 @@ public class MainActivity extends AppCompatActivity {
         int accentColor = getAccentColor();
         for (int i = 0; i < cardTrafficLightStyle.length; i++) {
             if (cardTrafficLightStyle[i] != null) {
-                cardTrafficLightStyle[i].setStrokeColor(i == trafficLightStyle ? accentColor : Color.parseColor("#444444"));
+                cardTrafficLightStyle[i].setStrokeColor(i == trafficLightStyle ? accentColor : getThemeColorAttr(R.attr.panelCardStrokeColor));
             }
         }
     }
@@ -2310,23 +2339,39 @@ public class MainActivity extends AppCompatActivity {
         if (indicatorTrafficLight != null) indicatorTrafficLight.setVisibility(index == 4 ? View.VISIBLE : View.INVISIBLE);
         if (indicatorAboutUs != null) indicatorAboutUs.setVisibility(index == 5 ? View.VISIBLE : View.INVISIBLE);
 
-        // 3. Menu card background colors (selected gets #FF262626, others transparent)
-        if (menuSystemAppearance != null) menuSystemAppearance.setCardBackgroundColor(ColorStateList.valueOf(index == 0 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuColorSettings != null) menuColorSettings.setCardBackgroundColor(ColorStateList.valueOf(index == 6 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuFeaturesAvoidance != null) menuFeaturesAvoidance.setCardBackgroundColor(ColorStateList.valueOf(index == 1 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuLayoutNormal != null) menuLayoutNormal.setCardBackgroundColor(ColorStateList.valueOf(index == 2 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuLayoutMinimal != null) menuLayoutMinimal.setCardBackgroundColor(ColorStateList.valueOf(index == 3 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuTrafficLight != null) menuTrafficLight.setCardBackgroundColor(ColorStateList.valueOf(index == 4 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
-        if (menuAboutUs != null) menuAboutUs.setCardBackgroundColor(ColorStateList.valueOf(index == 5 ? Color.parseColor("#FF262626") : Color.TRANSPARENT));
+        // 3. Menu card background colors (selected gets panelNavHeaderBgColor, others transparent)
+        int selectedBg = getThemeColorAttr(R.attr.panelNavHeaderBgColor, Color.parseColor("#FF262626"));
+        int primaryText = getThemeColorAttr(R.attr.panelTextColorPrimary, Color.WHITE);
+        int secondaryText = getThemeColorAttr(R.attr.panelTextColorSecondary, Color.parseColor("#FF888888"));
 
-        // 4. Menu text colors (selected gets #FFFFFFFF, others #FF888888)
-        if (tvMenuSystemAppearance != null) tvMenuSystemAppearance.setTextColor(index == 0 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuColorSettings != null) tvMenuColorSettings.setTextColor(index == 6 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuFeaturesAvoidance != null) tvMenuFeaturesAvoidance.setTextColor(index == 1 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuLayoutNormal != null) tvMenuLayoutNormal.setTextColor(index == 2 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuLayoutMinimal != null) tvMenuLayoutMinimal.setTextColor(index == 3 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuTrafficLight != null) tvMenuTrafficLight.setTextColor(index == 4 ? Color.WHITE : Color.parseColor("#FF888888"));
-        if (tvMenuAboutUs != null) tvMenuAboutUs.setTextColor(index == 5 ? Color.WHITE : Color.parseColor("#FF888888"));
+        if (menuSystemAppearance != null) menuSystemAppearance.setCardBackgroundColor(ColorStateList.valueOf(index == 0 ? selectedBg : Color.TRANSPARENT));
+        if (menuColorSettings != null) menuColorSettings.setCardBackgroundColor(ColorStateList.valueOf(index == 6 ? selectedBg : Color.TRANSPARENT));
+        if (menuFeaturesAvoidance != null) menuFeaturesAvoidance.setCardBackgroundColor(ColorStateList.valueOf(index == 1 ? selectedBg : Color.TRANSPARENT));
+        if (menuLayoutNormal != null) menuLayoutNormal.setCardBackgroundColor(ColorStateList.valueOf(index == 2 ? selectedBg : Color.TRANSPARENT));
+        if (menuLayoutMinimal != null) menuLayoutMinimal.setCardBackgroundColor(ColorStateList.valueOf(index == 3 ? selectedBg : Color.TRANSPARENT));
+        if (menuTrafficLight != null) menuTrafficLight.setCardBackgroundColor(ColorStateList.valueOf(index == 4 ? selectedBg : Color.TRANSPARENT));
+        if (menuAboutUs != null) menuAboutUs.setCardBackgroundColor(ColorStateList.valueOf(index == 5 ? selectedBg : Color.TRANSPARENT));
+
+        // 4. Menu text colors (selected gets primaryText, others secondaryText)
+        if (tvMenuSystemAppearance != null) tvMenuSystemAppearance.setTextColor(index == 0 ? primaryText : secondaryText);
+        if (tvMenuColorSettings != null) tvMenuColorSettings.setTextColor(index == 6 ? primaryText : secondaryText);
+        if (tvMenuFeaturesAvoidance != null) tvMenuFeaturesAvoidance.setTextColor(index == 1 ? primaryText : secondaryText);
+        if (tvMenuLayoutNormal != null) tvMenuLayoutNormal.setTextColor(index == 2 ? primaryText : secondaryText);
+        if (tvMenuLayoutMinimal != null) tvMenuLayoutMinimal.setTextColor(index == 3 ? primaryText : secondaryText);
+        if (tvMenuTrafficLight != null) tvMenuTrafficLight.setTextColor(index == 4 ? primaryText : secondaryText);
+        if (tvMenuAboutUs != null) tvMenuAboutUs.setTextColor(index == 5 ? primaryText : secondaryText);
+    }
+
+    public int getThemeColorAttr(int attrId) {
+        return getThemeColorAttr(attrId, Color.TRANSPARENT);
+    }
+
+    public int getThemeColorAttr(int attrId, int defaultColor) {
+        TypedValue typedValue = new TypedValue();
+        if (getTheme().resolveAttribute(attrId, typedValue, true)) {
+            return typedValue.data;
+        }
+        return defaultColor;
     }
 
     public void checkPermissionAndStart() {
@@ -2730,7 +2775,8 @@ public class MainActivity extends AppCompatActivity {
         gd.setShape(GradientDrawable.RECTANGLE);
         gd.setColor(color);
         gd.setCornerRadius(dpToPx(6));
-        gd.setStroke(dpToPx(1), 0x55FFFFFF); // Add thin semi-transparent white border
+        int strokeColor = getThemeColorAttr(R.attr.panelCardStrokeColor, 0xFF888888);
+        gd.setStroke(dpToPx(1), strokeColor);
         view.setBackground(gd);
     }
 

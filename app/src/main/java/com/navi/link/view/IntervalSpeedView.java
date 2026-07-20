@@ -14,8 +14,11 @@ import com.navi.link.R;
 public class IntervalSpeedView extends LinearLayout {
 
     private View container;
-    private TextView tvTitle;
-    private TextView tvInfo;
+    private TextView tvCurSpeed;
+    private TextView tvAvgVal;
+    private TextView tvAvgLabel;
+    private TextView tvDistVal;
+    private TextView tvDistLabel;
     private TextView tvLimit;
 
     public IntervalSpeedView(Context context) {
@@ -36,58 +39,91 @@ public class IntervalSpeedView extends LinearLayout {
     private void init() {
         LayoutInflater.from(getContext()).inflate(R.layout.layout_interval_speed, this, true);
         container = findViewById(R.id.ll_interval_container);
-        tvTitle = findViewById(R.id.tv_interval_title);
-        tvInfo = findViewById(R.id.tv_interval_info);
+        tvCurSpeed = findViewById(R.id.tv_interval_cur_speed);
+        tvAvgVal = findViewById(R.id.tv_interval_avg_val);
+        tvAvgLabel = findViewById(R.id.tv_interval_avg_label);
+        tvDistVal = findViewById(R.id.tv_interval_dist_val);
+        tvDistLabel = findViewById(R.id.tv_interval_dist_label);
         tvLimit = findViewById(R.id.tv_interval_limit);
         
         setVisibility(View.GONE);
     }
 
     /**
-     * 进入区间测速前：前方 100m 有区间测速
+     * 实时更新当前车速
      */
-    public void setApproachingState(String distanceToStart, int limitSpeed) {
+    public void updateCurrentSpeed(int curSpeed) {
+        if (tvCurSpeed != null) {
+            tvCurSpeed.setText(String.valueOf(curSpeed));
+        }
+    }
+
+    /**
+     * 进入区间测速前：前方 452m 有区间测速
+     */
+    public void setApproachingState(int curSpeed, String distanceToStart, int limitSpeed) {
         setVisibility(View.VISIBLE);
-        container.setVisibility(View.VISIBLE);
+        if (container != null) container.setVisibility(View.VISIBLE);
         
-        tvTitle.setText("前方区间测速");
-        tvTitle.setTextColor(Color.parseColor("#FFD700")); // Yellow-ish
-        
-        tvInfo.setText(distanceToStart != null ? distanceToStart : "");
-        tvInfo.setTextColor(Color.WHITE);
-        
-        tvLimit.setText(limitSpeed > 0 ? String.valueOf(limitSpeed) : "--");
+        if (tvCurSpeed != null) {
+            tvCurSpeed.setText(String.valueOf(curSpeed));
+        }
+        if (tvAvgVal != null) {
+            tvAvgVal.setText("--");
+            tvAvgVal.setTextColor(Color.WHITE);
+        }
+        if (tvAvgLabel != null) {
+            tvAvgLabel.setText("即将进入");
+        }
+        if (tvDistVal != null) {
+            tvDistVal.setText(distanceToStart != null ? distanceToStart : "--");
+            tvDistVal.setTextColor(Color.WHITE);
+        }
+        if (tvDistLabel != null) {
+            tvDistLabel.setText("距离起点");
+        }
+        if (tvLimit != null) {
+            tvLimit.setText(limitSpeed > 0 ? String.valueOf(limitSpeed) : "--");
+        }
     }
 
     /**
      * 已进入区间测速：显示均速和剩余距离
      */
-    public void setInsideState(int limitSpeed, int avgSpeed, String distanceToEnd) {
+    public void setInsideState(int curSpeed, int limitSpeed, int avgSpeed, String distanceToEnd) {
         setVisibility(View.VISIBLE);
-        container.setVisibility(View.VISIBLE);
+        if (container != null) container.setVisibility(View.VISIBLE);
         
-        tvTitle.setText("区间测速中");
-        tvTitle.setTextColor(Color.parseColor("#00FF00")); // Green-ish
-        
-        StringBuilder info = new StringBuilder();
-        info.append("均速 ").append(avgSpeed);
-        if (distanceToEnd != null && !distanceToEnd.isEmpty()) {
-            info.append(" | 剩余 ").append(distanceToEnd);
+        if (tvCurSpeed != null) {
+            tvCurSpeed.setText(String.valueOf(curSpeed));
         }
-        tvInfo.setText(info.toString());
-        
-        // 超速标红均速部分
-        if (limitSpeed > 0 && avgSpeed > limitSpeed) {
-            tvInfo.setTextColor(Color.parseColor("#FF4444")); // Red
-        } else {
-            tvInfo.setTextColor(Color.WHITE);
+        if (tvAvgVal != null) {
+            tvAvgVal.setText(String.valueOf(avgSpeed));
+            // 超速警示红
+            if (limitSpeed > 0 && avgSpeed > limitSpeed) {
+                tvAvgVal.setTextColor(Color.parseColor("#FF4444"));
+            } else {
+                tvAvgVal.setTextColor(Color.WHITE);
+            }
         }
-        
-        tvLimit.setText(limitSpeed > 0 ? String.valueOf(limitSpeed) : "--");
+        if (tvAvgLabel != null) {
+            tvAvgLabel.setText("平均车速");
+        }
+        if (tvDistVal != null) {
+            String distStr = (distanceToEnd != null && !distanceToEnd.isEmpty()) ? distanceToEnd : "--";
+            tvDistVal.setText(distStr);
+            tvDistVal.setTextColor(Color.WHITE);
+        }
+        if (tvDistLabel != null) {
+            tvDistLabel.setText("剩余里程");
+        }
+        if (tvLimit != null) {
+            tvLimit.setText(limitSpeed > 0 ? String.valueOf(limitSpeed) : "--");
+        }
     }
 
     public void hide() {
         setVisibility(View.GONE);
-        container.setVisibility(View.GONE);
+        if (container != null) container.setVisibility(View.GONE);
     }
 }

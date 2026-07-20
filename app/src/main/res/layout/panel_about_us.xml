@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -56,7 +56,7 @@
                     <TextView
                         android:text="软件版本"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -64,7 +64,7 @@
                         android:id="@+id/tv_about_app_version"
                         android:text="v1.0.0"
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                     <TextView
@@ -79,7 +79,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Author Row -->
                 <LinearLayout
@@ -92,14 +92,14 @@
                     <TextView
                         android:text="软件作者"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
                     <TextView
                         android:text="Shadow"
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -107,7 +107,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- QQ Group Row -->
                 <LinearLayout
@@ -120,7 +120,7 @@
                     <TextView
                         android:text="QQ交流群"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -139,7 +139,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Git Repo Row -->
                 <LinearLayout
@@ -152,7 +152,7 @@
                     <TextView
                         android:text="开源地址"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -171,7 +171,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Software Statement -->
                 <LinearLayout
@@ -183,7 +183,7 @@
                     <TextView
                         android:text="免责与许可声明"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:textStyle="bold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -191,7 +191,7 @@
                         android:layout_marginTop="6dp"
                         android:text="1. 本软件完全免费，仅供个人学习、研究与交流使用，严禁任何人将本软件用于任何商业性目的或收取任何费用。\n2. 本软件提供的所有功能均基于系统公开接口与第三方服务，作者不保证服务的稳定性与绝对准确性，请勿在驾驶过程中过度依赖本软件，确保驾驶安全。\n3. 作者不对因使用或无法使用本软件所导致的任何直接、间接损失（包括但不限于设备损坏、交通事故、数据丢失等）承担任何法律责任。继续使用本软件即代表您同意本免责声明。"
                         android:textSize="12sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:lineSpacingExtra="3dp"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content" />
@@ -206,9 +206,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -240,7 +240,7 @@
                     <TextView
                         android:text="处理器 (CPU)"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -248,7 +248,7 @@
                         android:id="@+id/tv_about_cpu_info"
                         android:text="获取中..."
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -256,7 +256,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- RAM Info -->
                 <LinearLayout
@@ -269,7 +269,7 @@
                     <TextView
                         android:text="运行内存 (RAM)"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -277,7 +277,7 @@
                         android:id="@+id/tv_about_ram_info"
                         android:text="获取中..."
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -285,7 +285,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- ROM Info -->
                 <LinearLayout
@@ -298,7 +298,7 @@
                     <TextView
                         android:text="存储空间 (ROM)"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -306,7 +306,7 @@
                         android:id="@+id/tv_about_rom_info"
                         android:text="获取中..."
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -314,7 +314,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Android Version/API -->
                 <LinearLayout
@@ -327,7 +327,7 @@
                     <TextView
                         android:text="系统版本 (API)"
                         android:textSize="15sp"
-                        android:textColor="#FFFFFFFF"
+                        android:textColor="?attr/panelTextColorPrimary"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1" />
@@ -335,7 +335,7 @@
                         android:id="@+id/tv_about_api_level"
                         android:text="获取中..."
                         android:textSize="14sp"
-                        android:textColor="#FF888888"
+                        android:textColor="?attr/panelTextColorSecondary"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content" />
                 </LinearLayout>
@@ -349,9 +349,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -395,7 +395,7 @@
                             android:id="@+id/tv_display_physical_res"
                             android:text="获取中..."
                             android:textSize="15sp"
-                            android:textColor="#FFFFFFFF"
+                            android:textColor="?attr/panelTextColorPrimary"
                             android:textStyle="bold"
                             android:layout_marginTop="4dp"
                             android:layout_width="wrap_content"
@@ -427,7 +427,7 @@
                             android:id="@+id/tv_display_app_res"
                             android:text="获取中..."
                             android:textSize="15sp"
-                            android:textColor="#FFFFFFFF"
+                            android:textColor="?attr/panelTextColorPrimary"
                             android:textStyle="bold"
                             android:layout_marginTop="4dp"
                             android:layout_width="wrap_content"
@@ -447,7 +447,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <LinearLayout
                     android:orientation="horizontal"
@@ -472,7 +472,7 @@
                             android:id="@+id/tv_display_density"
                             android:text="获取中..."
                             android:textSize="15sp"
-                            android:textColor="#FFFFFFFF"
+                            android:textColor="?attr/panelTextColorPrimary"
                             android:textStyle="bold"
                             android:layout_marginTop="4dp"
                             android:layout_width="wrap_content"
@@ -504,7 +504,7 @@
                             android:id="@+id/tv_display_refresh_rate"
                             android:text="获取中..."
                             android:textSize="15sp"
-                            android:textColor="#FFFFFFFF"
+                            android:textColor="?attr/panelTextColorPrimary"
                             android:textStyle="bold"
                             android:layout_marginTop="4dp"
                             android:layout_width="wrap_content"

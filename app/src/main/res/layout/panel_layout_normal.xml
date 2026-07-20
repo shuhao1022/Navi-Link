@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -70,7 +70,7 @@
                             <TextView
                                 android:text="常规巡航/导航车道线"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -78,7 +78,7 @@
                                 android:id="@+id/tv_normal_lane_status"
                                 android:text="车道线已启用"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 2.0.x: 转向图标背景隐藏开关 -->
                 <com.google.android.material.card.MaterialCardView
@@ -128,7 +128,7 @@
                             <TextView
                                 android:text="隐藏常规导航转向图标背景"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -136,7 +136,7 @@
                                 android:id="@+id/tv_hide_turn_icon_bg_status"
                                 android:text="背景默认显示"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -155,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 2.x: 常规巡航显示信息开关 -->
                 <com.google.android.material.card.MaterialCardView
@@ -186,7 +186,7 @@
                             <TextView
                                 android:text="常规巡航显示信息"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -194,7 +194,7 @@
                                 android:id="@+id/tv_normal_cruise_info_status"
                                 android:text="第一排图文信息已启用"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -213,7 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- 隐藏常规巡航速度开关 -->
                 <com.google.android.material.card.MaterialCardView
@@ -244,7 +244,7 @@
                             <TextView
                                 android:text="隐藏常规巡航车速"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -252,7 +252,7 @@
                                 android:id="@+id/tv_hide_normal_cruise_speed_status"
                                 android:text="常规巡航时显示车速"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -271,7 +271,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 2.2: TMC Progress Bar Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -302,7 +302,7 @@
                             <TextView
                                 android:text="TMC路况进度条"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -310,7 +310,7 @@
                                 android:id="@+id/tv_normal_tmc_status"
                                 android:text="TMC路况进度条已启用"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -329,7 +329,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 2.3: Bottom Info Bar Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -360,7 +360,7 @@
                             <TextView
                                 android:text="底栏到达信息"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -368,7 +368,7 @@
                                 android:id="@+id/tv_normal_bottom_info_status"
                                 android:text="底栏到达信息已启用"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />

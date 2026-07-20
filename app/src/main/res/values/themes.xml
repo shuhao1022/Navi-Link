@@ -1,11 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.NaviLink" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <item name="android:windowBackground">#FF121212</item>
+    <!-- Day Theme -->
+    <style name="Theme.NaviLink" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">#FFF4F6F9</item>
+        <item name="panelBgColor">#FFF4F6F9</item>
+        <item name="panelCardBgColor">#FFFFFFFF</item>
+        <item name="panelCardStrokeColor">#FFCBD5E1</item>
+        <item name="panelTextColorPrimary">#FF0F172A</item>
+        <item name="panelTextColorSecondary">#FF475569</item>
+        <item name="panelDividerColor">#FFE2E8F0</item>
+        <item name="panelNavHeaderBgColor">#FFEAEFF5</item>
     </style>
-
-    <style name="Theme.NaviLink" parent="Base.Theme.NaviLink" />
 
     <!-- 透明路由主题：无UI、无动画、无窗口 -->
     <style name="Theme.Transparent" parent="Theme.Material3.DayNight.NoActionBar">

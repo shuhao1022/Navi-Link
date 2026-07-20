@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -70,7 +70,7 @@
                             <TextView
                                 android:text="开机自启"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -78,7 +78,7 @@
                                 android:id="@+id/tv_auto_start_status"
                                 android:text="通电或开机时自动启动悬浮窗服务"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -97,7 +97,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 1: Cruise Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -128,7 +128,7 @@
                             <TextView
                                 android:text="启用巡航窗口"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -136,7 +136,7 @@
                                 android:id="@+id/tv_cruise_status"
                                 android:text="巡航窗已启用"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -155,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 3: Avoid Foreground Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -186,7 +186,7 @@
                             <TextView
                                 android:text="高德前台避让"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -194,7 +194,7 @@
                                 android:id="@+id/tv_avoid_foreground_status"
                                 android:text="前台正常显示浮窗"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -213,7 +213,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- 路口放大图自动隐藏 -->
                 <com.google.android.material.card.MaterialCardView
@@ -244,7 +244,7 @@
                             <TextView
                                 android:text="路口放大图自动隐藏"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -252,7 +252,7 @@
                                 android:id="@+id/tv_cross_map_hide_status"
                                 android:text="高德显示路口放大图时隐藏悬浮窗"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -271,7 +271,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 4: Overspeed Warning Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -307,7 +307,7 @@
                                 <TextView
                                     android:text="超速红色提醒"
                                     android:textSize="15sp"
-                                    android:textColor="#FFFFFFFF"
+                                    android:textColor="?attr/panelTextColorPrimary"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content" />
 
@@ -315,7 +315,7 @@
                                     android:id="@+id/tv_overspeed_warning_status"
                                     android:text="超速时车速红色报警并闪烁"
                                     android:textSize="12sp"
-                                    android:textColor="#FF888888"
+                                    android:textColor="?attr/panelTextColorSecondary"
                                     android:layout_marginTop="2dp"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content" />
@@ -436,7 +436,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 4.5: Lane Line Background Hide Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -467,7 +467,7 @@
                             <TextView
                                 android:text="车道线背景隐藏"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -475,7 +475,7 @@
                                 android:id="@+id/tv_hide_lane_line_bg_status"
                                 android:text="背景默认显示"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -499,9 +499,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
-            app:cardBackgroundColor="#FF1E1E1E"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
             app:cardCornerRadius="16dp"
-            app:strokeColor="#1AFFFFFF"
+            app:strokeColor="?attr/panelDividerColor"
             app:strokeWidth="1dp"
             app:cardElevation="0dp">
 
@@ -551,7 +551,7 @@
                             <TextView
                                 android:text="启用副屏投屏"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -559,7 +559,7 @@
                                 android:id="@+id/tv_cluster_mirror_status"
                                 android:text="副屏镜像显示悬浮窗信息"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
@@ -578,7 +578,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginHorizontal="16dp"
-                    android:background="#1AFFFFFF" />
+                    android:background="?attr/panelDividerColor" />
 
                 <!-- Option 7.5: Hide Main Screen on Cluster Active Switch Row -->
                 <com.google.android.material.card.MaterialCardView
@@ -609,7 +609,7 @@
                             <TextView
                                 android:text="副屏显示时隐藏主屏"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
 
@@ -617,7 +617,7 @@
                                 android:id="@+id/tv_hide_main_when_cluster_active_status"
                                 android:text="副屏成功显示后自动隐藏主屏悬浮窗"
                                 android:textSize="12sp"
-                                android:textColor="#FF888888"
+                                android:textColor="?attr/panelTextColorSecondary"
                                 android:layout_marginTop="2dp"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />

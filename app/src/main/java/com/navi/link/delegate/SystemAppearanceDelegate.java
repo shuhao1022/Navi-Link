@@ -267,9 +267,10 @@ public class SystemAppearanceDelegate {
         if (rbStartAmap != null) rbStartAmap.setChecked(activity.startupMode == 2);
         
         int accentColor = activity.getAccentColor();
-        cardNormalStart.setStrokeColor(activity.startupMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardServiceOnly.setStrokeColor(activity.startupMode == 1 ? accentColor : Color.parseColor("#444444"));
-        if (cardStartAmap != null) cardStartAmap.setStrokeColor(activity.startupMode == 2 ? accentColor : Color.parseColor("#444444"));
+        int defaultStroke = activity.getThemeColorAttr(com.navi.link.R.attr.panelCardStrokeColor);
+        cardNormalStart.setStrokeColor(activity.startupMode == 0 ? accentColor : defaultStroke);
+        cardServiceOnly.setStrokeColor(activity.startupMode == 1 ? accentColor : defaultStroke);
+        if (cardStartAmap != null) cardStartAmap.setStrokeColor(activity.startupMode == 2 ? accentColor : defaultStroke);
         
         if (tvStartAmapDesc != null) {
             if (activity.targetAmapPackage != null && !activity.targetAmapPackage.isEmpty()) {
@@ -286,9 +287,10 @@ public class SystemAppearanceDelegate {
         rbFull.setChecked(activity.styleMode == 2);
         
         int accentColor = activity.getAccentColor();
-        cardNormal.setStrokeColor(activity.styleMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardMinimal.setStrokeColor(activity.styleMode == 1 ? accentColor : Color.parseColor("#444444"));
-        cardFull.setStrokeColor(activity.styleMode == 2 ? accentColor : Color.parseColor("#444444"));
+        int defaultStroke = activity.getThemeColorAttr(com.navi.link.R.attr.panelCardStrokeColor);
+        cardNormal.setStrokeColor(activity.styleMode == 0 ? accentColor : defaultStroke);
+        cardMinimal.setStrokeColor(activity.styleMode == 1 ? accentColor : defaultStroke);
+        cardFull.setStrokeColor(activity.styleMode == 2 ? accentColor : defaultStroke);
     }
     
     public void updateCruiseStyleSelection() {
@@ -297,9 +299,10 @@ public class SystemAppearanceDelegate {
         rbCruiseFull.setChecked(activity.cruiseStyleMode == 2);
         
         int accentColor = activity.getAccentColor();
-        cardCruiseNormal.setStrokeColor(activity.cruiseStyleMode == 0 ? accentColor : Color.parseColor("#444444"));
-        cardCruiseMinimal.setStrokeColor(activity.cruiseStyleMode == 1 ? accentColor : Color.parseColor("#444444"));
-        cardCruiseFull.setStrokeColor(activity.cruiseStyleMode == 2 ? accentColor : Color.parseColor("#444444"));
+        int defaultStroke = activity.getThemeColorAttr(com.navi.link.R.attr.panelCardStrokeColor);
+        cardCruiseNormal.setStrokeColor(activity.cruiseStyleMode == 0 ? accentColor : defaultStroke);
+        cardCruiseMinimal.setStrokeColor(activity.cruiseStyleMode == 1 ? accentColor : defaultStroke);
+        cardCruiseFull.setStrokeColor(activity.cruiseStyleMode == 2 ? accentColor : defaultStroke);
     }
     
     public void updateSeekBarToCurrentScale() {

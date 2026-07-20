@@ -157,6 +157,14 @@
                 android:layout_marginHorizontal="10dp"
                 android:visibility="gone" />
 
+            <!-- 区间测速水平蓝框胶囊条（位于 TMC 进度条上方） -->
+            <com.navi.link.view.IntervalSpeedView
+                android:id="@+id/interval_speed_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="10dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp" />
 
             <com.navi.link.view.TmcProgressBar
                 android:id="@+id/tmc_progress_bar"
@@ -320,11 +328,5 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
-        <com.navi.link.view.IntervalSpeedView
-            android:id="@+id/interval_speed_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom|center_horizontal"
-            android:layout_marginBottom="4dp"/>
     </FrameLayout>
 </FrameLayout>

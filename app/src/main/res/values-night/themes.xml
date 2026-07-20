@@ -1,7 +1,13 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="Base.Theme.NaviLink" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    <!-- Night Theme -->
+    <style name="Theme.NaviLink" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">#FF121212</item>
+        <item name="panelBgColor">#FF121212</item>
+        <item name="panelCardBgColor">#FF1E1E1E</item>
+        <item name="panelCardStrokeColor">#FF333333</item>
+        <item name="panelTextColorPrimary">#FFFFFFFF</item>
+        <item name="panelTextColorSecondary">#FFAAAAAA</item>
+        <item name="panelDividerColor">#1AFFFFFF</item>
+        <item name="panelNavHeaderBgColor">#FF1E1E1E</item>
     </style>
 </resources>

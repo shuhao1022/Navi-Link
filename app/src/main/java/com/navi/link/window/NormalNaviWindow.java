@@ -127,6 +127,8 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         return sp.getBoolean("normal_navi_lane_enabled", false);
     }
 
+    private int mCurSpeed = 0;
+
     @Override
     public void updateNaviInfo(
             int icon, String disNum, String disUnit, String actionStr,
@@ -136,6 +138,10 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             String endPoiName, int totalLightNum, int remainLightNum,
             String curRoadName, int carDirection
     ) {
+        this.mCurSpeed = curSpeed;
+        if (intervalSpeedView != null) {
+            intervalSpeedView.updateCurrentSpeed(curSpeed);
+        }
         if (ivTurnIcon != null) {
             int turnIconRes = getTurnIconRes(icon);
             if (turnIconRes != 0) {
@@ -477,5 +483,24 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             }
         }
         return (a << 24) | (r << 16) | (g << 8) | b;
+    }
+
+    @Override
+    public void updateIntervalSpeed(int startDist, String startDistText, int avgSpeed, String endDistText, int limitSpeed) {
+        if (intervalSpeedView == null) return;
+
+        if (startDist <= 0 && (startDistText == null || startDistText.isEmpty() || "0m".equals(startDistText) || "0.0m".equals(startDistText))
+                && avgSpeed <= 0 && (endDistText == null || endDistText.isEmpty()) && limitSpeed <= 0) {
+            intervalSpeedView.hide();
+            return;
+        }
+
+        boolean isInside = (endDistText != null && !endDistText.trim().isEmpty()) || avgSpeed > 0;
+        if (isInside) {
+            intervalSpeedView.setInsideState(mCurSpeed, limitSpeed, avgSpeed, endDistText);
+        } else {
+            String distText = (startDistText != null && !startDistText.isEmpty()) ? startDistText : (startDist + "m");
+            intervalSpeedView.setApproachingState(mCurSpeed, distText, limitSpeed);
+        }
     }
 }
