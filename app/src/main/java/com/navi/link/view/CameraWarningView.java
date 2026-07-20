@@ -1,15 +1,6 @@
 package com.navi.link.view;
+
 import com.navi.link.R;
-import com.navi.link.BuildConfig;
-import com.navi.link.activity.*;
-import com.navi.link.delegate.*;
-import com.navi.link.window.*;
-import com.navi.link.view.*;
-import com.navi.link.receiver.*;
-import com.navi.link.service.*;
-import com.navi.link.utils.*;
-
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -40,6 +31,7 @@ public class CameraWarningView extends LinearLayout {
     private void init(Context context) {
         setOrientation(HORIZONTAL);
         setGravity(android.view.Gravity.CENTER_VERTICAL);
+        setBaselineAligned(false);
         LayoutInflater.from(context).inflate(R.layout.layout_camera_warning, this, true);
 
         ivCameraIcon = findViewById(R.id.iv_camera_icon);

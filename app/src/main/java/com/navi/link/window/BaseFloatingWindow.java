@@ -259,4 +259,8 @@ public abstract class BaseFloatingWindow {
             sp.getInt("bg_color_night", 0xCC121212) : 
             sp.getInt("bg_color_day", 0xE6F5F5F5);
     }
+
+    public void updateIntervalSpeed(int startDist, String startDistText, int avgSpeed, String endDistText, int limitSpeed) {
+        // To be overridden by subclasses
+    }
 }

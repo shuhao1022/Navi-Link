@@ -74,7 +74,7 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />
-        <com.navi.link.TrafficLightView
+        <com.navi.link.view.TrafficLightView
             android:id="@+id/ll_traffic_light_group"
             android:visibility="gone"
             android:layout_marginTop="5dp"
@@ -83,7 +83,7 @@
             android:layout_width="wrap_content"
             android:layout_height="50dp"/>
 
-        <com.navi.link.CameraWarningView
+        <com.navi.link.view.CameraWarningView
             android:id="@+id/ll_camera_dist_group"
             android:visibility="gone"
             android:layout_marginTop="5dp"
@@ -149,7 +149,7 @@
 
 
             <!-- 车道线组件 -->
-            <com.navi.link.LaneLineView
+            <com.navi.link.view.LaneLineView
                 android:id="@+id/lane_line_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -158,7 +158,7 @@
                 android:visibility="gone" />
 
 
-            <com.navi.link.TmcProgressBar
+            <com.navi.link.view.TmcProgressBar
                 android:id="@+id/tmc_progress_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" />
@@ -320,5 +320,11 @@
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>
+        <com.navi.link.view.IntervalSpeedView
+            android:id="@+id/interval_speed_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center_horizontal"
+            android:layout_marginBottom="4dp"/>
     </FrameLayout>
 </FrameLayout>

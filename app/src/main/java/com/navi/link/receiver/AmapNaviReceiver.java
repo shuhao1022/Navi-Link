@@ -20,7 +20,7 @@ import org.json.JSONArray;
 public class AmapNaviReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AmapNavi";
-    private boolean isLog = false;
+    private boolean isLog = true;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!"AUTONAVI_STANDARD_BROADCAST_SEND".equals(intent.getAction())) return;
@@ -41,6 +41,16 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             }
             Log.d(TAG, "==========================================================");
         }
+        if (keyType == 12110) {
+            int startDist = intent.getIntExtra("START_DISTANCE", -1);
+            String startDistText = intent.getStringExtra("START_DISTANCE_TEXT");
+            int avgSpeed = intent.getIntExtra("AVERAGE_SPEED", 0);
+            String endDistText = intent.getStringExtra("END_DISTANCE_TEXT");
+            int limitSpeed = intent.getIntExtra("LIMITED_SPEED", 0);
+            manager.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
+            return;
+        }
+
         if (keyType == 60073) {
             // 红绿灯数据也视为有活动数据，重置 5秒 看门狗
             manager.resetWatchdog();

@@ -249,6 +249,8 @@ public class MainActivity extends AppCompatActivity {
     // 红绿灯倒计时字体选择
     public MaterialCardView cardFontDefault, cardFontOne, cardFontTwo, cardFontThree;
     private RadioButton rbFontDefault, rbFontOne, rbFontTwo, rbFontThree;
+
+
     public int countdownFontIndex = 0; // 0=默认, 1=字体一, 2=字体二, 3=字体三
 
     // Menu elements
@@ -545,6 +547,8 @@ public class MainActivity extends AppCompatActivity {
         rbFontOne = findViewById(R.id.rb_font_one);
         rbFontTwo = findViewById(R.id.rb_font_two);
         rbFontThree = findViewById(R.id.rb_font_three);
+
+
         cardTrafficLightStyle[0] = findViewById(R.id.card_traffic_light_style_0);
         cardTrafficLightStyle[1] = findViewById(R.id.card_traffic_light_style_1);
         cardTrafficLightStyle[2] = findViewById(R.id.card_traffic_light_style_2);
@@ -1235,6 +1239,8 @@ public class MainActivity extends AppCompatActivity {
         if (cardFontThree != null) cardFontThree.setStrokeColor(countdownFontIndex == 3 ? accentColor : Color.parseColor("#444444"));
     }
 
+
+
     public void selectTrafficLightStyle(int style) {
         if (trafficLightStyle == style) return;
         trafficLightStyle = style;
@@ -1900,6 +1906,8 @@ public class MainActivity extends AppCompatActivity {
         if (cardFontOne != null) cardFontOne.setOnClickListener(v -> selectCountdownFont(1));
         if (cardFontTwo != null) cardFontTwo.setOnClickListener(v -> selectCountdownFont(2));
         if (cardFontThree != null) cardFontThree.setOnClickListener(v -> selectCountdownFont(3));
+
+
 
         if (cardClusterDisplaySelect != null) {
             cardClusterDisplaySelect.setOnClickListener(v -> showClusterDisplaySelectionDialog());

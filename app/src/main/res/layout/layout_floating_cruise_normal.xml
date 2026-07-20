@@ -52,7 +52,7 @@
                     android:textColor="#FFFFFF"
                     android:textSize="22sp" />
 
-                <com.navi.link.CameraWarningView
+                <com.navi.link.view.CameraWarningView
                     android:visibility="visible"
                     android:id="@+id/ll_cn_camera_dist"
                     android:background="@drawable/bg_traffic_light_capsule"
@@ -67,14 +67,14 @@
             <LinearLayout
                 android:id="@+id/ll_cn_traffic_lights_container"
                 android:layout_width="match_parent"
-                android:layout_height="50dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="6dp"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="gone" />
 
             <!-- 车道线组件 -->
-            <com.navi.link.LaneLineView
+            <com.navi.link.view.LaneLineView
                 android:id="@+id/lane_line_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

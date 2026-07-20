@@ -16,6 +16,7 @@ import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.view.View;
+import com.navi.link.view.IntervalSpeedView;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.widget.ImageView;
@@ -23,6 +24,7 @@ import android.widget.TextView;
 
 public class NormalNaviWindow extends BaseFloatingWindow {
 
+    private IntervalSpeedView intervalSpeedView;
     private int themeColor = Color.BLACK;
     private ImageView ivTurnIcon;
     private View llTurnIconContainer;
@@ -82,6 +84,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         vDivider = floatingView.findViewById(R.id.v_divider);
         laneLineView = floatingView.findViewById(R.id.lane_line_view);
         cameraWarningView = floatingView.findViewById(R.id.ll_camera_dist_group);
+        intervalSpeedView = floatingView.findViewById(R.id.interval_speed_view);
 
         layoutBottomContainer = floatingView.findViewById(R.id.layout_bottom_container);
         layoutSapaGroup = floatingView.findViewById(R.id.layout_sapa_group);

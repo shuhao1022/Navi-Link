@@ -48,7 +48,7 @@
                 android:textColor="#FF0099FF"
                 android:textSize="10sp"/>
         </RelativeLayout>
-        <com.navi.link.TrafficLightView
+        <com.navi.link.view.TrafficLightView
             android:id="@+id/ll_traffic_light_group"
             android:visibility="gone"
             android:layout_centerInParent="true"
@@ -68,7 +68,7 @@
             android:textSize="28sp" />
     </RelativeLayout>
             <!-- 车道线组件 -->
-            <com.navi.link.LaneLineView
+            <com.navi.link.view.LaneLineView
                 android:id="@+id/lane_line_view_full"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -313,7 +313,7 @@
              android:gravity="center_vertical"
              android:layout_width="match_parent"
              android:layout_height="50dp">
-             <com.navi.link.CameraWarningView
+             <com.navi.link.view.CameraWarningView
                  android:id="@+id/tv_full_camera_dist"
                  android:layout_width="wrap_content"
                  android:layout_height="wrap_content" />
@@ -344,7 +344,7 @@
                  android:textSize="25sp"/>
          </LinearLayout>
 
-         <com.navi.link.TmcProgressBar
+         <com.navi.link.view.TmcProgressBar
              android:id="@+id/tmc_progress_bar_full"
              android:layout_width="match_parent"
              android:layout_height="wrap_content" />

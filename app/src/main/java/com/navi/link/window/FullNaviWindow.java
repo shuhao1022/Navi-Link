@@ -17,6 +17,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import androidx.core.graphics.drawable.DrawableCompat;
 import android.view.View;
+import com.navi.link.view.IntervalSpeedView;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.widget.ImageView;
@@ -25,6 +26,7 @@ import androidx.cardview.widget.CardView;
 
 public class FullNaviWindow extends BaseFloatingWindow {
 
+    private IntervalSpeedView intervalSpeedView;
     private TextView tvFullSpeed;
     private TextView tvFullSpeedLimit;
     private TextView tvFullCurRoadName;
@@ -88,6 +90,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         tvFullDirection = floatingView.findViewById(R.id.tv_full_direction);
         tmcProgressBarFull = floatingView.findViewById(R.id.tmc_progress_bar_full);
         laneLineViewFull = floatingView.findViewById(R.id.lane_line_view_full);
+        intervalSpeedView = floatingView.findViewById(R.id.interval_speed_view);
 
         // 底部容器与服务区
         layoutBottomContainerFull = floatingView.findViewById(R.id.layout_bottom_container_full);

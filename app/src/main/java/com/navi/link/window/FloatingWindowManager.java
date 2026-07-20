@@ -782,9 +782,6 @@ public class FloatingWindowManager {
         if (view instanceof LaneLineView) {
             ((LaneLineView) view).setScaleFactor(factor);
         }
-        if (view instanceof TrafficLightView) {
-            ((TrafficLightView) view).setScaleFactor(factor);
-        }
         if (view instanceof TextView) {
             TextView tv = (TextView) view;
             tv.setTextSize(TypedValue.COMPLEX_UNIT_PX, tv.getTextSize() * factor);
@@ -1316,6 +1313,11 @@ public class FloatingWindowManager {
     /**
      * 更新路口放大图状态（高德 10019 广播 EXTRA_CROSS_MAP）
      */
+    public void updateIntervalSpeed(int startDist, String startDistText, int avgSpeed, String endDistText, int limitSpeed) {
+        if (activeWindow != null) {
+            activeWindow.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
+        }
+    }
     public void updateCrossMapStatus(int hasCrossMap) {
         if (cachedCrossMap == hasCrossMap) return;
         cachedCrossMap = hasCrossMap;

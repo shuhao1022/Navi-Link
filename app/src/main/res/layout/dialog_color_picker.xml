@@ -19,7 +19,7 @@
         android:layout_height="wrap_content" />
 
     <!-- Color Wheel -->
-    <com.navi.link.ColorWheelView
+    <com.navi.link.view.ColorWheelView
         android:id="@+id/color_wheel"
         android:layout_width="200dp"
         android:layout_height="200dp"

@@ -77,7 +77,7 @@
                 android:paddingEnd="8dp" />
 
             <!-- 极简车道线组件 -->
-            <com.navi.link.LaneLineView
+            <com.navi.link.view.LaneLineView
                 android:id="@+id/lane_line_view_min"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"
@@ -95,7 +95,7 @@
                 android:visibility="gone" />
 
             <!-- 巡航摄像头容器 -->
-            <com.navi.link.CameraWarningView
+            <com.navi.link.view.CameraWarningView
                 android:id="@+id/ll_min_cruise_camera_group"
                 android:layout_width="wrap_content"
                 android:layout_height="50dp"

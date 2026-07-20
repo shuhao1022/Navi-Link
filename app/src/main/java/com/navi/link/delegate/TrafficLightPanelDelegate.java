@@ -12,6 +12,7 @@ import com.navi.link.utils.*;
 
 import android.graphics.Color;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
@@ -36,6 +37,7 @@ public class TrafficLightPanelDelegate {
 
     private MaterialCardView cardFontDefault, cardFontOne, cardFontTwo, cardFontThree;
     private RadioButton rbFontDefault, rbFontOne, rbFontTwo, rbFontThree;
+
 
     public TrafficLightPanelDelegate(MainActivity activity) {
         this.activity = activity;
@@ -63,6 +65,8 @@ public class TrafficLightPanelDelegate {
         rbFontOne = activity.findViewById(R.id.rb_font_one);
         rbFontTwo = activity.findViewById(R.id.rb_font_two);
         rbFontThree = activity.findViewById(R.id.rb_font_three);
+
+
 
         cardTrafficLightStyle[0] = activity.findViewById(R.id.card_traffic_light_style_0);
         cardTrafficLightStyle[1] = activity.findViewById(R.id.card_traffic_light_style_1);
@@ -150,6 +154,8 @@ public class TrafficLightPanelDelegate {
         if (cardFontOne != null) cardFontOne.setOnClickListener(v -> activity.selectCountdownFont(1));
         if (cardFontTwo != null) cardFontTwo.setOnClickListener(v -> activity.selectCountdownFont(2));
         if (cardFontThree != null) cardFontThree.setOnClickListener(v -> activity.selectCountdownFont(3));
+
+
     }
 
     public void loadSettings() {
@@ -174,6 +180,8 @@ public class TrafficLightPanelDelegate {
             }
         }
 
+
+
         updateTrafficLightStyleSelection();
         updateCountdownFontSelection();
     }
@@ -189,17 +197,17 @@ public class TrafficLightPanelDelegate {
     }
 
     public void updateCountdownFontSelection() {
-        rbFontDefault.setChecked(activity.countdownFontIndex == 0);
-        rbFontOne.setChecked(activity.countdownFontIndex == 1);
-        rbFontTwo.setChecked(activity.countdownFontIndex == 2);
-        rbFontThree.setChecked(activity.countdownFontIndex == 3);
+        if (rbFontDefault != null) rbFontDefault.setChecked(activity.countdownFontIndex == 0);
+        if (rbFontOne != null) rbFontOne.setChecked(activity.countdownFontIndex == 1);
+        if (rbFontTwo != null) rbFontTwo.setChecked(activity.countdownFontIndex == 2);
+        if (rbFontThree != null) rbFontThree.setChecked(activity.countdownFontIndex == 3);
 
         int accentColor = activity.getAccentColor();
         int normalColor = Color.parseColor("#444444");
-        cardFontDefault.setStrokeColor(activity.countdownFontIndex == 0 ? accentColor : normalColor);
-        cardFontOne.setStrokeColor(activity.countdownFontIndex == 1 ? accentColor : normalColor);
-        cardFontTwo.setStrokeColor(activity.countdownFontIndex == 2 ? accentColor : normalColor);
-        cardFontThree.setStrokeColor(activity.countdownFontIndex == 3 ? accentColor : normalColor);
+        if (cardFontDefault != null) cardFontDefault.setStrokeColor(activity.countdownFontIndex == 0 ? accentColor : normalColor);
+        if (cardFontOne != null) cardFontOne.setStrokeColor(activity.countdownFontIndex == 1 ? accentColor : normalColor);
+        if (cardFontTwo != null) cardFontTwo.setStrokeColor(activity.countdownFontIndex == 2 ? accentColor : normalColor);
+        if (cardFontThree != null) cardFontThree.setStrokeColor(activity.countdownFontIndex == 3 ? accentColor : normalColor);
     }
 
     public void updateThemeColors(int accentColor, android.content.res.ColorStateList accentColorStateList) {
@@ -214,10 +222,10 @@ public class TrafficLightPanelDelegate {
             }
         }
 
-        cardFontDefault.setStrokeColor(activity.countdownFontIndex == 0 ? accentColor : normalColor);
-        cardFontOne.setStrokeColor(activity.countdownFontIndex == 1 ? accentColor : normalColor);
-        cardFontTwo.setStrokeColor(activity.countdownFontIndex == 2 ? accentColor : normalColor);
-        cardFontThree.setStrokeColor(activity.countdownFontIndex == 3 ? accentColor : normalColor);
+        if (cardFontDefault != null) cardFontDefault.setStrokeColor(activity.countdownFontIndex == 0 ? accentColor : normalColor);
+        if (cardFontOne != null) cardFontOne.setStrokeColor(activity.countdownFontIndex == 1 ? accentColor : normalColor);
+        if (cardFontTwo != null) cardFontTwo.setStrokeColor(activity.countdownFontIndex == 2 ? accentColor : normalColor);
+        if (cardFontThree != null) cardFontThree.setStrokeColor(activity.countdownFontIndex == 3 ? accentColor : normalColor);
 
         if (rbFontDefault != null) androidx.core.widget.CompoundButtonCompat.setButtonTintList(rbFontDefault, accentColorStateList);
         if (rbFontOne != null) androidx.core.widget.CompoundButtonCompat.setButtonTintList(rbFontOne, accentColorStateList);

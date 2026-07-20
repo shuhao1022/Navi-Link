@@ -62,7 +62,7 @@
                     app:layout_constraintStart_toEndOf="@id/tv_full_cruise_speed"
                     app:layout_constraintTop_toTopOf="parent" />
 
-                <com.navi.link.CameraWarningView
+                <com.navi.link.view.CameraWarningView
                     android:id="@+id/ll_full_cruise_camera"
                     android:layout_width="wrap_content"
                     android:layout_height="50dp"
@@ -94,14 +94,14 @@
             <LinearLayout
                 android:id="@+id/ll_full_cruise_traffic_lights"
                 android:layout_width="match_parent"
-                android:layout_height="60dp"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:gravity="center"
                 android:orientation="horizontal"
                 android:visibility="gone" />
 
             <!-- 第四行：车道线 -->
-            <com.navi.link.LaneLineView
+            <com.navi.link.view.LaneLineView
                 android:id="@+id/lane_line_view_full_cruise"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"

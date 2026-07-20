@@ -37,17 +37,6 @@ public class TrafficLightView extends LinearLayout {
     private boolean isCompact = false;
     private ObjectAnimator blinkAnimator;
     private SharedPreferences sp;
-    private float scaleFactor = -1f;
-
-    public void setScaleFactor(float factor) {
-        this.scaleFactor = factor;
-    }
-
-    private float getScale() {
-        if (scaleFactor > 0) return scaleFactor;
-        FloatingWindowManager fwm = FloatingWindowManager.getInstance();
-        return fwm != null ? fwm.getScale() : 1.0f;
-    }
 
     // 填充背景颜色常量（与图标资源颜色一致）
     private static final int FILL_COLOR_RED = 0xFFFF3333;
@@ -94,7 +83,8 @@ public class TrafficLightView extends LinearLayout {
 
         setOrientation(HORIZONTAL);
         setGravity(Gravity.CENTER_VERTICAL);
-        setPadding(dpToPx(1), 0, dpToPx(10), 0);
+        setBaselineAligned(false);
+        setPadding(dpToPx(2), 0, dpToPx(10), 0);
         setMinimumHeight(dpToPx(50)); // 默认胶囊高度50dp，与导航布局一致
 
         LayoutInflater.from(context).inflate(R.layout.traffic_light_view, this, true);
@@ -124,7 +114,6 @@ public class TrafficLightView extends LinearLayout {
         ivLightArrow.setImageResource(isNavi ? getNaviLightDirRes(dir) : getCruiseLightDirRes(dir));
         // 设置倒计时
         tvLightTime.setText(String.valueOf(countdown));
-        updateTextSize();
 
         int fontIndex = sp.getInt("countdown_font_index", 0);
         if (fontIndex == 0) {
@@ -181,15 +170,7 @@ public class TrafficLightView extends LinearLayout {
         }
     }
 
-    private void updateTextSize() {
-        if (tvLightTime == null) return;
-        int fontIndex = sp.getInt("countdown_font_index", 0);
-        int baseSize = isCompact ? 25 : 30;
-        int size = (fontIndex != 0) ? (baseSize + 5) : baseSize;
-        float scale = getScale();
-        tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_PX, TypedValue.applyDimension(
-                TypedValue.COMPLEX_UNIT_SP, size, getResources().getDisplayMetrics()) * scale);
-    }
+
 
     /**
      * 设置为紧凑模式（巡航超过3灯时缩小尺寸）
@@ -199,37 +180,31 @@ public class TrafficLightView extends LinearLayout {
         isCompact = compact;
 
         if (compact) {
-            // 缩小图标容器 45dp -> 35dp
+            // 缩小图标容器 48dp -> 35dp
             ViewGroup.LayoutParams iconLp = flIconContainer.getLayoutParams();
             iconLp.width = dpToPx(35);
             iconLp.height = dpToPx(35);
             flIconContainer.setLayoutParams(iconLp);
 
-            // 缩小箭头 padding 4dp -> 3dp
-            ivLightArrow.setPadding(dpToPx(8), dpToPx(8), dpToPx(8), dpToPx(8));
-
-            // 动态调节文字大小
-            updateTextSize();
+            // 缩小文字 35sp -> 25sp
+            tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 25);
 
             // 缩小容器内边距
             setPadding(dpToPx(2), 0, dpToPx(6), 0);
             setMinimumHeight(dpToPx(40)); // 紧凑胶囊高度40dp
         } else {
-            // 恢复图标容器 48dp
+            // 恢复图标容器 35dp -> 48dp
             ViewGroup.LayoutParams iconLp = flIconContainer.getLayoutParams();
             iconLp.width = dpToPx(48);
             iconLp.height = dpToPx(48);
             flIconContainer.setLayoutParams(iconLp);
 
-            // 恢复箭头 padding 4dp
-            ivLightArrow.setPadding(dpToPx(4), dpToPx(4), dpToPx(4), dpToPx(4));
-
-            // 动态调节文字大小
-            updateTextSize();
+            // 恢复文字 25sp -> 35sp
+            tvLightTime.setTextSize(TypedValue.COMPLEX_UNIT_SP, 35);
 
             // 恢复容器内边距
-            setPadding(dpToPx(1), 0, dpToPx(10), 0);
-            setMinimumHeight(dpToPx(50));
+            setPadding(dpToPx(2), 0, dpToPx(10), 0);
+            setMinimumHeight(dpToPx(50)); // 默认胶囊高度50dp
         }
     }
 
@@ -265,13 +240,11 @@ public class TrafficLightView extends LinearLayout {
             int fillColor = getFillColor(status, isNavi);
             float density = getResources().getDisplayMetrics().density;
 
-            float currentScale = getScale();
-
             GradientDrawable drawable = new GradientDrawable();
             drawable.setShape(GradientDrawable.RECTANGLE);
             drawable.setColor(fillColor);
-            drawable.setCornerRadius(30 * density * currentScale);
-            drawable.setStroke((int) (2 * density * currentScale + 0.5f), 0xFFFFFFFF);
+            drawable.setCornerRadius(30 * density);
+            drawable.setStroke((int) (2 * density + 0.5f), 0xFFFFFFFF);
             setBackground(drawable);
 
             ivLightIcon.setVisibility(View.GONE);
@@ -347,6 +320,6 @@ public class TrafficLightView extends LinearLayout {
     }
 
     private int dpToPx(int dp) {
-        return (int) (dp * getResources().getDisplayMetrics().density * getScale() + 0.5f);
+        return (int) (dp * getResources().getDisplayMetrics().density + 0.5f);
     }
 }
