@@ -91,9 +91,8 @@ public class FloatingWindowManager {
     private boolean hasActiveData = false; // 是否收到过实际导航/巡航广播数据
     private float clusterScale = 1.0f;
 
-    // 昼夜模式 + 透明背景
+    // 昼夜模式
     private boolean isNightMode = true; // 默认夜间（深色文字）
-    private int backgroundMode = 0; // 0=深色, 1=半透明, 2=全透明
     private boolean isAmapForeground = false;
 
     // 透明主题文字颜色常量
@@ -226,7 +225,6 @@ public class FloatingWindowManager {
         savedPosX = sp.getInt("window_pos_x", -1);
         savedPosY = sp.getInt("window_pos_y", -1);
         isNightMode = sp.getBoolean("is_night_mode", true); // 默认夜间
-        backgroundMode = sp.getInt("background_mode", 0); // 默认深色背景
         isClusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         clusterSavedPosX = sp.getInt("cluster_window_pos_x", -1);
@@ -969,18 +967,6 @@ public class FloatingWindowManager {
         }
     }
 
-    /**
-     * 恢复默认文字颜色（深色/半透明模式下使用白色系）
-     */
-    private void resetToDefaultTextColors() {
-        if (activeWindow != null) {
-            activeWindow.resetToDefaultTextColors();
-        }
-        if (clusterActiveWindow != null) {
-            clusterActiveWindow.resetToDefaultTextColors();
-        }
-    }
-
     public interface OnDayNightChangeListener {
         void onDayNightChanged(boolean isNight);
     }
@@ -1040,19 +1026,6 @@ public class FloatingWindowManager {
         updateClusterFloatingWindowVisibility();
     }
 
-    /**
-     * 设置背景模式: 0=深色, 1=半透明, 2=全透明
-     */
-    public void setBackgroundMode(int mode) {
-        this.backgroundMode = mode;
-        saveBackgroundMode();
-        applyThemeColor();
-    }
-
-    public int getBackgroundMode() {
-        return backgroundMode;
-    }
-
     public boolean isNightMode() {
         return isNightMode;
     }
@@ -1060,11 +1033,6 @@ public class FloatingWindowManager {
     private void saveDayNightState() {
         context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
                 .edit().putBoolean("is_night_mode", isNightMode).apply();
-    }
-
-    private void saveBackgroundMode() {
-        context.getSharedPreferences("floating_config", Context.MODE_PRIVATE)
-                .edit().putInt("background_mode", backgroundMode).apply();
     }
 
     private boolean isDarkThemeColor(int color) {
@@ -1732,14 +1700,8 @@ public class FloatingWindowManager {
         if (clusterFloatingView != null) {
             applyThemeColorToView(clusterFloatingView, clusterScaleTarget);
         }
-        if (backgroundMode == 2) {
-            if (clusterActiveWindow != null) {
-                clusterActiveWindow.applyDayNightTextColors(isNightMode);
-            }
-        } else {
-            if (clusterActiveWindow != null) {
-                clusterActiveWindow.resetToDefaultTextColors();
-            }
+        if (clusterActiveWindow != null) {
+            clusterActiveWindow.applyDayNightTextColors(isNightMode);
         }
     }
 

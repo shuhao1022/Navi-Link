@@ -9,6 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.hardware.display.DisplayManager;
 import android.view.Display;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 import androidx.appcompat.widget.SwitchCompat;
@@ -42,6 +43,7 @@ public class FeaturesPanelDelegate {
 
     private MaterialCardView cardClusterDisplaySelect;
     private TextView tvClusterDisplaySelectStatus;
+    private TextView tvClusterDisplaySelectLabel;
     private TextView btnAdjustClusterPos;
 
     private MaterialCardView cardHideMainWhenClusterActive;
@@ -75,6 +77,7 @@ public class FeaturesPanelDelegate {
 
         cardClusterDisplaySelect = activity.findViewById(R.id.card_cluster_display_select);
         tvClusterDisplaySelectStatus = activity.findViewById(R.id.tv_cluster_display_select_status);
+        tvClusterDisplaySelectLabel = activity.findViewById(R.id.tv_cluster_display_select_label);
         btnAdjustClusterPos = activity.findViewById(R.id.btn_adjust_cluster_pos);
 
         cardHideMainWhenClusterActive = activity.findViewById(R.id.card_hide_main_when_cluster_active);
@@ -153,6 +156,9 @@ public class FeaturesPanelDelegate {
                 activity.savePreferences();
                 if (tvClusterMirrorStatus != null) {
                     tvClusterMirrorStatus.setText(isChecked ? "仪表盘/副屏镜像已开启" : "未开启仪表盘/副屏镜像");
+                }
+                if (btnAdjustClusterPos != null) {
+                    btnAdjustClusterPos.setVisibility(isChecked ? View.VISIBLE : View.GONE);
                 }
                 FloatingWindowManager fwm = FloatingWindowManager.getInstance();
                 if (fwm != null) {
@@ -260,6 +266,9 @@ public class FeaturesPanelDelegate {
         if (tvClusterMirrorStatus != null) {
             tvClusterMirrorStatus.setText(activity.clusterMirrorEnabled ? "仪表盘/副屏镜像已开启" : "未开启仪表盘/副屏镜像");
         }
+        if (btnAdjustClusterPos != null) {
+            btnAdjustClusterPos.setVisibility(activity.clusterMirrorEnabled ? View.VISIBLE : View.GONE);
+        }
 
         if (cbHideMainWhenClusterActive != null) cbHideMainWhenClusterActive.setChecked(activity.hideMainWhenClusterActive);
         if (tvHideMainWhenClusterActiveStatus != null) {
@@ -278,6 +287,9 @@ public class FeaturesPanelDelegate {
         activity.updateSwitchTheme(cbHideLaneLineBgEnabled, accentColor);
         activity.updateSwitchTheme(cbHideCameraCapsuleBgEnabled, accentColor);
         activity.updateSwitchTheme(cbClusterMirrorEnabled, accentColor);
+        if (tvClusterDisplaySelectLabel != null) {
+            tvClusterDisplaySelectLabel.setTextColor(activity.getThemeColorAttr(R.attr.panelTextColorPrimary));
+        }
         activity.updateSwitchTheme(cbHideMainWhenClusterActive, accentColor);
     }
 }

@@ -724,12 +724,13 @@
                             android:layout_weight="1">
 
                             <TextView
+                                android:id="@+id/tv_cluster_display_select_label"
                                 android:text="选择投屏屏幕"
                                 android:textSize="15sp"
-                                android:textColor="#FFFFFFFF"
+                                android:textColor="?attr/panelTextColorPrimary"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content" />
-
+                            
                             <TextView
                                 android:id="@+id/tv_cluster_display_select_status"
                                 android:text="当前选择: 自动选择 (首个副屏幕)"

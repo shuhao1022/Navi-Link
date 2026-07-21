@@ -36,8 +36,6 @@ import android.app.AlertDialog;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.card.MaterialCardView;
 
 public class MainActivity extends AppCompatActivity {
@@ -69,7 +67,6 @@ public class MainActivity extends AppCompatActivity {
     public boolean isServiceOnlyMode = false;
     public int startupMode = 0;
     public String targetAmapPackage = "";
-    public int backgroundMode = 0;
     public boolean cruiseEnabled = true;
     public boolean normalLaneEnabled = false;
     public boolean hideTurnIconBg = false;
@@ -351,7 +348,6 @@ public class MainActivity extends AppCompatActivity {
         isServiceOnlyMode = sp.getBoolean(KEY_IS_SERVICE_ONLY, false);
         startupMode = sp.getInt("startup_mode", isServiceOnlyMode ? 1 : 0);
         targetAmapPackage = sp.getString("target_amap_package", "");
-        backgroundMode = sp.getInt("background_mode", 0);
         cruiseEnabled = sp.getBoolean("cruise_enabled", true);
         normalLaneEnabled = sp.getBoolean("normal_navi_lane_enabled", false);
         hideTurnIconBg = sp.getBoolean("hide_turn_icon_bg", false);
@@ -419,7 +415,6 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean(KEY_IS_SERVICE_ONLY, isServiceOnlyMode)
                 .putInt("startup_mode", startupMode)
                 .putString("target_amap_package", targetAmapPackage)
-                .putInt("background_mode", backgroundMode)
                 .putBoolean("cruise_enabled", cruiseEnabled)
                 .putBoolean("normal_navi_lane_enabled", normalLaneEnabled)
                 .putBoolean("hide_turn_icon_bg", hideTurnIconBg)
@@ -677,16 +672,6 @@ public class MainActivity extends AppCompatActivity {
         systemAppearanceDelegate.updateCruiseStyleSelection();
         savePreferences();
         updateFloatingWindowStyle();
-    }
-
-    public void selectBackgroundMode(int mode) {
-        if (this.backgroundMode == mode) return;
-        this.backgroundMode = mode;
-        savePreferences();
-        FloatingWindowManager manager = FloatingWindowManager.getInstance(this);
-        if (manager != null) {
-            manager.setBackgroundMode(mode);
-        }
     }
 
     public void selectDayNightOption(int option) {
