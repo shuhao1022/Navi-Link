@@ -63,6 +63,7 @@ public class FloatingWindowManager {
     // 副屏相关变量
     private boolean isClusterMirrorEnabled = false;
     private int clusterDisplayId = -1;
+    private boolean clusterMirrorRetryPending = false;
     private View clusterFloatingView;
     private BaseFloatingWindow clusterActiveWindow;
     private WindowManager clusterWindowManager;
@@ -182,6 +183,11 @@ public class FloatingWindowManager {
         updateFloatingWindowVisibility();
     };
     private final Runnable trafficLightTimeoutRunnable = this::hideTrafficLightCapsule;
+    private final Runnable intervalSpeedTimeoutRunnable = () -> {
+        if (activeWindow != null) {
+            activeWindow.updateIntervalSpeed(0, "", 0, "", 0);
+        }
+    };
 
     private final Runnable longPressCheck = new Runnable() {
         @Override
@@ -1352,8 +1358,17 @@ public class FloatingWindowManager {
         cachedIntervalEndDistText = endDistText;
         cachedIntervalLimitSpeed = limitSpeed;
 
+        handler.removeCallbacks(intervalSpeedTimeoutRunnable);
+
         if (activeWindow != null) {
-            activeWindow.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
+            boolean isInside = (endDistText != null && !endDistText.trim().isEmpty()) || avgSpeed > 0;
+            boolean isApproaching = startDist >= 0 && startDist <= 1000;
+            if (isInside || isApproaching) {
+                activeWindow.updateIntervalSpeed(startDist, startDistText, avgSpeed, endDistText, limitSpeed);
+                handler.postDelayed(intervalSpeedTimeoutRunnable, 10000);
+            } else {
+                activeWindow.updateIntervalSpeed(0, "", 0, "", 0);
+            }
         }
         checkAndUpdateOverspeed();
     }
@@ -1441,8 +1456,7 @@ public class FloatingWindowManager {
                     return display;
                 }
             }
-            Log.w(TAG, "Preferred cluster display missing: " + clusterDisplayId);
-            return null;
+            Log.w(TAG, "Preferred cluster display missing: " + clusterDisplayId + ", falling back to auto detection");
         }
         // 自动选择首个非主屏
         Display[] presentationDisplays = manager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
@@ -1469,9 +1483,19 @@ public class FloatingWindowManager {
         Display display = findClusterDisplay();
         if (display == null) {
             dismissClusterMirror();
-            Log.w(TAG, "Cluster mirror enabled but no secondary display found.");
+            if (!clusterMirrorRetryPending) {
+                clusterMirrorRetryPending = true;
+                handler.postDelayed(() -> {
+                    clusterMirrorRetryPending = false;
+                    if (isClusterMirrorEnabled) {
+                        ensureClusterMirror();
+                    }
+                }, 2000);
+            }
+            Log.w(TAG, "Cluster mirror enabled but no secondary display found, will retry.");
             return;
         }
+        clusterMirrorRetryPending = false;
 
         if (clusterFloatingView == null) {
             try {
