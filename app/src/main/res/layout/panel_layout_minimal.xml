@@ -89,9 +89,7 @@
                             android:clickable="false"
                             android:focusable="false"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:thumbTint="#FF4FC3F7"
-                            app:trackTint="#334FC3F7" />
+                            android:layout_height="wrap_content" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
 
