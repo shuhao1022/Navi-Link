@@ -75,6 +75,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -97,7 +98,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -121,7 +122,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -156,6 +157,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -178,7 +180,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -202,7 +204,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -237,6 +239,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -259,7 +262,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -283,7 +286,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -318,6 +321,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -340,7 +344,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -364,7 +368,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -399,6 +403,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -421,7 +426,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -445,7 +450,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -480,6 +485,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -502,7 +508,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -526,7 +532,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -561,6 +567,7 @@
                 <LinearLayout
                     android:orientation="horizontal"
                     android:layout_marginTop="12dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
@@ -583,7 +590,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>
@@ -607,7 +614,7 @@
                             android:layout_width="32dp"
                             android:layout_height="32dp"
                             android:layout_marginEnd="16dp"
-                            android:background="#FF444444"
+                            android:background="@drawable/bg_color_preview"
                             android:clickable="true"
                             android:focusable="true"/>
                     </LinearLayout>

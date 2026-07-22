@@ -919,7 +919,8 @@ public class FloatingWindowManager {
 
         // 获取旧背景色用于平滑过渡
         int oldColor = bgColor;
-        if (target.getBackground() instanceof GradientDrawable) {
+        if (target.getBackground() instanceof GradientDrawable
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
                 android.content.res.ColorStateList csl = ((GradientDrawable) target.getBackground()).getColor();
                 if (csl != null) oldColor = csl.getDefaultColor();
@@ -931,7 +932,12 @@ public class FloatingWindowManager {
 
         if (oldColor != bgColor) {
             // 平滑过渡背景色
-            ValueAnimator animator = ValueAnimator.ofArgb(oldColor, bgColor);
+            ValueAnimator animator;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                animator = ValueAnimator.ofArgb(oldColor, bgColor);
+            } else {
+                animator = ValueAnimator.ofObject(new android.animation.ArgbEvaluator(), oldColor, bgColor);
+            }
             animator.setDuration(300);
             animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override

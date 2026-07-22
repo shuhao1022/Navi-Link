@@ -412,79 +412,120 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content">
 
-                                <TextView
+                                <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/chip_overspeed_0"
-                                    android:text="0%"
-                                    android:textSize="13sp"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="4dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:minWidth="40dp"
                                     android:foreground="?android:attr/selectableItemBackground"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:minWidth="40dp"
+                                    app:cardBackgroundColor="@android:color/transparent"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+                                    <TextView
+                                        android:text="0%"
+                                        android:textSize="13sp"
+                                        android:gravity="center"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </com.google.android.material.card.MaterialCardView>
 
-                                <TextView
+                                <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/chip_overspeed_10"
-                                    android:text="10%"
-                                    android:textSize="13sp"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="4dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:minWidth="40dp"
                                     android:foreground="?android:attr/selectableItemBackground"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:minWidth="40dp"
+                                    app:cardBackgroundColor="@android:color/transparent"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+                                    <TextView
+                                        android:text="10%"
+                                        android:textSize="13sp"
+                                        android:gravity="center"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </com.google.android.material.card.MaterialCardView>
 
-                                <TextView
+                                <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/chip_overspeed_20"
-                                    android:text="20%"
-                                    android:textSize="13sp"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="4dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:minWidth="40dp"
                                     android:foreground="?android:attr/selectableItemBackground"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:minWidth="40dp"
+                                    app:cardBackgroundColor="@android:color/transparent"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+                                    <TextView
+                                        android:text="20%"
+                                        android:textSize="13sp"
+                                        android:gravity="center"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </com.google.android.material.card.MaterialCardView>
 
-                                <TextView
+                                <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/chip_overspeed_30"
-                                    android:text="30%"
-                                    android:textSize="13sp"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="4dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
                                     android:layout_marginEnd="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:minWidth="40dp"
                                     android:foreground="?android:attr/selectableItemBackground"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:minWidth="40dp"
+                                    app:cardBackgroundColor="@android:color/transparent"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+                                    <TextView
+                                        android:text="30%"
+                                        android:textSize="13sp"
+                                        android:gravity="center"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </com.google.android.material.card.MaterialCardView>
 
-                                <TextView
+                                <com.google.android.material.card.MaterialCardView
                                     android:id="@+id/chip_overspeed_50"
-                                    android:text="50%"
-                                    android:textSize="13sp"
-                                    android:gravity="center"
-                                    android:paddingHorizontal="12dp"
-                                    android:paddingVertical="4dp"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginEnd="6dp"
                                     android:clickable="true"
                                     android:focusable="true"
-                                    android:minWidth="40dp"
                                     android:foreground="?android:attr/selectableItemBackground"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content" />
+                                    android:minWidth="40dp"
+                                    app:cardBackgroundColor="@android:color/transparent"
+                                    app:cardCornerRadius="12dp"
+                                    app:cardElevation="0dp"
+                                    app:strokeWidth="0dp">
+                                    <TextView
+                                        android:text="50%"
+                                        android:textSize="13sp"
+                                        android:gravity="center"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="4dp"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="match_parent" />
+                                </com.google.android.material.card.MaterialCardView>
 
                             </LinearLayout>
                         </LinearLayout>

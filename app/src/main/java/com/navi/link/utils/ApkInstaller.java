@@ -61,22 +61,23 @@ public final class ApkInstaller {
             return;
         }
 
-        // 1) 系统 PackageInstaller
+        // 1) 系统安装器（标准 ACTION_VIEW，兼容性最好，优先使用以避免部分 OEM 上
+        //    PackageInstaller 提交成功但不弹确认框的问题）
+        if (trySystemInstaller(context, apkFile)) {
+            Log.i(TAG, "使用系统安装器");
+            return;
+        }
+
+        // 2) 系统 PackageInstaller（API 21+，作为回退）
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
                 && Api21Installer.install(context, apkFile)) {
             Log.i(TAG, "使用 PackageInstaller 安装");
             return;
         }
 
-        // 2) InstallerX
+        // 3) InstallerX
         if (tryInstallerX(context, apkFile)) {
             Log.i(TAG, "回退到 InstallerX 安装");
-            return;
-        }
-
-        // 3) 系统安装器
-        if (trySystemInstaller(context, apkFile)) {
-            Log.i(TAG, "回退到系统安装器");
             return;
         }
 

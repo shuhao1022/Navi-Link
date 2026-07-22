@@ -172,7 +172,9 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setTheme(R.style.Theme_NaviLink);
-        EdgeToEdge.enable(this);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            EdgeToEdge.enable(this);
+        }
         setContentView(R.layout.activity_main);
 
         initDelegates();
@@ -532,7 +534,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateStatusText() {
         if (tvStatus == null) return;
-        boolean hasPermission = Settings.canDrawOverlays(this);
+        boolean hasPermission = OverlayPermissionCompat.canDrawOverlays(this);
         if (hasPermission) {
             tvStatus.setText("● 悬浮窗正常运行");
             tvStatus.setTextColor(0xFF4CAF50);
@@ -543,10 +545,12 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void checkPermissionAndStart() {
-        if (!Settings.canDrawOverlays(this)) {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
-                    Uri.parse("package:" + getPackageName()));
-            startActivityForResult(intent, 100);
+        if (!OverlayPermissionCompat.canDrawOverlays(this)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                        Uri.parse("package:" + getPackageName()));
+                startActivityForResult(intent, 100);
+            }
         } else {
             startFloatingService();
         }
@@ -785,5 +789,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         updateStatusText();
+        if (OverlayPermissionCompat.canDrawOverlays(this)) {
+            startFloatingService();
+        }
     }
 }
