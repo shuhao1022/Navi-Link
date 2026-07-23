@@ -287,8 +287,8 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         if (tvEta != null) tvEta.setTextColor(textSecondary);
         if (tvNaviLightCount != null) tvNaviLightCount.setTextColor(textPrimary);
 //        if (ivNaviLightIcon != null) ivNaviLightIcon.setColorFilter(textPrimary);
+        int turnIconColor = isNightMode ? sp.getInt("normal_turn_icon_color_night", 0xFFFFFFFF) : sp.getInt("normal_turn_icon_color_day", 0xFFFFFFFF);
         if (ivTurnIcon != null) {
-            int turnIconColor = isNightMode ? sp.getInt("normal_turn_icon_color_night", 0xFFFFFFFF) : sp.getInt("normal_turn_icon_color_day", 0xFFFFFFFF);
             ivTurnIcon.setColorFilter(turnIconColor);
         }
         if (llTurnIconContainer != null) {
@@ -300,7 +300,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         }
         if (vDivider != null) vDivider.setBackgroundColor(textSecondary);
         if (tvExitInfo != null) {
-            tvExitInfo.setTextColor(textSecondary);
+            tvExitInfo.setTextColor(turnIconColor);
             Drawable exitBg = tvExitInfo.getBackground();
             if (exitBg instanceof GradientDrawable) {
                 ((GradientDrawable) exitBg.mutate()).setColor(isNightMode ? 0x33FFFFFF : 0x1A000000);
