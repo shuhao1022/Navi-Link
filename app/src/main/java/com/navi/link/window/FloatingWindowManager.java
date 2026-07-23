@@ -714,13 +714,17 @@ public class FloatingWindowManager {
      * recreateWindow 后立即恢复缓存数据，避免布局短暂显示默认值闪烁
      */
     private void restoreCachedData() {
-        if (!hasCachedData || activeWindow == null) return;
+        if (activeWindow == null) return;
+
+        // 车道线数据独立恢复：13012 广播可能先于 10001 到达，不受 hasCachedData 限制
+        if (cachedDriveWayJson != null) {
+            activeWindow.updateLaneLines(cachedDriveWayJson);
+        }
+
+        if (!hasCachedData) return;
         if (currentMode == MODE_CRUISE) {
             if (activeWindow != null) {
                 activeWindow.updateCruiseInfo(cachedSpeed, cachedRoadName, cachedCameraType, cachedCameraSpeed, cachedCameraDist, cachedCarDirection);
-            }
-            if (cachedDriveWayJson != null) {
-                activeWindow.updateLaneLines(cachedDriveWayJson);
             }
         } else if (currentMode == MODE_NAVI) {
             activeWindow.updateNaviInfo(
@@ -745,9 +749,6 @@ public class FloatingWindowManager {
             );
             if (cachedTmcJson != null) {
                 activeWindow.updateTmcData(cachedTmcJson);
-            }
-            if (cachedDriveWayJson != null) {
-                activeWindow.updateLaneLines(cachedDriveWayJson);
             }
             if (cachedExitName != null) {
                 activeWindow.updateExitInfo(cachedExitName, cachedExitDirection);
