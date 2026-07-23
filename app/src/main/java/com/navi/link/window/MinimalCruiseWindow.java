@@ -278,6 +278,10 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
             tvCruiseSpeed.setTextColor(textPrimary);
         }
         if (llMinCruiseCameraGroup != null) llMinCruiseCameraGroup.setTextColor(textPrimary);
+        if (laneLineViewMin != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineViewMin.setIconColor(laneIconColor);
+        }
     }
 
     @Override
@@ -291,6 +295,7 @@ public class MinimalCruiseWindow extends BaseFloatingWindow {
         if (tvCruiseUnit != null) {
             tvCruiseUnit.setTextColor(TEXT_PRIMARY_DARK);
         }
+        if (laneLineViewMin != null) laneLineViewMin.setIconColor(0xFFFFFFFF);
     }
 
     @Override

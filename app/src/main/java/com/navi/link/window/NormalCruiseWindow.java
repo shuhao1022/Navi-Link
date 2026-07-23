@@ -228,6 +228,10 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         if (tvCnSpeed != null && !isOverspeedBlinking) {
             tvCnSpeed.setTextColor(textPrimary);
         }
+        if (laneLineView != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineView.setIconColor(laneIconColor);
+        }
     }
 
     @Override
@@ -235,6 +239,7 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
         if (tvCnRoadName != null) tvCnRoadName.setTextColor(TEXT_PRIMARY_DARK);
         if (llCnCameraDist != null) llCnCameraDist.setTextColor(TEXT_PRIMARY_DARK);
         if (tvCnSpeed != null) tvCnSpeed.setTextColor(TEXT_PRIMARY_DARK);
+        if (laneLineView != null) laneLineView.setIconColor(0xFFFFFFFF);
     }
 
     @Override

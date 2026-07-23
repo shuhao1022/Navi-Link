@@ -32,6 +32,8 @@ public class ColorSettingsDelegate {
     private View viewColorPreviewNormalTurnBgNight;
     private View viewColorPreviewFullMiddleBgDay;
     private View viewColorPreviewFullMiddleBgNight;
+    private View viewColorPreviewLaneIconDay;
+    private View viewColorPreviewLaneIconNight;
     private MaterialCardView btnResetColors;
 
     public interface OnColorSelectedListener {
@@ -57,6 +59,8 @@ public class ColorSettingsDelegate {
         viewColorPreviewNormalTurnBgNight = activity.findViewById(R.id.view_color_preview_normal_turn_bg_night);
         viewColorPreviewFullMiddleBgDay = activity.findViewById(R.id.view_color_preview_full_middle_bg_day);
         viewColorPreviewFullMiddleBgNight = activity.findViewById(R.id.view_color_preview_full_middle_bg_night);
+        viewColorPreviewLaneIconDay = activity.findViewById(R.id.view_color_preview_lane_icon_day);
+        viewColorPreviewLaneIconNight = activity.findViewById(R.id.view_color_preview_lane_icon_night);
         btnResetColors = activity.findViewById(R.id.btn_reset_colors);
 
         setupListeners();
@@ -177,6 +181,23 @@ public class ColorSettingsDelegate {
             }));
         }
 
+        if (viewColorPreviewLaneIconDay != null) {
+            viewColorPreviewLaneIconDay.setOnClickListener(v -> showColorPickerDialog("车道线图标白天颜色", activity.laneIconColorDay, color -> {
+                activity.laneIconColorDay = color;
+                updateColorPreview(viewColorPreviewLaneIconDay, color);
+                activity.savePreferences();
+                activity.refreshFloatingWindow();
+            }));
+        }
+        if (viewColorPreviewLaneIconNight != null) {
+            viewColorPreviewLaneIconNight.setOnClickListener(v -> showColorPickerDialog("车道线图标夜间颜色", activity.laneIconColorNight, color -> {
+                activity.laneIconColorNight = color;
+                updateColorPreview(viewColorPreviewLaneIconNight, color);
+                activity.savePreferences();
+                activity.refreshFloatingWindow();
+            }));
+        }
+
         if (btnResetColors != null) {
             btnResetColors.setOnClickListener(v -> new android.app.AlertDialog.Builder(activity)
                     .setTitle("提示")
@@ -214,6 +235,8 @@ public class ColorSettingsDelegate {
         activity.normalTurnIconBgColorNight = 0xFF007D5E;
         activity.fullMiddleBgColorDay = 0xFF0099FF;
         activity.fullMiddleBgColorNight = 0xFF0099FF;
+        activity.laneIconColorDay = 0xFFFFFFFF;
+        activity.laneIconColorNight = 0xFFFFFFFF;
         updateColorPreviews();
     }
 
@@ -255,6 +278,8 @@ public class ColorSettingsDelegate {
         updateColorPreview(viewColorPreviewNormalTurnBgNight, activity.normalTurnIconBgColorNight);
         updateColorPreview(viewColorPreviewFullMiddleBgDay, activity.fullMiddleBgColorDay);
         updateColorPreview(viewColorPreviewFullMiddleBgNight, activity.fullMiddleBgColorNight);
+        updateColorPreview(viewColorPreviewLaneIconDay, activity.laneIconColorDay);
+        updateColorPreview(viewColorPreviewLaneIconNight, activity.laneIconColorNight);
     }
 
     public void showColorPickerDialog(String title, int initialColor, OnColorSelectedListener listener) {

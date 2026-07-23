@@ -308,6 +308,11 @@ public class NormalNaviWindow extends BaseFloatingWindow {
         }
         if (cameraWarningView != null) cameraWarningView.setTextColor(textPrimary);
 
+        if (laneLineView != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineView.setIconColor(laneIconColor);
+        }
+
         if (tvSapaName1 != null) tvSapaName1.setTextColor(textPrimary);
         if (tvSapaDist1 != null) tvSapaDist1.setTextColor(textPrimary);
         if (tvSapaName2 != null) tvSapaName2.setTextColor(textPrimary);
@@ -344,6 +349,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             }
         }
         if (cameraWarningView != null) cameraWarningView.setTextColor(TEXT_PRIMARY_DARK);
+        if (laneLineView != null) laneLineView.setIconColor(0xFFFFFFFF);
 
         if (tvSapaName1 != null) tvSapaName1.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSapaDist1 != null) tvSapaDist1.setTextColor(TEXT_PRIMARY_DARK);

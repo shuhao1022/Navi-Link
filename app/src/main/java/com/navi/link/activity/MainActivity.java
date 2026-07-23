@@ -122,6 +122,8 @@ public class MainActivity extends AppCompatActivity {
     public int normalTurnIconBgColorNight;
     public int fullMiddleBgColorDay;
     public int fullMiddleBgColorNight;
+    public int laneIconColorDay;
+    public int laneIconColorNight;
 
     // UI Elements - Title & Menu Tabs
     public TextView tvStatus;
@@ -347,6 +349,8 @@ public class MainActivity extends AppCompatActivity {
         normalTurnIconBgColorNight = sp.getInt("normal_turn_icon_bg_color_night", 0xFF007D5E);
         fullMiddleBgColorDay = sp.getInt("full_middle_bg_color_day", 0xFF0099FF);
         fullMiddleBgColorNight = sp.getInt("full_middle_bg_color_night", 0xFF0099FF);
+        laneIconColorDay = sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+        laneIconColorNight = sp.getInt("lane_icon_color_night", 0xFFFFFFFF);
         isServiceOnlyMode = sp.getBoolean(KEY_IS_SERVICE_ONLY, false);
         startupMode = sp.getInt("startup_mode", isServiceOnlyMode ? 1 : 0);
         targetAmapPackage = sp.getString("target_amap_package", "");
@@ -414,6 +418,8 @@ public class MainActivity extends AppCompatActivity {
                 .putInt("normal_turn_icon_bg_color_night", normalTurnIconBgColorNight)
                 .putInt("full_middle_bg_color_day", fullMiddleBgColorDay)
                 .putInt("full_middle_bg_color_night", fullMiddleBgColorNight)
+                .putInt("lane_icon_color_day", laneIconColorDay)
+                .putInt("lane_icon_color_night", laneIconColorNight)
                 .putBoolean(KEY_IS_SERVICE_ONLY, isServiceOnlyMode)
                 .putInt("startup_mode", startupMode)
                 .putString("target_amap_package", targetAmapPackage)

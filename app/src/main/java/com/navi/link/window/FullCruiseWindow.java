@@ -227,6 +227,10 @@ public class FullCruiseWindow extends BaseFloatingWindow {
         if (tvFullCruiseSpeed != null && !isOverspeedBlinking) {
             tvFullCruiseSpeed.setTextColor(textPrimary);
         }
+        if (laneLineViewFullCruise != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineViewFullCruise.setIconColor(laneIconColor);
+        }
     }
 
     @Override
@@ -236,6 +240,7 @@ public class FullCruiseWindow extends BaseFloatingWindow {
         if (tvFullCruiseLabel != null) tvFullCruiseLabel.setTextColor(TEXT_HINT_DARK);
         if (llFullCruiseCamera != null) llFullCruiseCamera.setTextColor(TEXT_PRIMARY_DARK);
         if (tvFullCruiseSpeed != null) tvFullCruiseSpeed.setTextColor(TEXT_PRIMARY_DARK);
+        if (laneLineViewFullCruise != null) laneLineViewFullCruise.setIconColor(0xFFFFFFFF);
     }
 
     @Override

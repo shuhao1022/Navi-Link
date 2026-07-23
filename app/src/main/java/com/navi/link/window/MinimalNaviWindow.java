@@ -286,6 +286,10 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             tvMinSpeed.setTextColor(textPrimary);
         }
         if (llMinNaviCameraGroup != null) llMinNaviCameraGroup.setTextColor(textPrimary);
+        if (laneLineViewMin != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineViewMin.setIconColor(laneIconColor);
+        }
     }
 
     @Override
@@ -297,6 +301,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
         if (tvMinDirection != null) tvMinDirection.setTextColor(TEXT_PRIMARY_DARK);
         if (tvMinLightCount != null) tvMinLightCount.setTextColor(TEXT_PRIMARY_DARK);
+        if (laneLineViewMin != null) laneLineViewMin.setIconColor(0xFFFFFFFF);
     }
 
     @Override

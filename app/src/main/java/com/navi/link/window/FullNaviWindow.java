@@ -384,6 +384,10 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (sapaDivider != null) {
             sapaDivider.setBackgroundColor(isNightMode ? 0x2AFFFFFF : 0x2A000000);
         }
+        if (laneLineViewFull != null) {
+            int laneIconColor = isNightMode ? sp.getInt("lane_icon_color_night", 0xFFFFFFFF) : sp.getInt("lane_icon_color_day", 0xFFFFFFFF);
+            laneLineViewFull.setIconColor(laneIconColor);
+        }
     }
 
     @Override
@@ -407,6 +411,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         if (sapaDivider != null) {
             sapaDivider.setBackgroundColor(0x2AFFFFFF);
         }
+        if (laneLineViewFull != null) laneLineViewFull.setIconColor(0xFFFFFFFF);
     }
 
     @Override

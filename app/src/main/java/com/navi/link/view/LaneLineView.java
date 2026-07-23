@@ -51,6 +51,7 @@ public class LaneLineView extends LinearLayout {
     private boolean isSimpleMode = false;
     private float scaleFactor = -1f;
     private SharedPreferences sp;
+    private int iconColor = 0xFFFFFFFF;
 
     public void setScaleFactor(float factor) {
         this.scaleFactor = factor;
@@ -272,6 +273,7 @@ public class LaneLineView extends LinearLayout {
                     int resId = getLaneDrawableRes(iconStr);
                     ImageView iv = (ImageView) child;
                     iv.setImageResource(resId);
+                    iv.setColorFilter(iconColor);
                     child.setVisibility(View.VISIBLE);
 
                     boolean advised = laneObj.optBoolean("trafficLaneAdvised", false)
@@ -315,6 +317,16 @@ public class LaneLineView extends LinearLayout {
         String resName = "lane_pdf_" + iconNumber;
         int resId = getContext().getResources().getIdentifier(resName, "drawable", getContext().getPackageName());
         return resId != 0 ? resId : getFallbackRes();
+    }
+
+    public void setIconColor(int color) {
+        this.iconColor = color;
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child instanceof ImageView) {
+                ((ImageView) child).setColorFilter(color);
+            }
+        }
     }
 
     private int getFallbackRes() {
