@@ -46,7 +46,9 @@ public class FloatingWindowManager {
     private static final long LIGHT_HIDE_TIMEOUT_MS = 5000;
     private static final long LONG_PRESS_MS = 500;
     private static final long NAVI_TIMEOUT_MS = 6000;
-    private static final long WATCHDOG_TIMEOUT_MS = 5000;
+    // 改为15秒：与STATE=40(~10秒间隔)配合，保证巡航暂停后看门狗能被保活
+    // 若广播完全停止（退出高德），15秒后正常触发隐藏
+    private static final long WATCHDOG_TIMEOUT_MS = 15000;
     private static final int TRAFFIC_LIGHT_BEEP_THRESHOLD = 3;
 
     public static final int MODE_CRUISE = 0;

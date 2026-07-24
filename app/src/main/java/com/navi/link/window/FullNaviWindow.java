@@ -206,7 +206,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
         }
 
         if (tvDistanceUnitFull != null) {
-            tvDistanceUnitFull.setText(disNumIsNow(disNum) ? "进入" : disUnit);
+            tvDistanceUnitFull.setText(disNumIsNow(disNum) ? "进入" : disUnit+"进入");
         }
 
         if (tvRoadNameMinFull != null) {
