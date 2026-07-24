@@ -1657,6 +1657,7 @@ public class FloatingWindowManager {
             }
 
             View inflated = LayoutInflater.from(clusterContext).inflate(layoutRes, null);
+            applyCustomWindowWidth(inflated, layoutRes);
             clusterFloatingView = inflated;
 
             if (currentMode == MODE_NAVI && styleMode >= 1) {
