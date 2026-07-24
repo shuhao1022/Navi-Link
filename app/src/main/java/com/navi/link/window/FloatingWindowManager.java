@@ -95,6 +95,7 @@ public class FloatingWindowManager {
     private int themeColor = 0xFF4FC3F7;
     private boolean isShowing = false;
     private boolean hasActiveData = false; // 是否收到过实际导航/巡航广播数据
+    private boolean hasEverReceivedData = false; // 是否曾经收到过数据（用于STATE=40保活判断）
     private float clusterScale = 1.0f;
 
     // 昼夜模式
@@ -330,6 +331,7 @@ public class FloatingWindowManager {
             floatingView = null;
         }
         isShowing = false;
+        hasEverReceivedData = false;
     }
 
     public boolean isShowing() {
@@ -431,6 +433,7 @@ public class FloatingWindowManager {
         setOverspeedWarning(false);
 
         hasActiveData = false;
+        hasEverReceivedData = false;
         currentMode = MODE_CRUISE;
 
         // 取消所有超时与切换的延迟任务
@@ -459,6 +462,7 @@ public class FloatingWindowManager {
         cachedDriveWayJson = null;
 
         hasActiveData = false;
+        hasEverReceivedData = false;
 
         // 取消所有延迟任务
         handler.removeCallbacks(naviTimeoutRunnable);
@@ -524,9 +528,14 @@ public class FloatingWindowManager {
 
     public void resetWatchdog() {
         hasActiveData = true;
+        hasEverReceivedData = true;
         handler.removeCallbacks(watchdogRunnable);
         handler.postDelayed(watchdogRunnable, WATCHDOG_TIMEOUT_MS);
         updateFloatingWindowVisibility();
+    }
+
+    public boolean hasEverReceivedData() {
+        return hasEverReceivedData;
     }
 
     // ======================== 窗口重建 ========================

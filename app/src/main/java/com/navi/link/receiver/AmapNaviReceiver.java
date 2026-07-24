@@ -56,9 +56,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             } else if (extraState == 25) {
                 manager.onCruiseEnded();
             } else if (extraState == 40) {
-                // 40 是保活信号（高德仍在运行），无需 isActive 守卫
-                // 避免巡航暂停后看门狗触发，后续 STATE=40 无法恢复窗口的问题
-                if (!manager.isNavigationJustEnded() && !manager.isCruiseJustEnded()) {
+                // 40 是保活信号：已有过数据才激活（避免刚启动无数据显示窗口）
+                // 巡航暂停后仍能保活
+                if (manager.hasEverReceivedData() && !manager.isNavigationJustEnded() && !manager.isCruiseJustEnded()) {
                     manager.resetWatchdog();
                 }
             }
