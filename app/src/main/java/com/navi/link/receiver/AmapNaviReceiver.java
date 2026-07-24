@@ -20,7 +20,7 @@ import org.json.JSONArray;
 public class AmapNaviReceiver extends BroadcastReceiver {
 
     private static final String TAG = "AmapNavi";
-    private boolean isLog = false;
+    private boolean isLog = true;
     @Override
     public void onReceive(Context context, Intent intent) {
         if (!"AUTONAVI_STANDARD_BROADCAST_SEND".equals(intent.getAction())) return;
@@ -56,7 +56,9 @@ public class AmapNaviReceiver extends BroadcastReceiver {
             } else if (extraState == 25) {
                 manager.onCruiseEnded();
             } else if (extraState == 40) {
-                if (manager.isActive() && !manager.isNavigationJustEnded() && !manager.isCruiseJustEnded()) {
+                // 40 是保活信号（高德仍在运行），无需 isActive 守卫
+                // 避免巡航暂停后看门狗触发，后续 STATE=40 无法恢复窗口的问题
+                if (!manager.isNavigationJustEnded() && !manager.isCruiseJustEnded()) {
                     manager.resetWatchdog();
                 }
             }
