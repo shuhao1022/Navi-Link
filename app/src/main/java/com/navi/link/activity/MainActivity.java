@@ -83,6 +83,10 @@ public class MainActivity extends AppCompatActivity {
     public boolean normalBottomInfoEnabled = true;
     public boolean normalCruiseInfoEnabled = true;
     public boolean hideNormalCruiseSpeed = false;
+    public int normalNaviWindowWidth = 320;
+    public int normalCruiseWindowWidth = 320;
+    public int fullNaviWindowWidth = 280;
+    public int fullCruiseWindowWidth = 360;
     public boolean minimalLaneEnabled = false;
 
     public boolean isMinimalCameraEnabled = false;
@@ -377,6 +381,10 @@ public class MainActivity extends AppCompatActivity {
         normalBottomInfoEnabled = sp.getBoolean("normal_navi_bottom_info_enabled", true);
         normalCruiseInfoEnabled = sp.getBoolean("normal_cruise_info_enabled", true);
         hideNormalCruiseSpeed = sp.getBoolean("hide_normal_cruise_speed", false);
+        normalNaviWindowWidth = sp.getInt("normal_navi_window_width", 320);
+        normalCruiseWindowWidth = sp.getInt("normal_cruise_window_width", 320);
+        fullNaviWindowWidth = sp.getInt("full_navi_window_width", 280);
+        fullCruiseWindowWidth = sp.getInt("full_cruise_window_width", 360);
         minimalLaneEnabled = sp.getBoolean("minimal_navi_lane_enabled", false);
         isTrafficLightFillEnabled = sp.getBoolean("traffic_light_fill_enabled", false);
         isTrafficLightCapsuleEnabled = sp.getBoolean("traffic_light_capsule_enabled", true);
@@ -446,6 +454,10 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("normal_navi_bottom_info_enabled", normalBottomInfoEnabled)
                 .putBoolean("normal_cruise_info_enabled", normalCruiseInfoEnabled)
                 .putBoolean("hide_normal_cruise_speed", hideNormalCruiseSpeed)
+                .putInt("normal_navi_window_width", normalNaviWindowWidth)
+                .putInt("normal_cruise_window_width", normalCruiseWindowWidth)
+                .putInt("full_navi_window_width", fullNaviWindowWidth)
+                .putInt("full_cruise_window_width", fullCruiseWindowWidth)
                 .putBoolean("minimal_navi_lane_enabled", minimalLaneEnabled)
                 .putBoolean("traffic_light_fill_enabled", isTrafficLightFillEnabled)
                 .putBoolean("traffic_light_capsule_enabled", isTrafficLightCapsuleEnabled)
@@ -457,6 +469,26 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("hide_camera_capsule_bg", hideCameraCapsuleBg)
                 .putInt("app_day_night_option", dayNightOption)
                 .apply();
+    }
+
+    public int getWidthFromSP(String spKey) {
+        switch (spKey) {
+            case "normal_navi_window_width": return normalNaviWindowWidth;
+            case "normal_cruise_window_width": return normalCruiseWindowWidth;
+            case "full_navi_window_width": return fullNaviWindowWidth;
+            case "full_cruise_window_width": return fullCruiseWindowWidth;
+            default: return 320;
+        }
+    }
+
+    public void setWidthToSP(String spKey, int width) {
+        switch (spKey) {
+            case "normal_navi_window_width": normalNaviWindowWidth = width; break;
+            case "normal_cruise_window_width": normalCruiseWindowWidth = width; break;
+            case "full_navi_window_width": fullNaviWindowWidth = width; break;
+            case "full_cruise_window_width": fullCruiseWindowWidth = width; break;
+        }
+        savePreferences();
     }
 
     public void setupListeners() {

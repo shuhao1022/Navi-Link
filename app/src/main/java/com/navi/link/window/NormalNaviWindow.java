@@ -281,7 +281,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
 
         if (tvDistanceNum != null) tvDistanceNum.setTextColor(textPrimary);
         if (tvDistanceUnit != null) tvDistanceUnit.setTextColor(textPrimary);
-        if (tvAction != null) tvAction.setTextColor(textSecondary);
+        if (tvAction != null) tvAction.setTextColor(textPrimary);
         if (tvRoadName != null) tvRoadName.setTextColor(textPrimary);
         if (tvSummary != null) tvSummary.setTextColor(textSecondary);
         if (tvEta != null) tvEta.setTextColor(textSecondary);
@@ -328,7 +328,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
     public void resetToDefaultTextColors() {
         if (tvDistanceNum != null) tvDistanceNum.setTextColor(TEXT_PRIMARY_DARK);
         if (tvDistanceUnit != null) tvDistanceUnit.setTextColor(TEXT_PRIMARY_DARK);
-        if (tvAction != null) tvAction.setTextColor(TEXT_SECONDARY_DARK);
+        if (tvAction != null) tvAction.setTextColor(TEXT_PRIMARY_DARK);
         if (tvRoadName != null) tvRoadName.setTextColor(TEXT_PRIMARY_DARK);
         if (tvSummary != null) tvSummary.setTextColor(TEXT_SECONDARY_DARK);
         if (tvEta != null) tvEta.setTextColor(TEXT_SECONDARY_DARK);

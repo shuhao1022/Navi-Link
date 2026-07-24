@@ -74,6 +74,16 @@
             android:textColor="#FFFFFF"
             android:textSize="20sp"
             android:textStyle="bold" />
+        <TextView
+            android:id="@+id/tv_action"
+            android:layout_toRightOf="@id/tv_distance_unit"
+            android:layout_alignBottom="@id/tv_distance_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="进入"
+            android:visibility="visible"
+            android:textColor="#888888"
+            android:textSize="20sp"/>
         <com.navi.link.view.TrafficLightView
             android:id="@+id/ll_traffic_light_group"
             android:visibility="gone"
@@ -99,15 +109,7 @@
             android:layout_alignParentBottom="true"
             android:layout_width="match_parent"
             android:layout_height="50dp">
-            <TextView
-                android:id="@+id/tv_action"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="进入"
-                android:visibility="gone"
-                android:textColor="#888888"
-                android:textSize="16sp"
-                android:textStyle="bold" />
+
             <TextView
 
                 android:id="@+id/tv_road_name"

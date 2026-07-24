@@ -4,6 +4,7 @@ import com.navi.link.R;
 import com.navi.link.activity.MainActivity;
 import com.navi.link.window.FloatingWindowManager;
 
+import android.view.View;
 import android.widget.TextView;
 import androidx.appcompat.widget.SwitchCompat;
 import com.google.android.material.card.MaterialCardView;
@@ -35,6 +36,22 @@ public class NormalPanelDelegate {
     private SwitchCompat cbHideNormalCruiseSpeedEnabled;
     private TextView tvHideNormalCruiseSpeedStatus;
 
+    private TextView tvNormalWidthValue;
+    private View btnNormalWidthDecrease;
+    private View btnNormalWidthIncrease;
+
+    private TextView tvCruiseWidthValue;
+    private View btnCruiseWidthDecrease;
+    private View btnCruiseWidthIncrease;
+
+    private TextView tvFullNaviWidthValue;
+    private View btnFullNaviWidthDecrease;
+    private View btnFullNaviWidthIncrease;
+
+    private TextView tvFullCruiseWidthValue;
+    private View btnFullCruiseWidthDecrease;
+    private View btnFullCruiseWidthIncrease;
+
     public NormalPanelDelegate(MainActivity activity) {
         this.activity = activity;
     }
@@ -63,6 +80,22 @@ public class NormalPanelDelegate {
         cbNormalBottomInfoEnabled = activity.findViewById(R.id.cb_normal_bottom_info_enabled);
         tvNormalBottomInfoStatus = activity.findViewById(R.id.tv_normal_bottom_info_status);
         cardNormalBottomInfoToggle = activity.findViewById(R.id.card_normal_bottom_info_toggle);
+
+        tvNormalWidthValue = activity.findViewById(R.id.tv_normal_width_value);
+        btnNormalWidthDecrease = activity.findViewById(R.id.btn_normal_width_decrease);
+        btnNormalWidthIncrease = activity.findViewById(R.id.btn_normal_width_increase);
+
+        tvCruiseWidthValue = activity.findViewById(R.id.tv_cruise_width_value);
+        btnCruiseWidthDecrease = activity.findViewById(R.id.btn_cruise_width_decrease);
+        btnCruiseWidthIncrease = activity.findViewById(R.id.btn_cruise_width_increase);
+
+        tvFullNaviWidthValue = activity.findViewById(R.id.tv_full_navi_width_value);
+        btnFullNaviWidthDecrease = activity.findViewById(R.id.btn_full_navi_width_decrease);
+        btnFullNaviWidthIncrease = activity.findViewById(R.id.btn_full_navi_width_increase);
+
+        tvFullCruiseWidthValue = activity.findViewById(R.id.tv_full_cruise_width_value);
+        btnFullCruiseWidthDecrease = activity.findViewById(R.id.btn_full_cruise_width_decrease);
+        btnFullCruiseWidthIncrease = activity.findViewById(R.id.btn_full_cruise_width_increase);
 
         setupListeners();
     }
@@ -181,6 +214,38 @@ public class NormalPanelDelegate {
                 if (cbNormalBottomInfoEnabled != null) cbNormalBottomInfoEnabled.toggle();
             });
         }
+
+        // 常规导航窗口宽度加减号
+        if (btnNormalWidthDecrease != null) {
+            btnNormalWidthDecrease.setOnClickListener(v -> adjustWidth("normal_navi_window_width", -5, tvNormalWidthValue, "dp"));
+        }
+        if (btnNormalWidthIncrease != null) {
+            btnNormalWidthIncrease.setOnClickListener(v -> adjustWidth("normal_navi_window_width", 5, tvNormalWidthValue, "dp"));
+        }
+
+        // 常规巡航窗口宽度加减号
+        if (btnCruiseWidthDecrease != null) {
+            btnCruiseWidthDecrease.setOnClickListener(v -> adjustWidth("normal_cruise_window_width", -5, tvCruiseWidthValue, "dp"));
+        }
+        if (btnCruiseWidthIncrease != null) {
+            btnCruiseWidthIncrease.setOnClickListener(v -> adjustWidth("normal_cruise_window_width", 5, tvCruiseWidthValue, "dp"));
+        }
+
+        // 全数据导航窗口宽度加减号
+        if (btnFullNaviWidthDecrease != null) {
+            btnFullNaviWidthDecrease.setOnClickListener(v -> adjustWidth("full_navi_window_width", -5, tvFullNaviWidthValue, "dp"));
+        }
+        if (btnFullNaviWidthIncrease != null) {
+            btnFullNaviWidthIncrease.setOnClickListener(v -> adjustWidth("full_navi_window_width", 5, tvFullNaviWidthValue, "dp"));
+        }
+
+        // 全数据巡航窗口宽度加减号
+        if (btnFullCruiseWidthDecrease != null) {
+            btnFullCruiseWidthDecrease.setOnClickListener(v -> adjustWidth("full_cruise_window_width", -5, tvFullCruiseWidthValue, "dp"));
+        }
+        if (btnFullCruiseWidthIncrease != null) {
+            btnFullCruiseWidthIncrease.setOnClickListener(v -> adjustWidth("full_cruise_window_width", 5, tvFullCruiseWidthValue, "dp"));
+        }
     }
 
     public void loadSettings() {
@@ -212,6 +277,39 @@ public class NormalPanelDelegate {
         if (cbNormalBottomInfoEnabled != null) cbNormalBottomInfoEnabled.setChecked(activity.normalBottomInfoEnabled);
         if (tvNormalBottomInfoStatus != null) {
             tvNormalBottomInfoStatus.setText(activity.normalBottomInfoEnabled ? "底栏到达信息已启用" : "底栏到达信息已禁用");
+        }
+
+        updateWidthDisplay();
+    }
+
+    private void updateWidthDisplay() {
+        if (tvNormalWidthValue != null) {
+            tvNormalWidthValue.setText(activity.normalNaviWindowWidth + "dp");
+        }
+        if (tvCruiseWidthValue != null) {
+            tvCruiseWidthValue.setText(activity.normalCruiseWindowWidth + "dp");
+        }
+        if (tvFullNaviWidthValue != null) {
+            tvFullNaviWidthValue.setText(activity.fullNaviWindowWidth + "dp");
+        }
+        if (tvFullCruiseWidthValue != null) {
+            tvFullCruiseWidthValue.setText(activity.fullCruiseWindowWidth + "dp");
+        }
+    }
+
+    private void adjustWidth(String spKey, int delta, TextView valueView, String unit) {
+        int current = activity.getWidthFromSP(spKey);
+        int newWidth = Math.max(200, Math.min(500, current + delta));
+        if (newWidth != current) {
+            activity.setWidthToSP(spKey, newWidth);
+            if (valueView != null) {
+                valueView.setText(newWidth + unit);
+            }
+            updateWidthDisplay();
+            FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+            if (fwm != null) {
+                fwm.refreshWindow();
+            }
         }
     }
 

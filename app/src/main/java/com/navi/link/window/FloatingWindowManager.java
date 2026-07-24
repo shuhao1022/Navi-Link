@@ -18,6 +18,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.media.MediaPlayer;
 import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
@@ -38,6 +39,7 @@ import android.util.Log;
 import androidx.core.view.ViewCompat;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 public class FloatingWindowManager {
 
@@ -45,6 +47,7 @@ public class FloatingWindowManager {
     private static final long LONG_PRESS_MS = 500;
     private static final long NAVI_TIMEOUT_MS = 6000;
     private static final long WATCHDOG_TIMEOUT_MS = 5000;
+    private static final int TRAFFIC_LIGHT_BEEP_THRESHOLD = 3;
 
     public static final int MODE_CRUISE = 0;
     public static final int MODE_NAVI = 1;
@@ -174,6 +177,9 @@ public class FloatingWindowManager {
     private View overspeedBorderView;
     private ObjectAnimator borderAnimator;
 
+//    private MediaPlayer trafficLightBeepPlayer;
+//    private boolean trafficLightBeepPlayed;
+// 提示音功能暂时禁用，代码保留以备后续开放
     // Runnable
     private final Runnable naviSwitchRunnable = this::doNaviSwitch;
     private final Runnable naviTimeoutRunnable = this::onNaviTimeout;
@@ -305,6 +311,7 @@ public class FloatingWindowManager {
     public void hide() {
         handler.removeCallbacksAndMessages(null);
         dismissClusterMirror();
+//        releaseTrafficLightBeepPlayer();
         if (floatingView != null) {
             try {
                 windowManager.removeViewImmediate(floatingView);
@@ -569,6 +576,9 @@ public class FloatingWindowManager {
         }
 
         View inflated = LayoutInflater.from(context).inflate(layoutRes, null);
+
+        // 自定义窗口宽度
+        applyCustomWindowWidth(inflated, layoutRes);
 
         // 统一包裹 FrameLayout：超速红色边框覆盖层、主题背景等共用同一个容器
         FrameLayout wrapper = new FrameLayout(context);
@@ -1163,6 +1173,10 @@ public class FloatingWindowManager {
 
     public void updateCruiseTrafficLights(JSONArray lightsArray) {
         if (!isShowing || currentMode != MODE_CRUISE) return;
+
+//        // 巡航红绿灯提示音：优先取直行灯(dir==2)，没有则取第一个
+//        checkCruiseTrafficLightBeep(lightsArray);
+
         boolean updated = false;
         if (activeWindow != null && floatingView != null) {
             activeWindow.updateCruiseTrafficLights(lightsArray);
@@ -1386,6 +1400,17 @@ public class FloatingWindowManager {
         cachedLightStatus = status;
         cachedLightDir = dir;
         cachedLightCountdown = countdown;
+
+//        // 红灯倒计时最后几秒提示音（导航模式下 status == 1 表示红灯）
+//        if (status == 1 && countdown > 0 && countdown <= TRAFFIC_LIGHT_BEEP_THRESHOLD) {
+//            if (!trafficLightBeepPlayed) {
+//                playTrafficLightBeep();
+//                trafficLightBeepPlayed = true;
+//            }
+//        } else if (countdown == 0 || countdown > TRAFFIC_LIGHT_BEEP_THRESHOLD) {
+//            trafficLightBeepPlayed = false;
+//        }
+
         if (!isShowing || currentMode != MODE_NAVI) return;
 
         if (activeWindow != null && floatingView != null) {
@@ -1407,11 +1432,100 @@ public class FloatingWindowManager {
     }
 
     private void hideTrafficLightCapsule() {
+//        trafficLightBeepPlayed = false;
         if (activeWindow != null && floatingView != null) {
             activeWindow.updateTrafficLight(0, 0, 0);
         }
         if (clusterActiveWindow != null && clusterFloatingView != null) {
             clusterActiveWindow.updateTrafficLight(0, 0, 0);
+        }
+    }
+
+//    private void playTrafficLightBeep() {
+//        try {
+//            if (trafficLightBeepPlayer == null) {
+//                trafficLightBeepPlayer = MediaPlayer.create(context, R.raw.voice_deng_go);
+//            }
+//            if (trafficLightBeepPlayer != null) {
+//                trafficLightBeepPlayer.start();
+//            }
+//        } catch (Exception e) {
+//            Log.w(TAG, "播放红绿灯提示音失败", e);
+//        }
+//    }
+//
+//    private void checkCruiseTrafficLightBeep(JSONArray lightsArray) {
+//        if (lightsArray == null || lightsArray.length() == 0) {
+//            trafficLightBeepPlayed = false;
+//            return;
+//        }
+//        try {
+//            // 优先取直行灯(dir==2)，没有则取第一个
+//            JSONObject targetLight = null;
+//            for (int i = 0; i < lightsArray.length(); i++) {
+//                JSONObject light = lightsArray.getJSONObject(i);
+//                if (light.getInt("dir") == 2) {
+//                    targetLight = light;
+//                    break;
+//                }
+//            }
+//            if (targetLight == null) {
+//                targetLight = lightsArray.getJSONObject(0);
+//            }
+//
+//            int status = targetLight.getInt("status");
+//            int countdown = targetLight.getInt("countdown");
+//
+//            // 巡航模式：status == 0 表示红灯
+//            if (status == 0 && countdown > 0 && countdown <= TRAFFIC_LIGHT_BEEP_THRESHOLD) {
+//                if (!trafficLightBeepPlayed) {
+//                    playTrafficLightBeep();
+//                    trafficLightBeepPlayed = true;
+//                }
+//            } else if (countdown == 0 || countdown > TRAFFIC_LIGHT_BEEP_THRESHOLD) {
+//                trafficLightBeepPlayed = false;
+//            }
+//        } catch (Exception e) {
+//            Log.w(TAG, "检查巡航红绿灯提示音失败", e);
+//        }
+//    }
+//
+//    private void releaseTrafficLightBeepPlayer() {
+//        if (trafficLightBeepPlayer != null) {
+//            try {
+//                trafficLightBeepPlayer.release();
+//            } catch (Exception ignored) {}
+//            trafficLightBeepPlayer = null;
+//        }
+//        trafficLightBeepPlayed = false;
+//    }
+
+    /** 应用自定义窗口宽度 */
+    private void applyCustomWindowWidth(View inflated, int layoutRes) {
+        String spKey = null;
+        int defaultWidth = 320;
+        if (layoutRes == R.layout.layout_floating_navi_normal) {
+            spKey = "normal_navi_window_width";
+            defaultWidth = 320;
+        } else if (layoutRes == R.layout.layout_floating_cruise_normal) {
+            spKey = "normal_cruise_window_width";
+            defaultWidth = 320;
+        } else if (layoutRes == R.layout.layout_floating_navi_full) {
+            spKey = "full_navi_window_width";
+            defaultWidth = 280;
+        } else if (layoutRes == R.layout.layout_floating_cruise_full) {
+            spKey = "full_cruise_window_width";
+            defaultWidth = 360;
+        }
+        if (spKey != null) {
+            SharedPreferences sp = context.getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+            int widthDp = sp.getInt(spKey, defaultWidth);
+            if (widthDp != defaultWidth) {
+                View rootLayout = inflated.findViewById(R.id.root_layout);
+                if (rootLayout != null) {
+                    rootLayout.getLayoutParams().width = dpToPx(widthDp);
+                }
+            }
         }
     }
 
