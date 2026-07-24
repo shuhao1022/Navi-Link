@@ -368,7 +368,7 @@
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="常规"
+                                android:text="常规导航"
                                 android:buttonTint="#FF4FC3F7" />
 
                             <TextView
@@ -378,7 +378,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:gravity="center"
-                                android:text="完整导航" />
+                                android:text="经典导航窗口" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
@@ -410,7 +410,7 @@
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="灵动岛"
+                                android:text="灵动岛导航"
                                 android:buttonTint="#FF4FC3F7" />
 
                             <TextView
@@ -451,7 +451,7 @@
                                 android:clickable="false"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="全数据"
+                                android:text="全数据导航"
                                 android:buttonTint="#FF4FC3F7" />
 
                             <TextView
@@ -527,7 +527,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="2dp"
                                 android:gravity="center"
-                                android:text="完整巡航" />
+                                android:text="经典巡航窗口" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
