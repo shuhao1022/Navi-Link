@@ -187,9 +187,16 @@ public class FloatingWindowManager {
     private final Runnable naviSwitchRunnable = this::doNaviSwitch;
     private final Runnable naviTimeoutRunnable = this::onNaviTimeout;
     private final Runnable cruiseGraceRunnable = this::onCruiseGrace;
+    /** 清除 hasEverReceivedData，避免跨高德会话后STATE=40误激活窗口 */
+    private final Runnable sessionCleanupRunnable = () -> {
+        hasEverReceivedData = false;
+    };
     private final Runnable watchdogRunnable = () -> {
         hasActiveData = false;
         updateFloatingWindowVisibility();
+        // 看门狗触发后，若长时间无数据续命才清除会话标记
+        handler.removeCallbacks(sessionCleanupRunnable);
+        handler.postDelayed(sessionCleanupRunnable, WATCHDOG_TIMEOUT_MS * 2);
     };
     private final Runnable trafficLightTimeoutRunnable = this::hideTrafficLightCapsule;
     private final Runnable intervalSpeedTimeoutRunnable = () -> {
@@ -530,6 +537,7 @@ public class FloatingWindowManager {
         hasActiveData = true;
         hasEverReceivedData = true;
         handler.removeCallbacks(watchdogRunnable);
+        handler.removeCallbacks(sessionCleanupRunnable);
         handler.postDelayed(watchdogRunnable, WATCHDOG_TIMEOUT_MS);
         updateFloatingWindowVisibility();
     }
