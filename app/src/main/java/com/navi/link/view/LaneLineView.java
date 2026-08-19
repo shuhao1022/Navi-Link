@@ -291,6 +291,13 @@ public class LaneLineView extends LinearLayout {
     }
 
     private void startBlink(ImageView iv) {
+        if (sp == null) {
+            sp = getContext().getSharedPreferences("floating_config", Context.MODE_PRIVATE);
+        }
+        if (sp != null && !sp.getBoolean("enable_blinking_animation", true)) {
+            cancelBlink(iv);
+            return;
+        }
         Object animatorObj = iv.getTag();
         if (animatorObj instanceof ObjectAnimator) {
             return;

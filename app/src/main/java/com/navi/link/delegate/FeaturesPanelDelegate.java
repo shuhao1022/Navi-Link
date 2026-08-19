@@ -30,6 +30,10 @@ public class FeaturesPanelDelegate {
     private TextView tvCrossMapHideStatus;
     private MaterialCardView cardCrossMapHideToggle;
 
+    private SwitchButton cbBlinkingAnimationEnabled;
+    private TextView tvBlinkingAnimationStatus;
+    private MaterialCardView cardBlinkingAnimationToggle;
+
     private SwitchButton cbHideLaneLineBgEnabled;
     private TextView tvHideLaneLineBgStatus;
     private MaterialCardView cardHideLaneLineBgToggle;
@@ -75,6 +79,10 @@ public class FeaturesPanelDelegate {
         cbCrossMapHideEnabled = activity.findViewById(R.id.cb_cross_map_hide_enabled);
         tvCrossMapHideStatus = activity.findViewById(R.id.tv_cross_map_hide_status);
         cardCrossMapHideToggle = activity.findViewById(R.id.card_cross_map_hide_toggle);
+
+        cbBlinkingAnimationEnabled = activity.findViewById(R.id.cb_blinking_animation_enabled);
+        tvBlinkingAnimationStatus = activity.findViewById(R.id.tv_blinking_animation_status);
+        cardBlinkingAnimationToggle = activity.findViewById(R.id.card_blinking_animation_toggle);
 
         cbHideLaneLineBgEnabled = activity.findViewById(R.id.cb_hide_lane_line_bg_enabled);
         tvHideLaneLineBgStatus = activity.findViewById(R.id.tv_hide_lane_line_bg_status);
@@ -132,6 +140,25 @@ public class FeaturesPanelDelegate {
         if (cardCrossMapHideToggle != null) {
             cardCrossMapHideToggle.setOnClickListener(v -> {
                 if (cbCrossMapHideEnabled != null) cbCrossMapHideEnabled.toggle();
+            });
+        }
+
+        if (cbBlinkingAnimationEnabled != null) {
+            cbBlinkingAnimationEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                activity.enableBlinkingAnimation = isChecked;
+                activity.savePreferences();
+                if (tvBlinkingAnimationStatus != null) {
+                    tvBlinkingAnimationStatus.setText(isChecked ? "闪烁动画提示已开启" : "闪烁动画提示已关闭");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardBlinkingAnimationToggle != null) {
+            cardBlinkingAnimationToggle.setOnClickListener(v -> {
+                if (cbBlinkingAnimationEnabled != null) cbBlinkingAnimationEnabled.toggle();
             });
         }
 
@@ -410,6 +437,11 @@ public class FeaturesPanelDelegate {
             tvCrossMapHideStatus.setText(activity.crossMapHideEnabled ? "路口放大图时隐藏悬浮窗" : "路口放大图时正常显示浮窗");
         }
 
+        if (cbBlinkingAnimationEnabled != null) cbBlinkingAnimationEnabled.setChecked(activity.enableBlinkingAnimation);
+        if (tvBlinkingAnimationStatus != null) {
+            tvBlinkingAnimationStatus.setText(activity.enableBlinkingAnimation ? "闪烁动画提示已开启" : "闪烁动画提示已关闭");
+        }
+
         if (cbHideLaneLineBgEnabled != null) cbHideLaneLineBgEnabled.setChecked(activity.hideLaneLineBg);
         if (tvHideLaneLineBgStatus != null) {
             tvHideLaneLineBgStatus.setText(activity.hideLaneLineBg ? "背景已隐藏" : "背景已显示");
@@ -452,6 +484,7 @@ public class FeaturesPanelDelegate {
         int accentColor = activity.getAccentColor();
         activity.updateSwitchTheme(cbAvoidForegroundEnabled, accentColor);
         activity.updateSwitchTheme(cbCrossMapHideEnabled, accentColor);
+        activity.updateSwitchTheme(cbBlinkingAnimationEnabled, accentColor);
         activity.updateSwitchTheme(cbHideLaneLineBgEnabled, accentColor);
         activity.updateSwitchTheme(cbHideCameraCapsuleBgEnabled, accentColor);
         activity.updateSwitchTheme(cbClusterMirrorEnabled, accentColor);

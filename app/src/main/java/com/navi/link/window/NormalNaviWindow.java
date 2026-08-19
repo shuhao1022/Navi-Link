@@ -148,7 +148,7 @@ public class NormalNaviWindow extends BaseFloatingWindow {
             if (turnIconRes != 0) {
                 ivTurnIcon.setImageResource(turnIconRes);
             }
-            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit);
+            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit) && isBlinkingAnimationEnabled();
             if (shouldBlink) {
                 ObjectAnimator animator = (ObjectAnimator) ivTurnIcon.getTag();
                 if (animator == null) {

@@ -101,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean isMinimalAccentNaviInfoEnabled = false;
     public boolean isMinimalAutocenterEnabled = false;
     public boolean isMinimalSpeedLimitEnabled = false;
+    public boolean isMinimalArrivalInfoEnabled = false;
 
     public boolean isTrafficLightFillEnabled = false;
     public int trafficLightStyle = 0;
@@ -108,6 +109,7 @@ public class MainActivity extends AppCompatActivity {
     public boolean isTrafficLightIconEnabled = true;
     public int countdownFontIndex = 0;
     public boolean crossMapHideEnabled = false;
+    public boolean enableBlinkingAnimation = true;
     public boolean clusterCrossMapHideEnabled = false;
     public boolean hideLaneLineBg = false;
     public boolean hideCameraCapsuleBg = false;
@@ -193,6 +195,7 @@ public class MainActivity extends AppCompatActivity {
         }
         setContentView(R.layout.activity_main);
 
+        initConfigLaunchers();
         initDelegates();
         initViews();
         loadPreferences();
@@ -383,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
         isMinimalAccentNaviInfoEnabled = sp.getBoolean("minimal_accent_navi_info_enabled", false);
         isMinimalAutocenterEnabled = sp.getBoolean("minimal_autocenter_enabled", false);
         isMinimalSpeedLimitEnabled = sp.getBoolean("minimal_speed_limit_enabled", false);
+        isMinimalArrivalInfoEnabled = sp.getBoolean("minimal_arrival_info_enabled", false);
         clusterMirrorEnabled = sp.getBoolean("cluster_mirror_enabled", false);
         clusterDisplayId = sp.getInt("cluster_display_id", -1);
         hideMainWhenClusterActive = sp.getBoolean("hide_main_when_cluster_active", false);
@@ -402,6 +406,7 @@ public class MainActivity extends AppCompatActivity {
         countdownFontIndex = sp.getInt("countdown_font_index", 0);
         trafficLightStyle = sp.getInt("traffic_light_style", 0);
         crossMapHideEnabled = sp.getBoolean("hide_on_cross_map", false);
+        enableBlinkingAnimation = sp.getBoolean("enable_blinking_animation", true);
         clusterCrossMapHideEnabled = sp.getBoolean("hide_on_cross_map_cluster", false);
         hideLaneLineBg = sp.getBoolean("hide_lane_line_bg", false);
         hideCameraCapsuleBg = sp.getBoolean("hide_camera_capsule_bg", false);
@@ -461,6 +466,8 @@ public class MainActivity extends AppCompatActivity {
                 .putBoolean("minimal_accent_navi_info_enabled", isMinimalAccentNaviInfoEnabled)
                 .putBoolean("minimal_autocenter_enabled", isMinimalAutocenterEnabled)
                 .putBoolean("minimal_speed_limit_enabled", isMinimalSpeedLimitEnabled)
+                .putBoolean("minimal_arrival_info_enabled", isMinimalArrivalInfoEnabled)
+                .putBoolean("enable_blinking_animation", enableBlinkingAnimation)
                 .putBoolean("cluster_mirror_enabled", clusterMirrorEnabled)
                 .putInt("cluster_display_id", clusterDisplayId)
                 .putBoolean("hide_main_when_cluster_active", hideMainWhenClusterActive)
@@ -940,6 +947,136 @@ public class MainActivity extends AppCompatActivity {
         updateStatusText();
         if (OverlayPermissionCompat.canDrawOverlays(this)) {
             startFloatingService();
+        }
+    }
+
+    private androidx.activity.result.ActivityResultLauncher<Intent> exportConfigLauncher;
+    private androidx.activity.result.ActivityResultLauncher<Intent> importConfigLauncher;
+
+    private void initConfigLaunchers() {
+        exportConfigLauncher = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try (java.io.OutputStream os = getContentResolver().openOutputStream(uri)) {
+                            String json = ConfigBackupManager.exportConfigToJson(MainActivity.this);
+                            if (ConfigBackupManager.writeJsonToStream(os, json)) {
+                                Toast.makeText(MainActivity.this, "配置导出成功！", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(MainActivity.this, "配置导出失败", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this, "导出出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+
+        importConfigLauncher = registerForActivityResult(
+                new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
+                        Uri uri = result.getData().getData();
+                        try (java.io.InputStream is = getContentResolver().openInputStream(uri)) {
+                            String json = ConfigBackupManager.readJsonFromStream(is);
+                            if (ConfigBackupManager.importConfigFromJson(MainActivity.this, json)) {
+                                Toast.makeText(MainActivity.this, "配置导入成功！", Toast.LENGTH_SHORT).show();
+                                reloadAllConfigAndUi();
+                            } else {
+                                Toast.makeText(MainActivity.this, "导入失败：格式非法", Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(MainActivity.this, "导入出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+    public void exportConfig() {
+        String json = ConfigBackupManager.exportConfigToJson(this);
+        if (android.text.TextUtils.isEmpty(json)) {
+            Toast.makeText(this, "配置导出失败：数据为空", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        java.io.File targetFile = ConfigBackupManager.getDownloadExportFile(this);
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(targetFile)) {
+            if (ConfigBackupManager.writeJsonToStream(fos, json)) {
+                Toast.makeText(this, "配置已导出至：Download/" + targetFile.getName(), Toast.LENGTH_LONG).show();
+                return;
+            }
+        } catch (Exception e) {
+            android.util.Log.e("MainActivity", "导出到 Download 失败，尝试应用私有备份目录", e);
+        }
+
+        // 降级兜底路径
+        java.io.File fallbackFile = ConfigBackupManager.getFallbackExportFile(this);
+        try (java.io.FileOutputStream fos = new java.io.FileOutputStream(fallbackFile)) {
+            if (ConfigBackupManager.writeJsonToStream(fos, json)) {
+                Toast.makeText(this, "配置已导出至：" + fallbackFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "配置导出失败", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception ex) {
+            Toast.makeText(this, "配置导出失败：" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public void importConfig() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            importConfigLauncher.launch(intent);
+        } catch (android.content.ActivityNotFoundException e) {
+            java.io.File dir = getExternalFilesDir("backups");
+            if (dir != null && dir.exists() && dir.listFiles() != null && dir.listFiles().length > 0) {
+                java.io.File[] files = dir.listFiles();
+                java.io.File latest = files[files.length - 1];
+                try (java.io.FileInputStream fis = new java.io.FileInputStream(latest)) {
+                    String json = ConfigBackupManager.readJsonFromStream(fis);
+                    if (ConfigBackupManager.importConfigFromJson(this, json)) {
+                        Toast.makeText(this, "导入成功 (来自 " + latest.getName() + ")", Toast.LENGTH_SHORT).show();
+                        reloadAllConfigAndUi();
+                    } else {
+                        Toast.makeText(this, "导入失败：格式不匹配", Toast.LENGTH_SHORT).show();
+                    }
+                } catch (Exception ex) {
+                    Toast.makeText(this, "导入失败：" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+            } else {
+                Toast.makeText(this, "未找到系统文件选择器及本地备份文件", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    public void resetDefaultConfig() {
+        new AlertDialog.Builder(this)
+                .setTitle("恢复默认设置")
+                .setMessage("确定要清空当前所有设置并还原为默认状态吗？此操作无法撤销。")
+                .setPositiveButton("确定还原", (dialog, which) -> {
+                    if (ConfigBackupManager.resetDefaultConfig(MainActivity.this)) {
+                        Toast.makeText(MainActivity.this, "已恢复默认设置！", Toast.LENGTH_SHORT).show();
+                        reloadAllConfigAndUi();
+                    } else {
+                        Toast.makeText(MainActivity.this, "恢复默认失败", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setNegativeButton("取消", null)
+                .show();
+    }
+
+    public void reloadAllConfigAndUi() {
+        FloatingWindowManager.getInstance(this).refreshWindow();
+        loadPreferences();
+        if (systemAppearanceDelegate != null) systemAppearanceDelegate.initViews();
+        if (featuresPanelDelegate != null) {
+            featuresPanelDelegate.initViews();
+            featuresPanelDelegate.loadSettings();
+        }
+        if (trafficLightPanelDelegate != null) {
+            trafficLightPanelDelegate.initViews();
+            trafficLightPanelDelegate.loadSettings();
         }
     }
 }

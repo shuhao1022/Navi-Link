@@ -674,5 +674,90 @@
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
+
+        <!-- 配置备份与恢复卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeColor="?attr/panelCardStrokeColor"
+            app:strokeWidth="1dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="配置备份与恢复"
+                    android:textColor="?attr/panelTextColorPrimary"
+                    android:textSize="15sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="支持导出 JSON 配置文件、导入备份文件及一键还原默认设置"
+                    android:textColor="?attr/panelTextColorSecondary"
+                    android:textSize="12sp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:orientation="horizontal">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_export_config"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="📤 导出配置"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:backgroundTint="#FF0099FF"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_import_config"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="6dp"
+                        android:layout_weight="1"
+                        android:text="📥 导入配置"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:backgroundTint="#FF4FC3F7"
+                        app:cornerRadius="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_reset_config"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🔄 恢复默认"
+                        android:textColor="#FFFFFF"
+                        android:textSize="12sp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        app:backgroundTint="#FFFF5252"
+                        app:cornerRadius="8dp" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
     </LinearLayout>
 </ScrollView>

@@ -156,7 +156,9 @@ public class TrafficLightView extends LinearLayout {
         }
 
         // 5秒以内闪烁
-        if (countdown <= 5) {
+        android.content.SharedPreferences sp = getContext().getSharedPreferences("floating_config", android.content.Context.MODE_PRIVATE);
+        boolean enableBlinking = sp == null || sp.getBoolean("enable_blinking_animation", true);
+        if (countdown <= 5 && enableBlinking) {
             if (blinkAnimator == null) {
                 blinkAnimator = ObjectAnimator.ofFloat(this, "alpha", 1f, 0.3f);
                 blinkAnimator.setDuration(500);

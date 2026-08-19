@@ -74,15 +74,25 @@ public class FullCruiseWindow extends BaseFloatingWindow {
             boolean overspeed = isOverspeedWarningEnabled && cameraSpeed > 0 && speed > Math.round(cameraSpeed * factor);
             if (overspeed) {
                 tvFullCruiseSpeed.setTextColor(Color.RED);
-                ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
-                if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvFullCruiseSpeed, "alpha", 1f, 0.3f);
-                    newAnimator.setDuration(500);
-                    newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                    newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                    newAnimator.start();
-                    tvFullCruiseSpeed.setTag(newAnimator);
-                    isOverspeedBlinking = true;
+                if (isBlinkingAnimationEnabled()) {
+                    ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
+                    if (animator == null) {
+                        ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvFullCruiseSpeed, "alpha", 1f, 0.3f);
+                        newAnimator.setDuration(500);
+                        newAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                        newAnimator.setRepeatMode(ValueAnimator.REVERSE);
+                        newAnimator.start();
+                        tvFullCruiseSpeed.setTag(newAnimator);
+                        isOverspeedBlinking = true;
+                    }
+                } else {
+                    ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();
+                    if (animator != null) {
+                        animator.cancel();
+                        tvFullCruiseSpeed.setTag(null);
+                    }
+                    tvFullCruiseSpeed.setAlpha(1f);
+                    isOverspeedBlinking = false;
                 }
             } else {
                 ObjectAnimator animator = (ObjectAnimator) tvFullCruiseSpeed.getTag();

@@ -169,7 +169,7 @@ public abstract class BaseFloatingWindow {
         EtaInfo etaInfo = parseEta(etaText);
         if (etaInfo.dayOffset > 0) {
             String offsetStr = "+" + etaInfo.dayOffset;
-            String rawText = etaInfo.time + offsetStr + "到";
+            String rawText = etaInfo.time + offsetStr;
             android.text.SpannableString spannable = new android.text.SpannableString(rawText);
             int start = etaInfo.time.length();
             int end = start + offsetStr.length();
@@ -252,6 +252,10 @@ public abstract class BaseFloatingWindow {
     }
 
     public void updateCruiseTrafficLights(JSONArray lightsArray) {}
+
+    protected boolean isBlinkingAnimationEnabled() {
+        return sp != null && sp.getBoolean("enable_blinking_animation", true);
+    }
 
     protected void scaleViewRecursive(View view, float factor) {
         if (view instanceof TextView) {

@@ -100,6 +100,64 @@
                     android:layout_marginHorizontal="16dp"
                     android:background="?attr/panelDividerColor" />
 
+                <!-- Option: Blinking Animation Switch Row -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_blinking_animation_toggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:paddingHorizontal="16dp"
+                        android:paddingVertical="12dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <LinearLayout
+                            android:orientation="vertical"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1">
+
+                            <TextView
+                                android:text="闪烁动画提示"
+                                android:textSize="15sp"
+                                android:textColor="?attr/panelTextColorPrimary"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+
+                            <TextView
+                                android:id="@+id/tv_blinking_animation_status"
+                                android:text="开启/关闭超速、临近转弯及路口信号灯的闪烁效果"
+                                android:textSize="12sp"
+                                android:textColor="?attr/panelTextColorSecondary"
+                                android:layout_marginTop="2dp"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content" />
+                        </LinearLayout>
+
+                        <com.navi.link.view.SwitchButton
+                            android:id="@+id/cb_blinking_animation_enabled"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:clickable="false"
+                            android:focusable="false" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginHorizontal="16dp"
+                    android:background="?attr/panelDividerColor" />
+
                 <!-- Option 1: Cruise Switch Row -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/card_cruise_toggle"
@@ -1077,8 +1135,8 @@
 
                     <SeekBar
                         android:id="@+id/sb_cluster_scale"
-                        android:max="15"
-                        android:progress="5"
+                        android:max="19"
+                        android:progress="9"
                         android:layout_marginTop="10dp"
                         android:layout_marginHorizontal="8dp"
                         android:layout_width="match_parent"
@@ -1090,7 +1148,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content">
                         <TextView
-                            android:text="0.5x"
+                            android:text="0.1x"
                             android:textSize="11sp"
                             android:textColor="#FF666666"
                             android:layout_width="0dp"

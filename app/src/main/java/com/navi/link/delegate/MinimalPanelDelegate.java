@@ -46,6 +46,10 @@ public class MinimalPanelDelegate {
     private SwitchButton cbMinimalSpeedLimitEnabled;
     private TextView tvMinimalSpeedLimitStatus;
 
+    private MaterialCardView cardMinimalArrivalInfoToggle;
+    private SwitchButton cbMinimalArrivalInfoEnabled;
+    private TextView tvMinimalArrivalInfoStatus;
+
     public MinimalPanelDelegate(MainActivity activity) {
         this.activity = activity;
     }
@@ -85,6 +89,10 @@ public class MinimalPanelDelegate {
         cardMinimalSpeedLimitToggle = activity.findViewById(R.id.card_minimal_speed_limit_toggle);
         cbMinimalSpeedLimitEnabled = activity.findViewById(R.id.cb_minimal_speed_limit_enabled);
         tvMinimalSpeedLimitStatus = activity.findViewById(R.id.tv_minimal_speed_limit_status);
+
+        cardMinimalArrivalInfoToggle = activity.findViewById(R.id.card_minimal_arrival_info_toggle);
+        cbMinimalArrivalInfoEnabled = activity.findViewById(R.id.cb_minimal_arrival_info_enabled);
+        tvMinimalArrivalInfoStatus = activity.findViewById(R.id.tv_minimal_arrival_info_status);
 
         setupListeners();
     }
@@ -257,6 +265,25 @@ public class MinimalPanelDelegate {
                 if (cbMinimalSpeedLimitEnabled != null) cbMinimalSpeedLimitEnabled.toggle();
             });
         }
+
+        if (cbMinimalArrivalInfoEnabled != null) {
+            cbMinimalArrivalInfoEnabled.setOnCheckedChangeListener((buttonView, isChecked) -> {
+                activity.isMinimalArrivalInfoEnabled = isChecked;
+                activity.savePreferences();
+                if (tvMinimalArrivalInfoStatus != null) {
+                    tvMinimalArrivalInfoStatus.setText(isChecked ? "到达信息显示已启用" : "已关闭到达信息显示");
+                }
+                FloatingWindowManager fwm = FloatingWindowManager.getInstance();
+                if (fwm != null) {
+                    fwm.refreshWindow();
+                }
+            });
+        }
+        if (cardMinimalArrivalInfoToggle != null) {
+            cardMinimalArrivalInfoToggle.setOnClickListener(v -> {
+                if (cbMinimalArrivalInfoEnabled != null) cbMinimalArrivalInfoEnabled.toggle();
+            });
+        }
     }
 
     public void loadSettings() {
@@ -301,6 +328,11 @@ public class MinimalPanelDelegate {
         if (tvMinimalSpeedLimitStatus != null) {
             tvMinimalSpeedLimitStatus.setText(activity.isMinimalSpeedLimitEnabled ? "限速显示已启用" : "限速显示已禁用");
         }
+
+        if (cbMinimalArrivalInfoEnabled != null) cbMinimalArrivalInfoEnabled.setChecked(activity.isMinimalArrivalInfoEnabled);
+        if (tvMinimalArrivalInfoStatus != null) {
+            tvMinimalArrivalInfoStatus.setText(activity.isMinimalArrivalInfoEnabled ? "到达信息显示已启用" : "已关闭到达信息显示");
+        }
     }
 
     public void updateThemeColors() {
@@ -318,5 +350,6 @@ public class MinimalPanelDelegate {
         activity.updateSwitchTheme(cbMinimalSpeedEnabled, accentColor);
         activity.updateSwitchTheme(cbMinimalLightCountEnabled, accentColor);
         activity.updateSwitchTheme(cbMinimalSpeedLimitEnabled, accentColor);
+        activity.updateSwitchTheme(cbMinimalArrivalInfoEnabled, accentColor);
     }
 }

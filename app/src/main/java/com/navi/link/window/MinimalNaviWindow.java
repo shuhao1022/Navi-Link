@@ -32,6 +32,9 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
     private TextView tvMinSpeedLimit;
     private View minDividerMin;
     private View naviMinDivider;
+    private View minimalComeInfo;
+    private TextView tvMinimalSummary;
+    private TextView tvMinimalEta;
 
     private TrafficLightView llTrafficLightGroupMin;
 
@@ -64,6 +67,9 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         tvMinSpeedLimit = floatingView.findViewById(R.id.tv_min_speed_limit);
         minDividerMin = floatingView.findViewById(R.id.min_divider);
         naviMinDivider = floatingView.findViewById(R.id.navi_min_divider);
+        minimalComeInfo = floatingView.findViewById(R.id.minimal_come_info);
+        tvMinimalSummary = floatingView.findViewById(R.id.tv_minimal_summary);
+        tvMinimalEta = floatingView.findViewById(R.id.tv_minimal_eta);
 
         llTrafficLightGroupMin = floatingView.findViewById(R.id.ll_traffic_light_group);
 
@@ -92,7 +98,7 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             if (turnIconRes != 0) {
                 ivActionIconMin.setImageResource(turnIconRes);
             }
-            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit);
+            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit) && isBlinkingAnimationEnabled();
             if (shouldBlink) {
                 ObjectAnimator animator = (ObjectAnimator) ivActionIconMin.getTag();
                 if (animator == null) {
@@ -122,15 +128,25 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
             boolean overspeed = isOverspeedWarningEnabled && limit > 0 && curSpeed > limit;
             if (overspeed) {
                 tvMinSpeed.setTextColor(Color.RED);
-                ObjectAnimator animator = (ObjectAnimator) tvMinSpeed.getTag();
-                if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvMinSpeed, "alpha", 1f, 0.3f);
-                    newAnimator.setDuration(500);
-                    newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                    newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                    newAnimator.start();
-                    tvMinSpeed.setTag(newAnimator);
-                    isOverspeedBlinking = true;
+                if (isBlinkingAnimationEnabled()) {
+                    ObjectAnimator animator = (ObjectAnimator) tvMinSpeed.getTag();
+                    if (animator == null) {
+                        ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvMinSpeed, "alpha", 1f, 0.3f);
+                        newAnimator.setDuration(500);
+                        newAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                        newAnimator.setRepeatMode(ValueAnimator.REVERSE);
+                        newAnimator.start();
+                        tvMinSpeed.setTag(newAnimator);
+                        isOverspeedBlinking = true;
+                    }
+                } else {
+                    ObjectAnimator animator = (ObjectAnimator) tvMinSpeed.getTag();
+                    if (animator != null) {
+                        animator.cancel();
+                        tvMinSpeed.setTag(null);
+                    }
+                    tvMinSpeed.setAlpha(1f);
+                    isOverspeedBlinking = false;
                 }
             } else {
                 ObjectAnimator animator = (ObjectAnimator) tvMinSpeed.getTag();
@@ -210,6 +226,20 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
                 tvMinSpeedLimit.setVisibility(View.GONE);
             }
         }
+        if (minimalComeInfo != null) {
+            boolean arrivalInfoEnabled = sp.getBoolean("minimal_arrival_info_enabled", false);
+            if (arrivalInfoEnabled) {
+                minimalComeInfo.setVisibility(View.VISIBLE);
+                if (tvMinimalSummary != null) {
+                    tvMinimalSummary.setText(summaryStr != null ? summaryStr : "");
+                }
+                if (tvMinimalEta != null) {
+                    tvMinimalEta.setText(formatEtaSpannable(eta));
+                }
+            } else {
+                minimalComeInfo.setVisibility(View.GONE);
+            }
+        }
         mCameraType = cameraType;
         mCameraSpeed = cameraSpeed;
         mCameraDist = cameraDist;
@@ -278,6 +308,8 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (tvDistanceNumMin != null) tvDistanceNumMin.setTextColor(textPrimary);
         if (tvDistanceUnitMin != null) tvDistanceUnitMin.setTextColor(textPrimary);
         if (tvRoadNameMin != null) tvRoadNameMin.setTextColor(textSecondary);
+        if (tvMinimalSummary != null) tvMinimalSummary.setTextColor(textSecondary);
+        if (tvMinimalEta != null) tvMinimalEta.setTextColor(textSecondary);
         if (ivActionIconMin != null) ivActionIconMin.setColorFilter(textPrimary);
         if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(textPrimary);
         if (tvMinDirection != null) tvMinDirection.setTextColor(textPrimary);
@@ -297,6 +329,8 @@ public class MinimalNaviWindow extends BaseFloatingWindow {
         if (tvDistanceNumMin != null) tvDistanceNumMin.setTextColor(TEXT_PRIMARY_DARK);
         if (tvDistanceUnitMin != null) tvDistanceUnitMin.setTextColor(TEXT_PRIMARY_DARK);
         if (tvRoadNameMin != null) tvRoadNameMin.setTextColor(TEXT_SECONDARY_DARK);
+        if (tvMinimalSummary != null) tvMinimalSummary.setTextColor(TEXT_SECONDARY_DARK);
+        if (tvMinimalEta != null) tvMinimalEta.setTextColor(TEXT_SECONDARY_DARK);
         if (ivActionIconMin != null) ivActionIconMin.clearColorFilter();
         if (tvMinSpeedUnit != null) tvMinSpeedUnit.setTextColor(TEXT_PRIMARY_DARK);
         if (tvMinDirection != null) tvMinDirection.setTextColor(TEXT_PRIMARY_DARK);

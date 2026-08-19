@@ -26,7 +26,8 @@ public class SwitchButton extends View {
     private ValueAnimator mAnimator;
 
     // 颜色配置
-    private int mColorOn = 0xFF1A73E8;    // 开启状态宝蓝
+//    private int mColorOn = 0xFF1A73E8;    // 开启状态宝蓝
+    private int mColorOn = 0xFF4FC3F7;    // 开启状态浅蓝
     private int mColorOff = 0xFF4A5056;   // 关闭状态深灰
     private int mThumbColor = 0xFFFFFFFF; // 纯白滑块圆圈
 

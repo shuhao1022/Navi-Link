@@ -47,6 +47,7 @@ public class SystemAppearanceDelegate {
     private MaterialCardView cardOverspeedWarningToggle;
     private LinearLayout llOverspeedThresholdRow;
     private View[] overspeedThresholdChips;
+    private View btnExportConfig, btnImportConfig, btnResetConfig;
 
     public SystemAppearanceDelegate(MainActivity activity) {
         this.activity = activity;
@@ -111,6 +112,10 @@ public class SystemAppearanceDelegate {
                 activity.findViewById(R.id.chip_overspeed_30),
                 activity.findViewById(R.id.chip_overspeed_50)
         };
+
+        btnExportConfig = activity.findViewById(R.id.btn_export_config);
+        btnImportConfig = activity.findViewById(R.id.btn_import_config);
+        btnResetConfig = activity.findViewById(R.id.btn_reset_config);
         
         setupListeners();
     }
@@ -119,6 +124,10 @@ public class SystemAppearanceDelegate {
         if (cardServiceOnly != null) cardServiceOnly.setOnClickListener(v -> activity.selectStartupMode(1));
         if (cardNormalStart != null) cardNormalStart.setOnClickListener(v -> activity.selectStartupMode(0));
         if (cardStartAmap != null) cardStartAmap.setOnClickListener(v -> activity.selectStartupMode(2));
+
+        if (btnExportConfig != null) btnExportConfig.setOnClickListener(v -> activity.exportConfig());
+        if (btnImportConfig != null) btnImportConfig.setOnClickListener(v -> activity.importConfig());
+        if (btnResetConfig != null) btnResetConfig.setOnClickListener(v -> activity.resetDefaultConfig());
         
         if (cardNormal != null) cardNormal.setOnClickListener(v -> activity.selectStyle(0));
         if (cardMinimal != null) cardMinimal.setOnClickListener(v -> activity.selectStyle(1));
@@ -224,7 +233,7 @@ public class SystemAppearanceDelegate {
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     if (fromUser) {
-                        float scale = 0.5f + (progress / 15.0f) * 1.5f;
+                        float scale = 0.1f + (progress / 19.0f) * 1.9f;
                         if (tvClusterScaleValue != null) {
                             tvClusterScaleValue.setText(String.format("%.1fx", scale));
                         }
@@ -345,10 +354,11 @@ public class SystemAppearanceDelegate {
         if (tvScaleValue != null) tvScaleValue.setText(String.format("%.1fx", currentScale));
 
         float clusterScale = (manager != null) ? manager.getClusterScale() : 1.0f;
-        int progressCluster = Math.round(((clusterScale - 0.5f) / 1.5f) * 15.0f);
+        int progressCluster = Math.round(((clusterScale - 0.1f) / 1.9f) * 19.0f);
         if (progressCluster < 0) progressCluster = 0;
-        if (progressCluster > 15) progressCluster = 15;
+        if (progressCluster > 19) progressCluster = 19;
         if (sbClusterScale != null) {
+            sbClusterScale.setMax(19);
             sbClusterScale.setProgress(progressCluster);
         }
         if (tvClusterScaleValue != null) {

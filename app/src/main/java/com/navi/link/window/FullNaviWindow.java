@@ -136,7 +136,7 @@ public class FullNaviWindow extends BaseFloatingWindow {
 
         // 转向图标闪烁逻辑
         if (ivActionIconFull != null) {
-            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit);
+            boolean shouldBlink = shouldBlinkTurnIcon(disNum, disUnit) && isBlinkingAnimationEnabled();
             if (shouldBlink) {
                 ObjectAnimator animator = (ObjectAnimator) ivActionIconFull.getTag();
                 if (animator == null) {
@@ -165,15 +165,25 @@ public class FullNaviWindow extends BaseFloatingWindow {
             boolean overspeed = isOverspeedWarningEnabled && limit > 0 && curSpeed > limit;
             if (overspeed) {
                 tvFullSpeed.setTextColor(Color.RED);
-                ObjectAnimator animator = (ObjectAnimator) tvFullSpeed.getTag();
-                if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvFullSpeed, "alpha", 1f, 0.3f);
-                    newAnimator.setDuration(500);
-                    newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                    newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                    newAnimator.start();
-                    tvFullSpeed.setTag(newAnimator);
-                    isOverspeedBlinking = true;
+                if (isBlinkingAnimationEnabled()) {
+                    ObjectAnimator animator = (ObjectAnimator) tvFullSpeed.getTag();
+                    if (animator == null) {
+                        ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvFullSpeed, "alpha", 1f, 0.3f);
+                        newAnimator.setDuration(500);
+                        newAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                        newAnimator.setRepeatMode(ValueAnimator.REVERSE);
+                        newAnimator.start();
+                        tvFullSpeed.setTag(newAnimator);
+                        isOverspeedBlinking = true;
+                    }
+                } else {
+                    ObjectAnimator animator = (ObjectAnimator) tvFullSpeed.getTag();
+                    if (animator != null) {
+                        animator.cancel();
+                        tvFullSpeed.setTag(null);
+                    }
+                    tvFullSpeed.setAlpha(1f);
+                    isOverspeedBlinking = false;
                 }
             } else {
                 ObjectAnimator animator = (ObjectAnimator) tvFullSpeed.getTag();

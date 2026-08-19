@@ -78,15 +78,25 @@ public class NormalCruiseWindow extends BaseFloatingWindow {
             boolean overspeed = !hideSpeed && isOverspeedWarningEnabled && cameraSpeed > 0 && speed > Math.round(cameraSpeed * factor);
             if (overspeed) {
                 tvCnSpeed.setTextColor(Color.RED);
-                ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
-                if (animator == null) {
-                    ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvCnSpeed, "alpha", 1f, 0.3f);
-                    newAnimator.setDuration(500);
-                    newAnimator.setRepeatCount(ValueAnimator.INFINITE);
-                    newAnimator.setRepeatMode(ValueAnimator.REVERSE);
-                    newAnimator.start();
-                    tvCnSpeed.setTag(newAnimator);
-                    isOverspeedBlinking = true;
+                if (isBlinkingAnimationEnabled()) {
+                    ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
+                    if (animator == null) {
+                        ObjectAnimator newAnimator = ObjectAnimator.ofFloat(tvCnSpeed, "alpha", 1f, 0.3f);
+                        newAnimator.setDuration(500);
+                        newAnimator.setRepeatCount(ValueAnimator.INFINITE);
+                        newAnimator.setRepeatMode(ValueAnimator.REVERSE);
+                        newAnimator.start();
+                        tvCnSpeed.setTag(newAnimator);
+                        isOverspeedBlinking = true;
+                    }
+                } else {
+                    ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
+                    if (animator != null) {
+                        animator.cancel();
+                        tvCnSpeed.setTag(null);
+                    }
+                    tvCnSpeed.setAlpha(1f);
+                    isOverspeedBlinking = false;
                 }
             } else {
                 ObjectAnimator animator = (ObjectAnimator) tvCnSpeed.getTag();
