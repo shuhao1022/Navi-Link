@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     public TrafficLightPanelDelegate trafficLightPanelDelegate;
     public ColorSettingsDelegate colorSettingsDelegate;
     public AboutUsPanelDelegate aboutUsPanelDelegate;
+    public FileTransferPanelDelegate fileTransferPanelDelegate;
 
     // Preference State Variables
     public boolean isMinimalStyle = false;
@@ -152,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
     public MaterialCardView menuLayoutMinimal;
     public MaterialCardView menuTrafficLight;
     public MaterialCardView menuAboutUs;
+    public MaterialCardView menuFileTransfer;
 
     public View indicatorSystemAppearance;
     public View indicatorColorSettings;
@@ -160,6 +162,7 @@ public class MainActivity extends AppCompatActivity {
     public View indicatorLayoutMinimal;
     public View indicatorTrafficLight;
     public View indicatorAboutUs;
+    public View indicatorFileTransfer;
 
     public TextView tvMenuSystemAppearance;
     public TextView tvMenuColorSettings;
@@ -168,6 +171,7 @@ public class MainActivity extends AppCompatActivity {
     public TextView tvMenuLayoutMinimal;
     public TextView tvMenuTrafficLight;
     public TextView tvMenuAboutUs;
+    public TextView tvMenuFileTransfer;
 
     public ScrollView panelSystemAppearance;
     public ScrollView panelColorSettings;
@@ -176,6 +180,7 @@ public class MainActivity extends AppCompatActivity {
     public ScrollView panelLayoutMinimal;
     public ScrollView panelTrafficLight;
     public ScrollView panelAboutUs;
+    public ScrollView panelFileTransfer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -218,6 +223,7 @@ public class MainActivity extends AppCompatActivity {
         minimalPanelDelegate = new MinimalPanelDelegate(this);
         trafficLightPanelDelegate = new TrafficLightPanelDelegate(this);
         aboutUsPanelDelegate = new AboutUsPanelDelegate(this);
+        fileTransferPanelDelegate = new FileTransferPanelDelegate(this);
     }
 
     private void restartActivity() {
@@ -308,6 +314,7 @@ public class MainActivity extends AppCompatActivity {
         menuLayoutMinimal = findViewById(R.id.menu_layout_minimal);
         menuTrafficLight = findViewById(R.id.menu_traffic_light);
         menuAboutUs = findViewById(R.id.menu_about_us);
+        menuFileTransfer = findViewById(R.id.menu_file_transfer);
 
         indicatorSystemAppearance = findViewById(R.id.indicator_system_appearance);
         indicatorColorSettings = findViewById(R.id.indicator_color_settings);
@@ -316,6 +323,7 @@ public class MainActivity extends AppCompatActivity {
         indicatorLayoutMinimal = findViewById(R.id.indicator_layout_minimal);
         indicatorTrafficLight = findViewById(R.id.indicator_traffic_light);
         indicatorAboutUs = findViewById(R.id.indicator_about_us);
+        indicatorFileTransfer = findViewById(R.id.indicator_file_transfer);
 
         tvMenuSystemAppearance = findViewById(R.id.tv_menu_system_appearance);
         tvMenuColorSettings = findViewById(R.id.tv_menu_color_settings);
@@ -324,6 +332,7 @@ public class MainActivity extends AppCompatActivity {
         tvMenuLayoutMinimal = findViewById(R.id.tv_menu_layout_minimal);
         tvMenuTrafficLight = findViewById(R.id.tv_menu_traffic_light);
         tvMenuAboutUs = findViewById(R.id.tv_menu_about_us);
+        tvMenuFileTransfer = findViewById(R.id.tv_menu_file_transfer);
 
         // Bind Right Side Panels
         panelSystemAppearance = findViewById(R.id.panel_system_appearance);
@@ -333,6 +342,7 @@ public class MainActivity extends AppCompatActivity {
         panelLayoutMinimal = findViewById(R.id.panel_layout_minimal);
         panelTrafficLight = findViewById(R.id.panel_traffic_light);
         panelAboutUs = findViewById(R.id.panel_about_us);
+        panelFileTransfer = findViewById(R.id.panel_file_transfer);
 
         // Initialize Delegate Views
         systemAppearanceDelegate.initViews();
@@ -342,6 +352,7 @@ public class MainActivity extends AppCompatActivity {
         minimalPanelDelegate.initViews();
         trafficLightPanelDelegate.initViews();
         aboutUsPanelDelegate.initViews();
+        fileTransferPanelDelegate.initViews();
 
         switchMenu(0);
     }
@@ -424,6 +435,7 @@ public class MainActivity extends AppCompatActivity {
         minimalPanelDelegate.loadSettings();
         trafficLightPanelDelegate.loadSettings();
         aboutUsPanelDelegate.loadSettings();
+        fileTransferPanelDelegate.loadSettings();
     }
 
     public void savePreferences() {
@@ -542,6 +554,7 @@ public class MainActivity extends AppCompatActivity {
         if (menuLayoutMinimal != null) menuLayoutMinimal.setOnClickListener(v -> switchMenu(4));
         if (menuTrafficLight != null) menuTrafficLight.setOnClickListener(v -> switchMenu(5));
         if (menuAboutUs != null) menuAboutUs.setOnClickListener(v -> switchMenu(6));
+        if (menuFileTransfer != null) menuFileTransfer.setOnClickListener(v -> switchMenu(7));
 
         // Delegates setup listeners
         systemAppearanceDelegate.setupListeners();
@@ -551,25 +564,30 @@ public class MainActivity extends AppCompatActivity {
         minimalPanelDelegate.setupListeners();
         trafficLightPanelDelegate.setupListeners();
         aboutUsPanelDelegate.setupListeners();
+        fileTransferPanelDelegate.setupListeners();
     }
 
     public void switchMenu(int index) {
         selectedMenuIndex = index;
         ScrollView[] panels = {
                 panelSystemAppearance, panelColorSettings, panelFeaturesAvoidance,
-                panelLayoutNormal, panelLayoutMinimal, panelTrafficLight, panelAboutUs
+                panelLayoutNormal, panelLayoutMinimal, panelTrafficLight, panelAboutUs,
+                panelFileTransfer
         };
         MaterialCardView[] menus = {
                 menuSystemAppearance, menuColorSettings, menuFeaturesAvoidance,
-                menuLayoutNormal, menuLayoutMinimal, menuTrafficLight, menuAboutUs
+                menuLayoutNormal, menuLayoutMinimal, menuTrafficLight, menuAboutUs,
+                menuFileTransfer
         };
         View[] indicators = {
                 indicatorSystemAppearance, indicatorColorSettings, indicatorFeaturesAvoidance,
-                indicatorLayoutNormal, indicatorLayoutMinimal, indicatorTrafficLight, indicatorAboutUs
+                indicatorLayoutNormal, indicatorLayoutMinimal, indicatorTrafficLight, indicatorAboutUs,
+                indicatorFileTransfer
         };
         TextView[] textViews = {
                 tvMenuSystemAppearance, tvMenuColorSettings, tvMenuFeaturesAvoidance,
-                tvMenuLayoutNormal, tvMenuLayoutMinimal, tvMenuTrafficLight, tvMenuAboutUs
+                tvMenuLayoutNormal, tvMenuLayoutMinimal, tvMenuTrafficLight, tvMenuAboutUs,
+                tvMenuFileTransfer
         };
 
         int accentColor = getAccentColor();
@@ -596,6 +614,7 @@ public class MainActivity extends AppCompatActivity {
         minimalPanelDelegate.updateThemeColors();
         trafficLightPanelDelegate.updateThemeColors();
         aboutUsPanelDelegate.updateThemeColors();
+        fileTransferPanelDelegate.updateThemeColors();
     }
 
     public void updateStatusText() {
@@ -948,6 +967,17 @@ public class MainActivity extends AppCompatActivity {
         if (OverlayPermissionCompat.canDrawOverlays(this)) {
             startFloatingService();
         }
+        if (fileTransferPanelDelegate != null) {
+            fileTransferPanelDelegate.onResume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (fileTransferPanelDelegate != null) {
+            fileTransferPanelDelegate.onPause();
+        }
     }
 
     private androidx.activity.result.ActivityResultLauncher<Intent> exportConfigLauncher;
@@ -975,18 +1005,25 @@ public class MainActivity extends AppCompatActivity {
         importConfigLauncher = registerForActivityResult(
                 new androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(),
                 result -> {
-                    if (result.getResultCode() == RESULT_OK && result.getData() != null && result.getData().getData() != null) {
+                    if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri uri = result.getData().getData();
-                        try (java.io.InputStream is = getContentResolver().openInputStream(uri)) {
-                            String json = ConfigBackupManager.readJsonFromStream(is);
-                            if (ConfigBackupManager.importConfigFromJson(MainActivity.this, json)) {
-                                Toast.makeText(MainActivity.this, "配置导入成功！", Toast.LENGTH_SHORT).show();
-                                reloadAllConfigAndUi();
-                            } else {
-                                Toast.makeText(MainActivity.this, "导入失败：格式非法", Toast.LENGTH_SHORT).show();
+                        if (uri == null && result.getData().getClipData() != null && result.getData().getClipData().getItemCount() > 0) {
+                            uri = result.getData().getClipData().getItemAt(0).getUri();
+                        }
+                        if (uri != null) {
+                            try (java.io.InputStream is = getContentResolver().openInputStream(uri)) {
+                                String json = ConfigBackupManager.readJsonFromStream(is);
+                                if (ConfigBackupManager.importConfigFromJson(MainActivity.this, json)) {
+                                    Toast.makeText(MainActivity.this, "配置导入成功！", Toast.LENGTH_SHORT).show();
+                                    reloadAllConfigAndUi();
+                                } else {
+                                    Toast.makeText(MainActivity.this, "导入失败：格式非法", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception e) {
+                                Toast.makeText(MainActivity.this, "导入出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
-                        } catch (Exception e) {
-                            Toast.makeText(MainActivity.this, "导入出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(MainActivity.this, "未能获取选择的文件", Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
@@ -1023,29 +1060,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void importConfig() {
-        try {
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("*/*");
-            importConfigLauncher.launch(intent);
-        } catch (android.content.ActivityNotFoundException e) {
-            java.io.File dir = getExternalFilesDir("backups");
-            if (dir != null && dir.exists() && dir.listFiles() != null && dir.listFiles().length > 0) {
-                java.io.File[] files = dir.listFiles();
-                java.io.File latest = files[files.length - 1];
-                try (java.io.FileInputStream fis = new java.io.FileInputStream(latest)) {
-                    String json = ConfigBackupManager.readJsonFromStream(fis);
-                    if (ConfigBackupManager.importConfigFromJson(this, json)) {
-                        Toast.makeText(this, "导入成功 (来自 " + latest.getName() + ")", Toast.LENGTH_SHORT).show();
-                        reloadAllConfigAndUi();
-                    } else {
-                        Toast.makeText(this, "导入失败：格式不匹配", Toast.LENGTH_SHORT).show();
-                    }
-                } catch (Exception ex) {
-                    Toast.makeText(this, "导入失败：" + ex.getMessage(), Toast.LENGTH_SHORT).show();
-                }
+        final java.util.List<java.io.File> localFiles = ConfigBackupManager.findLocalConfigBackupFiles(this);
+        if (!localFiles.isEmpty()) {
+            final String[] items = new String[localFiles.size() + 1];
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("MM-dd HH:mm", java.util.Locale.getDefault());
+            for (int i = 0; i < localFiles.size(); i++) {
+                java.io.File f = localFiles.get(i);
+                items[i] = f.getName() + " (" + sdf.format(new java.util.Date(f.lastModified())) + ")";
+            }
+            items[localFiles.size()] = "📁 从其它位置选择文件 (系统文件选择器)";
+
+            new AlertDialog.Builder(this)
+                    .setTitle("选择要导入的配置文件")
+                    .setItems(items, (dialog, which) -> {
+                        if (which == localFiles.size()) {
+                            launchSystemFilePicker();
+                        } else {
+                            java.io.File selectedFile = localFiles.get(which);
+                            importConfigFileDirectly(selectedFile);
+                        }
+                    })
+                    .setNegativeButton("取消", null)
+                    .show();
+        } else {
+            launchSystemFilePicker();
+        }
+    }
+
+    private void importConfigFileDirectly(java.io.File file) {
+        if (file == null || !file.exists()) {
+            Toast.makeText(this, "文件不存在", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        try (java.io.FileInputStream fis = new java.io.FileInputStream(file)) {
+            String json = ConfigBackupManager.readJsonFromStream(fis);
+            if (ConfigBackupManager.importConfigFromJson(this, json)) {
+                Toast.makeText(this, "配置导入成功 (" + file.getName() + ")", Toast.LENGTH_SHORT).show();
+                reloadAllConfigAndUi();
             } else {
-                Toast.makeText(this, "未找到系统文件选择器及本地备份文件", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "导入失败：格式非法", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            Toast.makeText(this, "导入出错：" + e.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void launchSystemFilePicker() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+            intent.setType("*/*");
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            importConfigLauncher.launch(intent);
+        } catch (Exception e) {
+            try {
+                Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+                intent.setType("*/*");
+                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                importConfigLauncher.launch(intent);
+            } catch (Exception ex) {
+                Toast.makeText(this, "无法打开系统文件选择器", Toast.LENGTH_SHORT).show();
             }
         }
     }

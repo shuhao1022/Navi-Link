@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/panel_file_transfer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:visibility="gone"
+    android:scrollbars="none">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="16dp">
+
+        <!-- 标题 -->
+        <TextView
+            android:text="文件快传"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="?attr/panelTextColorPrimary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:layout_marginBottom="4dp"/>
+
+        <TextView
+            android:text="手机与车机接入同一 Wi-Fi 或热点后，扫描二维码或在浏览器输入地址，即可无线传输文件到车机。"
+            android:textSize="12sp"
+            android:textColor="?attr/panelTextColorSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"/>
+
+        <!-- 服务总开关卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_transfer_server_toggle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        android:text="开启文件快传服务"
+                        android:textSize="15sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/panelTextColorPrimary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+
+                    <TextView
+                        android:id="@+id/tv_transfer_server_status"
+                        android:text="● 后台服务运行中 (切换应用不中断)"
+                        android:textSize="12sp"
+                        android:textColor="#FF4CAF50"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"/>
+                </LinearLayout>
+
+                <com.navi.link.view.SwitchButton
+                    android:id="@+id/sw_transfer_server_enable"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 二维码 + 网络信息 卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- QR Code -->
+                <ImageView
+                    android:id="@+id/iv_transfer_qr_code"
+                    android:layout_width="120dp"
+                    android:layout_height="120dp"
+                    android:scaleType="fitCenter"
+                    android:background="#FFFFFFFF"
+                    android:padding="4dp"/>
+
+                <!-- Right side info -->
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="16dp">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content">
+
+                        <TextView
+                            android:text="服务地址"
+                            android:textSize="12sp"
+                            android:textColor="?attr/panelTextColorSecondary"
+                            android:layout_width="0dp"
+                            android:layout_weight="1"
+                            android:layout_height="wrap_content"/>
+
+                        <TextView
+                            android:id="@+id/btn_transfer_switch_port"
+                            android:text="切换端口"
+                            android:textSize="12sp"
+                            android:textStyle="bold"
+                            android:textColor="?attr/colorAccent"
+                            android:paddingStart="8dp"
+                            android:paddingEnd="8dp"
+                            android:paddingTop="2dp"
+                            android:paddingBottom="2dp"
+                            android:clickable="true"
+                            android:focusable="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/tv_transfer_ip_address"
+                        android:text="正在获取..."
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/colorAccent"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"/>
+
+                    <TextView
+                        android:id="@+id/tv_transfer_network_hint"
+                        android:text="⚠️ 请连接手机热点或连入车载 Wi-Fi"
+                        android:textSize="12sp"
+                        android:textColor="?attr/panelTextColorSecondary"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="8dp"/>
+
+                </LinearLayout>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 已接收文件 卡片 -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            app:cardBackgroundColor="?attr/panelCardBgColor"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:padding="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <!-- 标题行 -->
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:text="📂 已接收文件"
+                        android:textSize="14sp"
+                        android:textStyle="bold"
+                        android:textColor="?attr/panelTextColorPrimary"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"/>
+
+                    <TextView
+                        android:id="@+id/btn_transfer_clear_all"
+                        android:text="清空所有"
+                        android:textSize="12sp"
+                        android:textColor="#FFFF4D4F"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"/>
+                </LinearLayout>
+
+                <!-- 空状态提示 -->
+                <TextView
+                    android:id="@+id/tv_transfer_empty_hint"
+                    android:text="暂无接收到的文件\n手机扫码上传后，文件将显示在这里"
+                    android:textSize="13sp"
+                    android:gravity="center"
+                    android:textColor="?attr/panelTextColorSecondary"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="20dp"
+                    android:paddingBottom="20dp"
+                    android:visibility="visible"/>
+
+                <!-- 文件列表容器 -->
+                <LinearLayout
+                    android:id="@+id/layout_transfer_file_list"
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 存储路径说明 -->
+        <TextView
+            android:id="@+id/tv_transfer_storage_path_hint"
+            android:text="💡 文件保存目录：Android/data/com.navi.link/files/Transfers/"
+            android:textSize="11sp"
+            android:textColor="?attr/panelTextColorSecondary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingStart="4dp"/>
+
+    </LinearLayout>
+</ScrollView>

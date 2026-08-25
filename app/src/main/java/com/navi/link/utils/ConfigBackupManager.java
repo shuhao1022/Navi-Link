@@ -20,10 +20,16 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Navi-Link 配置备份与恢复工具类
@@ -156,6 +162,49 @@ public class ConfigBackupManager {
                 } catch (Exception ignored) {}
             }
         }
+    }
+
+    /**
+     * 自动扫描本地常见备份目录，查找已导出的配置文件列表 (按修改时间倒序排列)
+     */
+    public static List<File> findLocalConfigBackupFiles(Context context) {
+        List<File> list = new ArrayList<File>();
+        Set<String> pathSet = new HashSet<String>();
+
+        File[] dirsToScan = new File[]{
+                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),
+                new File(Environment.getExternalStorageDirectory(), "Download"),
+                new File(Environment.getExternalStorageDirectory(), "NaviLink/Transfers"),
+                new File(Environment.getExternalStorageDirectory(), "NaviLink/backups"),
+                context != null ? context.getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS) : null,
+                context != null ? context.getExternalFilesDir("Transfers") : null,
+                context != null ? context.getExternalFilesDir("backups") : null
+        };
+
+        for (File dir : dirsToScan) {
+            if (dir == null || !dir.exists() || !dir.isDirectory()) continue;
+            File[] files = dir.listFiles();
+            if (files == null) continue;
+
+            for (File f : files) {
+                if (!f.isFile()) continue;
+                String name = f.getName().toLowerCase(Locale.ROOT);
+                if ((name.endsWith(".json") || name.contains("navilink") || name.contains("管家配置") || name.contains("config"))
+                        && !pathSet.contains(f.getAbsolutePath())) {
+                    pathSet.add(f.getAbsolutePath());
+                    list.add(f);
+                }
+            }
+        }
+
+        Collections.sort(list, new Comparator<File>() {
+            @Override
+            public int compare(File f1, File f2) {
+                return Long.compare(f2.lastModified(), f1.lastModified());
+            }
+        });
+
+        return list;
     }
 
     /**

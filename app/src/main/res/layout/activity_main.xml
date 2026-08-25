@@ -390,6 +390,47 @@
                             android:layout_height="match_parent" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
+                <!-- Menu 7: File Transfer -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/menu_file_transfer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:cardBackgroundColor="@android:color/transparent"
+                    app:cardCornerRadius="8dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:foreground="?android:attr/selectableItemBackground">
+
+                    <LinearLayout
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp">
+
+                        <!-- Left active vertical stripe (hidden by default) -->
+                        <View
+                            android:id="@+id/indicator_file_transfer"
+                            android:background="#FF4FC3F7"
+                            android:visibility="invisible"
+                            android:layout_width="4dp"
+                            android:layout_height="match_parent" />
+
+                        <TextView
+                            android:id="@+id/tv_menu_file_transfer"
+                            android:text="文件快传"
+                            android:textSize="14sp"
+                            android:textColor="?attr/panelTextColorSecondary"
+                            android:gravity="center_vertical"
+                            android:layout_marginStart="12dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
         </ScrollView>
 
@@ -426,6 +467,9 @@
 
             <!-- Panel 7: About Us -->
             <include layout="@layout/panel_about_us" />
+
+            <!-- Panel 8: File Transfer -->
+            <include layout="@layout/panel_file_transfer" />
 
         </FrameLayout>
     </LinearLayout>
