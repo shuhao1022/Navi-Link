@@ -33,7 +33,7 @@ import java.util.Set;
 
 /**
  * Navi-Link 配置备份与恢复工具类
- * 兼顾 Android 4.x (API 17+) 及高版本系统的兼容性
+ * 兼顾 Android 4.x (API 17+) 及高版本系统的兼容性与类型安全解析
  */
 public class ConfigBackupManager {
 
@@ -66,7 +66,7 @@ public class ConfigBackupManager {
     }
 
     /**
-     * 从 JSON 字符串恢复配置到 SharedPreferences
+     * 从 JSON 字符串恢复配置到 SharedPreferences (类型安全防崩溃重构)
      */
     public static boolean importConfigFromJson(Context context, String jsonStr) {
         if (TextUtils.isEmpty(jsonStr)) return false;
@@ -76,23 +76,46 @@ public class ConfigBackupManager {
 
             JSONObject configObj = root.getJSONObject("config");
             SharedPreferences sp = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+            Map<String, ?> existingAll = sp.getAll();
+
             SharedPreferences.Editor editor = sp.edit();
+            editor.clear(); // 清空原有存储，彻底消除 ClassCastException 隐患
 
             Iterator<?> keys = configObj.keys();
             while (keys.hasNext()) {
                 String key = (String) keys.next();
-                Object val = configObj.get(key);
+                if (configObj.isNull(key)) continue;
 
-                if (val instanceof Boolean) {
-                    editor.putBoolean(key, (Boolean) val);
-                } else if (val instanceof Integer) {
-                    editor.putInt(key, (Integer) val);
-                } else if (val instanceof Long) {
-                    editor.putLong(key, (Long) val);
-                } else if (val instanceof Double || val instanceof Float) {
-                    editor.putFloat(key, ((Number) val).floatValue());
-                } else if (val instanceof String) {
-                    editor.putString(key, (String) val);
+                Object val = configObj.get(key);
+                Object oldVal = existingAll != null ? existingAll.get(key) : null;
+
+                if (oldVal instanceof Float) {
+                    editor.putFloat(key, parseAsFloat(val, (Float) oldVal));
+                } else if (oldVal instanceof Integer) {
+                    editor.putInt(key, parseAsInt(val, (Integer) oldVal));
+                } else if (oldVal instanceof Long) {
+                    editor.putLong(key, parseAsLong(val, (Long) oldVal));
+                } else if (oldVal instanceof Boolean) {
+                    editor.putBoolean(key, parseAsBoolean(val, (Boolean) oldVal));
+                } else if (oldVal instanceof String) {
+                    editor.putString(key, String.valueOf(val));
+                } else {
+                    // 新配置项，按 Key 特征或原始 JSON 类型推断
+                    if (isFloatKey(key)) {
+                        editor.putFloat(key, parseAsFloat(val, 1.0f));
+                    } else if (val instanceof Boolean) {
+                        editor.putBoolean(key, (Boolean) val);
+                    } else if (val instanceof Double || val instanceof Float) {
+                        editor.putFloat(key, ((Number) val).floatValue());
+                    } else if (val instanceof Integer) {
+                        editor.putInt(key, (Integer) val);
+                    } else if (val instanceof Long) {
+                        editor.putLong(key, (Long) val);
+                    } else if (val instanceof String) {
+                        editor.putString(key, String.valueOf(val));
+                    } else if (val instanceof Number) {
+                        editor.putFloat(key, ((Number) val).floatValue());
+                    }
                 }
             }
             return editor.commit();
@@ -100,6 +123,57 @@ public class ConfigBackupManager {
             Log.e(TAG, "导入配置 JSON 失败", e);
             return false;
         }
+    }
+
+    private static boolean isFloatKey(String key) {
+        if (key == null) return false;
+        String lower = key.toLowerCase(Locale.ROOT);
+        return lower.contains("scale") || lower.contains("alpha") || lower.contains("ratio") || lower.contains("opacity");
+    }
+
+    private static float parseAsFloat(Object val, float defVal) {
+        if (val instanceof Number) {
+            return ((Number) val).floatValue();
+        }
+        try {
+            return Float.parseFloat(String.valueOf(val));
+        } catch (Exception e) {
+            return defVal;
+        }
+    }
+
+    private static int parseAsInt(Object val, int defVal) {
+        if (val instanceof Number) {
+            return ((Number) val).intValue();
+        }
+        try {
+            return Integer.parseInt(String.valueOf(val));
+        } catch (Exception e) {
+            return defVal;
+        }
+    }
+
+    private static long parseAsLong(Object val, long defVal) {
+        if (val instanceof Number) {
+            return ((Number) val).longValue();
+        }
+        try {
+            return Long.parseLong(String.valueOf(val));
+        } catch (Exception e) {
+            return defVal;
+        }
+    }
+
+    private static boolean parseAsBoolean(Object val, boolean defVal) {
+        if (val instanceof Boolean) {
+            return (Boolean) val;
+        }
+        if (val != null) {
+            String s = String.valueOf(val).trim();
+            if ("true".equalsIgnoreCase(s) || "1".equals(s)) return true;
+            if ("false".equalsIgnoreCase(s) || "0".equals(s)) return false;
+        }
+        return defVal;
     }
 
     /**
